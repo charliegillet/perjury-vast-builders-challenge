@@ -1,0 +1,207 @@
+[Skip to main content](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html#main-content)
+
+Back to top`⌘` + `K`
+
+[![VSS - Home](https://docs.nvidia.com/vss/latest/_static/nvidia-logo-horiz-rgb-blk-for-screen.svg)![VSS - Home](https://docs.nvidia.com/vss/latest/_static/nvidia-logo-horiz-rgb-wht-for-screen.svg)\\
+VSS](https://docs.nvidia.com/vss/latest/index.html)
+
+3.2.1
+
+[3.2.1](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html) [3.2.0](https://docs.nvidia.com/vss/3.2.0/warehouse-docs/agents.html) [3.1.0](https://docs.nvidia.com/vss/3.1.0/warehouse-docs/agents.html) [3.0.0](https://docs.nvidia.com/vss/3.0.0/warehouse-docs/agents.html) [2.4.1](https://docs.nvidia.com/vss/2.4.1/warehouse-docs/agents.html) [2.4.0](https://docs.nvidia.com/vss/2.4.0/warehouse-docs/agents.html) [2.3.1](https://docs.nvidia.com/vss/2.3.1/warehouse-docs/agents.html) [2.3.0](https://docs.nvidia.com/vss/2.3.0/warehouse-docs/agents.html) [2.2.0](https://docs.nvidia.com/vss/2.2.0/warehouse-docs/agents.html)
+
+LightDarkSystem Settings
+
+# Agents [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#agents "Link to this heading")
+
+The Warehouse Blueprint incorporates an agentic AI system that provides natural language interaction capabilities for querying warehouse safety incidents, generating reports, and retrieving visual information from warehouse cameras.
+
+The suggested agent to use is NVIDIA Nemotron Nano 9B v2 (`nvidia/nvidia-nemotron-nano-9b-v2`) for natural language understanding and query routing, and NVIDIA Cosmos3 Nano Reasoner (`nvidia/cosmos3-nano-reasoner`) for video understanding and analyzing warehouse safety incidents.
+
+For detailed information on all components, APIs, and customization options, refer to the [VSS Agents](https://docs.nvidia.com/vss/latest/VSS-Agents.html).
+
+## Agent Architecture [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#agent-architecture "Link to this heading")
+
+![VSS Agent Architecture](https://docs.nvidia.com/vss/latest/_images/agent-architecture.png)
+
+The agent system uses a two-tier hierarchy:
+
+1. **Top Agent**: LLM-powered routing agent that interprets queries, decides which tools or sub-agents to invoke, maintains conversation context, and streams reasoning traces.
+
+2. **Sub-Agents**: Specialized agents for different types of reporting tasks:
+
+   - **Report Agent**: Handles detailed, comprehensive reports for single incidents. Retrieves incident data, performs video analysis using VLMs, and generates structured markdown reports with incident details, location information, people and vehicles involved.
+
+   - **Multi-Report Agent**: Handles listing and summarizing multiple incidents. Supports filtering by time range, sensor, and incident count. Provides incident summaries with optional chart generation for visualizing incident trends.
+
+For detailed agent architecture information, see [Agent Overview](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Overview.html)
+
+### Tools [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#tools "Link to this heading")
+
+The Top Agent has direct access to a small set of tools and routes more complex requests to the Report and Multi-Report sub-agents, which in turn use the Video Analytics, Video Storage, and Report Generation tools listed below. For the canonical tool reference, see [Video-Analytics-MCP Server](https://docs.nvidia.com/vss/latest/vss-agent/Video-Analytics-MCP-Server.html).
+
+**Top Agent Tools**
+
+| Tool | Description |
+| --- | --- |
+| `vst_sensor_list` | Lists available sensors/cameras from VIOS (VST) |
+| `vst_picture_url` | Retrieves a snapshot/picture URL for a sensor (live or at a specified timestamp) |
+| `get_fov_counts_with_chart` | Provides occupancy statistics with histogram visualizations |
+
+**Video Analytics Tools**
+
+| Tool | Description |
+| --- | --- |
+| `video_analytics_mcp.video_analytics__get_incidents` | Retrieves multiple incidents filtered by sensor, place, time range, and VLM verdict |
+| `video_analytics_mcp.video_analytics__get_incident` | Retrieves a specific incident by incident ID |
+| `video_analytics_mcp.video_analytics__get_fov_histogram` | Gets field-of-view occupancy histogram data |
+| `video_analytics_mcp.video_analytics__get_sensor_ids` | Lists all available sensors/cameras (filtered by place when applicable) |
+
+**Video Storage Tools**
+
+| Tool | Description |
+| --- | --- |
+| `vst_video_url` (`vst.video_clip`) | Retrieves video clip URLs for incident playback, with optional bounding-box overlay |
+| `vst_picture_url` (`vst.snapshot`) | Retrieves snapshot/picture URLs at a given timestamp, with optional bounding-box overlay |
+| `vst_sensor_list` (`vst.sensor_list`) | Returns the list of sensors registered in VIOS |
+
+**Report Generation Tools**
+
+| Tool | Description |
+| --- | --- |
+| `video_understanding` | Uses the VLM to analyze video frames and extract incident information |
+| `template_report_gen` | Combines incident data and VLM observations into a structured markdown report using a template and the LLM |
+| `chart_generator` | Creates visualization charts for reports |
+| `multi_incident_formatter` | Formats multiple incidents (with video/snapshot URLs and optional charts) for summary reports |
+
+**Sub-Agents**
+
+| Sub-Agent | Description |
+| --- | --- |
+| `report_agent` | Generates a detailed report for a single incident (uses `video_analytics_mcp.video_analytics__get_incident`, `video_analytics_mcp.video_analytics__get_incidents`, and `template_report_gen`) |
+| `multi_report_agent` | Lists and summarizes multiple incidents (uses `multi_incident_formatter`, which in turn calls the incidents, video URL, picture URL, and chart generator tools) |
+
+## Supported Queries [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#supported-queries "Link to this heading")
+
+| Query Type | Examples |
+| --- | --- |
+| Sensor Discovery | `List all available sensors` |
+| Snapshots | `Take a snapshot of Camera_01` |
+| Incident Listing | `List last 5 incidents for Camera_01`, `Show incidents in the last 24 hours` |
+| Reports | `Generate a report for incident 12345`, `Give a report for Camera_01 in last hour` |
+| Occupancy Metrics | `How many people were in Camera_01 20 minutes ago?` |
+| Multi-Step | `List last 5 incidents; generate report for the second one` |
+
+The agent understands temporal expressions such as “last 10 minutes”, “yesterday”, and “past hour”.
+
+Note
+
+`Camera_01` is an example. Ask `List all available sensors` to discover your sensor names.
+
+**Example: Sensor Discovery**
+
+![Listing available sensors](https://docs.nvidia.com/vss/latest/_images/vss-warehouse-bp-ui-chat-mode-query-example-1.png)
+
+**Example: Incident Report with Chart**
+
+![Generating incident reports](https://docs.nvidia.com/vss/latest/_images/vss-warehouse-bp-ui-chat-mode-query-example-3.png)
+
+**Example: Camera Snapshot**
+
+![Camera snapshot](https://docs.nvidia.com/vss/latest/_images/vss-warehouse-bp-ui-chat-mode-query-example-4.png)
+
+## Warehouse Agent Configuration [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#warehouse-agent-configuration "Link to this heading")
+
+**Configuration File Location**
+
+The warehouse agent configuration file is located at `deploy/docker/industry-profiles/warehouse-operations/vss-agent/configs/config.yml`. For detailed configuration options and YAML structure, see [Agent Configuration](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Configuration.html).
+
+**Models Used**
+
+| Model | Type | Purpose |
+| --- | --- | --- |
+| `nvidia/nvidia-nemotron-nano-9b-v2` | LLM | Query routing, reasoning, report generation |
+| `nvidia/cosmos3-nano-reasoner` | VLM | Video understanding and analysis |
+
+**Key Warehouse-Specific Settings**
+
+The warehouse profile configures the following key components:
+
+- **Routing prompt**: Optimized for warehouse video surveillance incident reporting
+
+- **VLM prompts**: Tuned to analyze incidents, location conditions (lighting, floor, blockages), people (worker/driver/pedestrian), and vehicles (forklift/transporter)
+
+- **Report template**: Warehouse incident report format
+
+
+For the complete configuration reference including all tools, agents, environment variables, and YAML examples, see [Agent Configuration](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Configuration.html).
+
+For information about other available profiles (Smart Cities, Developer), see [Agent Profiles](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Profiles.html).
+
+## Customization [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#customization "Link to this heading")
+
+The agent configuration is designed to be flexible and extensible. Key customization areas for the warehouse deployment include:
+
+- **Prompt Customization**: Modify `workflow.prompt` to adjust routing logic for warehouse-specific query patterns
+
+- **VLM Prompt Engineering**: Tune `vlm_prompts` in `template_report_gen` for different warehouse scenarios
+
+- **Report Templates**: Create custom markdown templates in the templates directory for warehouse-specific report formats
+
+
+For comprehensive customization guidance including adding custom functions and MCP servers, see [Agent Customization](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Customization.html).
+
+## Agent Skills [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#agent-skills "Link to this heading")
+
+In addition to the in-product VSS Agent described above, a deployed Warehouse Blueprint can be operated from a coding agent (Claude Code, Codex, NemoClaw) using [Agent Skills](https://docs.nvidia.com/vss/latest/agent-skills.html#agent-skills). The following Skills are particularly relevant to the Warehouse Blueprint:
+
+- `vss-deploy-profile` — configure, deploy, debug, and tear down the Warehouse profile via Docker Compose without manual `.env` editing.
+
+- `vss-deploy-detection-tracking-2d` — operate the RTVI-CV perception microservice for the `warehouse-2d` and `warehouse-3d` use cases.
+
+- `vss-deploy-detection-tracking-3d` — deploy and operate the standalone RTVI-CV-3D / MV3DT stack for sample data, custom videos, or RTSP streams. See the
+[MV3DT Agent Skills walkthrough](https://docs.nvidia.com/vss/latest/warehouse-docs/MV3DT-profile.html#mv3dt-agent-skills-walkthrough) for sample prompts and expected agent steps.
+
+- `vss-query-analytics` — query incidents, sensors, and FOV metrics from Elasticsearch via the VA-MCP server (the same data the Warehouse Agent uses).
+
+- `vss-setup-behavior-analytics` — deploy the `vss-behavior-analytics` service standalone with custom configurations or calibration.
+
+- `vss-manage-video-io-storage` — manage video and stream operations, recording timelines, clip extraction, and snapshots through VIOS.
+
+- `vss-generate-video-calibration` — calibrate multi-camera datasets with AutoMagicCalib (AMC). See the
+[Auto Calibration Agent Skills walkthrough](https://docs.nvidia.com/vss/latest/autocalib-getting-started.html#autocalib-agent-skills-walkthrough) for sample prompts and expected agent steps.
+
+
+For the full agent skills catalog and installation instructions, see [Agent Skills](https://docs.nvidia.com/vss/latest/agent-skills.html#agent-skills).
+
+### Agent Evaluation [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#agent-evaluation "Link to this heading")
+
+The VSS Agent includes a comprehensive evaluation framework for assessing agent performance across different dimensions including report quality, question-answering accuracy, and trajectory quality.
+
+For detailed information on configuring evaluators, creating evaluation datasets, and interpreting results, see [Agent Evaluation](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Evaluation.html).
+
+### Observability [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#observability "Link to this heading")
+
+Warehouse agents support distributed tracing via Phoenix through NeMo Agent Toolkit (NAT) telemetry export.
+
+To enable Phoenix telemetry, configure telemetry in the agent configuration file (see [Agent Configuration](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Configuration.html)) and set `PHOENIX_ENDPOINT` in your environment.
+
+Once telemetry is enabled and your agent is running, access the Phoenix UI at `http://<HOST_IP>:7777/phoenix` (projects view is typically under `/projects`).
+
+For a walkthrough of the Phoenix UI (projects view, traces list, and sample trace anatomy), see [Observability](https://docs.nvidia.com/vss/latest/vss-agent/vss-agent-Observability.html).
+
+Additional references:
+
+- [NVIDIA NeMo Agent Toolkit observability workflow](https://docs.nvidia.com/nemo/agent-toolkit/latest/workflows/observe/observe-workflow-with-phoenix.html)
+
+- [Phoenix documentation](https://arize.com/docs/phoenix)
+
+- [Phoenix Environments](https://arize.com/docs/phoenix/environments)
+
+
+### Known Limitations [\#](https://docs.nvidia.com/vss/latest/warehouse-docs/agents.html\#known-limitations "Link to this heading")
+
+For information on warehouse blueprint known limitations, please refer to the [Known Limitations](https://docs.nvidia.com/vss/latest/warehouse-docs/Known-Limitations.html#known-limitations-agents) section.
+
+For information on general VSS Agent known issues, please refer to the [VSS Agent Known Issues](https://docs.nvidia.com/vss/latest/vss-agent/VSS-Agent-Known-Issues.html) section.
+
+On this page
