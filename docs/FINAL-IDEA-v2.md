@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-10-02) by [FINAL-IDEA-v3.md](FINAL-IDEA-v3.md) (PERJURY).** ASSAY is kept as the **fallback**: the v3 §11 decision tree routes here at 10:45 only if the Pack A gates fail and the PIE mapping gate (G2 below) passes. Otherwise it routes to ASSAY-GOLD.
+
 # FINAL IDEA v2: ASSAY
 
 > **Replaces [FINAL-IDEA.md](FINAL-IDEA.md) (UNWATCHED).** Round-2 corpus research showed UNWATCHED's learned-normal story only holds on Pack D, which may be sparse and has one baseline day (n=1). The judge simulation below commits to **ASSAY**, which merges SCENARIO MINER, VOID, and QUORUM's camera wall. **The pre-decided pivot is NIGHTSHIFT + VOID** (§13).

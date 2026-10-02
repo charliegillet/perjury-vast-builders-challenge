@@ -20,7 +20,8 @@ Applications required (space limited); registration closes one week before each 
 
 | Doc | What it is |
 |---|---|
-| ⭐ [docs/FINAL-IDEA-v2.md](docs/FINAL-IDEA-v2.md) | **Current plan: ASSAY.** Plain-English scenario mining over the PIE dashcam archive, Cosmos3-verified, graded against human labels, with I-24 as a no-pedestrian negative control. Includes the 10:45 decision tree and the pre-build list for tonight |
+| ⭐ [docs/FINAL-IDEA-v3.md](docs/FINAL-IDEA-v3.md) | **Current plan: PERJURY.** Say anything about the footage; each atomic claim goes to the cheapest witness that can settle it (VastDB records, YOLO, captions, or a jury of I-24 cameras watched by Cosmos3), and gets SUPPORTED / CONTRADICTED / "the pixels can't tell" with evidence and measured error rates. Routing table, 13-service roles, bench, gates, hour plan, scripts |
+| [docs/FINAL-IDEA-v2.md](docs/FINAL-IDEA-v2.md) | **Fallback: ASSAY.** Plain-English scenario mining over the PIE dashcam archive, Cosmos3-verified, graded against human labels, with I-24 as a no-pedestrian negative control. Includes the 10:45 decision tree and the pre-build list for tonight |
 | [docs/corpus/](docs/corpus/) | What's actually in each footage pack (A–F) plus the organizer overview-video analysis |
 | 🚨 [docs/OFFICIAL-STARTER-KIT.md](docs/OFFICIAL-STARTER-KIT.md) | **Read first.** Official starter repo `vast-data/vast-builders-challenge`: browser VM, pre-deployed stack, skills, corpus packs, dry-run lessons, and how UNWATCHED adapts |
 | [docs/EVENT-DETAILS.md](docs/EVENT-DETAILS.md) | Official rules: **4:30 PM PT deadline**, submit **public repo + demo video**, join VAST Cosmos Community (build env = first 100 arrivals) |
@@ -36,7 +37,9 @@ Applications required (space limited); registration closes one week before each 
 
 ## Idea
 
-**ASSAY** (current, see FINAL-IDEA-v2): *ask for a driving scenario in plain English; ASSAY pulls every instance from the archive, Cosmos3 verifies each one, and it grades itself against human labels: found, missed, made up.* Previous pick, now the pivot: **UNWATCHED** — the archive that watches itself and doesn't cry wolf. Every new segment is scored against what that camera normally sees; Cosmos-Reason2 verifies outliers before anyone is paged; a suppression counter shows what it chose not to show you; an unsolicited digest lands in Slack.
+**PERJURY** (current, see [FINAL-IDEA-v3](docs/FINAL-IDEA-v3.md)): *"Every claim about the footage takes the stand."* Built for the judge's brief: interesting, uses the set of services provided, amazing. Hero claim on Pack A (I-24): **"A pickup is towing a trailer"**, which should come out TRUE on the free-flow scene and FALSE on the snow scene. YOLO can't settle it, so a jury of cameras watched by Cosmos3 does. The I24-3D paper gives the ground truth.
+- **Fallback:** ASSAY ([v2](docs/FINAL-IDEA-v2.md)), scenario mining graded against PIE labels.
+- **Older ideas:** NIGHTSHIFT and UNWATCHED ([v1](docs/FINAL-IDEA.md)).
 
 ## Setup
 
