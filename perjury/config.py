@@ -40,15 +40,16 @@ class Settings:
         self.vss_url = (e.get("INGRESS_URL") or e.get("VSS_URL") or "").rstrip("/")
         self.vss_user = e.get("USERNAME") or e.get("VSS_USERNAME") or ""
         self.vss_password = e.get("PASSWORD") or e.get("VSS_PASSWORD") or ""
-        # GPU host (shared CoreWeave endpoints)
+        # GPU host (shared CoreWeave endpoints). config.example: "No auth token is needed"; the bearer is sent only if set
         self.gpu_token = e.get("GPU_BEARER_TOKEN", "")
         self.cosmos_url = e.get("COSMOS3_REASON_URL", "").rstrip("/")
         self.cosmos_model = e.get("COSMOS3_REASON_MODEL", "nvidia/cosmos3-reason")
         self.cosmos_bbox_scale = float(e.get("COSMOS_BBOX_SCALE", "1000"))
         self.yolo_url = e.get("YOLO_URL", "").rstrip("/")
         self.embed_url = e.get("COSMOS_EMBED1_URL", "").rstrip("/")
-        self.embed_model = e.get("COSMOS_EMBED1_MODEL", "")
+        self.embed_model = e.get("COSMOS_EMBED1_MODEL", "nvidia/cosmos-embed1")
         self.canary_url = e.get("CANARY_1B_URL", "").rstrip("/")
+        self.canary_model = e.get("CANARY_1B_MODEL", "")  # config.example leaves it unset on purpose
         # W&B
         self.wandb_key = e.get("WANDB_API_KEY", "")
         self.wandb_project = (f"{e['WANDB_TEAM']}/{e.get('WANDB_PROJECT', 'perjury')}"

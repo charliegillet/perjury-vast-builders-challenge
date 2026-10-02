@@ -1,5 +1,5 @@
 """Canary-1B testimony ASR (§10): multipart POST /v1/audio/transcriptions. Health is /v1/health/ready only
-(/v1/models is 404 on this NIM). Model id is ambiguous: try nvidia/canary-1b -> no model field -> canary-1b, keep the
+(/v1/models is 404 on this NIM). Model id is ambiguous: try $CANARY_1B_MODEL if set, then nvidia/canary-1b -> no model field -> canary-1b, keep the
 first variant that returns text. PERJURY_CANARY_LANGUAGE=en adds a language field ([A] at G4).
 """
 from __future__ import annotations
@@ -50,7 +50,8 @@ class Canary(HttpBase):
         """{"text", "model_id", "latency_ms"}. Raises ServiceError when no variant returns text."""
         if not self.s.canary_url:
             raise ServiceError(self.service, "CANARY_1B_URL not set")
-        variants = [self.variant] if self.variant is not False else list(MODEL_VARIANTS)
+        variants = ([self.variant] if self.variant is not False
+                    else list(dict.fromkeys(([self.s.canary_model] if self.s.canary_model else []) + list(MODEL_VARIANTS))))
         errors = []
         with ribbon(bus, self.service, gpu=True, request={"file": wav, "language": self.language or None}) as call:
             t0 = time.monotonic()
