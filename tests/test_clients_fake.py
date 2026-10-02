@@ -64,11 +64,13 @@ def test_fake_ptow_no_on_scene2_and_rate_is_low(c):
     clean = next(x["source"] for x in s2 if fakes.false_yes_panel(x["source"]) is None)
     assert yes_panels(run(tow_probe(c, clean)).parsed) == []
 
-    async def all_s2():
-        return [await tow_probe(c, x["source"]) for x in s2]
-    res = run(all_s2())
-    yes = sum(bool(yes_panels(r.parsed)) for r in res)
-    assert 0 < yes / len(s2) < 0.12          # ~5% hallucination per juror, never on most of Scene 2
+    fy = [x["source"] for x in s2 if fakes.false_yes_panel(x["source"])]
+    assert 0 < len(fy) / len(s2) < 0.12      # ~5% hallucination per juror, never on most of Scene 2
+    sample = fy + [x["source"] for x in s2 if x["source"] not in fy][::8]
+
+    async def probe_all():
+        return {src: bool(yes_panels((await tow_probe(c, src)).parsed)) for src in sample}
+    assert run(probe_all()) == {src: src in fy for src in sample}
 
 
 def test_fakes_deterministic(c):
@@ -360,3 +362,62 @@ def test_live_yolo_url_then_b64_fallback(mock):
 
 def test_mp4_dims_none_on_garbage():
     assert mp4_dims(b"not an mp4") is None and mp4_dims(None) is None
+
+
+# ---- offline jobs (pure parts) ----
+def test_index_regex_variants_and_g1():
+    from perjury.index_i24 import build_index, g1_check, parse_scene_cam
+    assert parse_scene_cam("s3://b/i24/scene1_p2c3/seg_000.mp4") == (1, "p2c3")
+    assert parse_scene_cam("s3://b/I24/Scene2/p1c4.mp4") == (2, "p1c4")
+    assert parse_scene_cam("s3://b/scene3-cam/rec_p3c12_x.mp4") == (3, "p3c12")
+    assert parse_scene_cam("s3://b/unknown.mp4") == (None, None)
+    rows = [{"source": x["source"], "original_video": x["original_video"], "start_sec": x["start"],
+             "end_sec": x["end"], "reasoning_content": x["caption"], "object_counts": json.dumps(x["object_counts"]),
+             "object_classes": ",".join(x["object_classes"]), "processing_time": x["processing_time"],
+             "video_shape": "[2160, 3840, 3]", "camera_id": "i24_cam-1"} for x in fakes.load_index()["segments"]]
+    idx = build_index(reversed(rows), "i24_cam-1", "vastdb")
+    ok, msg = g1_check(idx)
+    assert ok and len(idx["segments"]) == 690 and idx["scenes"]["1"]["duration"] == 90
+    assert idx["segments"][0]["object_counts"]["car"] > 0 and idx["segments"][0]["video_shape"] == [2160, 3840, 3]
+    assert not g1_check({**idx, "segments": idx["segments"][:500]})[0]
+
+
+def test_index_cluster_fallback_by_duration_and_snow():
+    from perjury.index_i24 import build_index
+    rows = []
+    for name, n, cap in (("a", 18, "dry road"), ("b", 12, "snow on the shoulder"), ("c", 12, "queued traffic")):
+        rows += [{"source": f"s3://b/{name}/clip_{i:03d}.mp4", "original_video": f"s3://p/{name}.mp4",
+                  "start_sec": i * 5, "end_sec": i * 5 + 5, "caption": cap} for i in range(n)]
+    idx = build_index(rows, "i24_cam-1", "vss-tools")
+    by = {s["original_video"]: s["scene"] for s in idx["segments"]}
+    assert by == {"s3://p/a.mp4": 1, "s3://p/b.mp4": 2, "s3://p/c.mp4": 3}
+
+
+def test_witness_split_sentences():
+    from perjury.witness import split_sentences
+    ans = ("## Overview\nSnow lines the shoulders. Traffic moves slowly in daylight.\n\n## Timeline\n"
+           "- 0:00–0:05: **A cyclist rides along the shoulder.**\n- [0:05-0:10] Cars pass. OK\n---")
+    assert split_sentences(ans) == ["Snow lines the shoulders.", "Traffic moves slowly in daylight.",
+                                    "A cyclist rides along the shoulder."]
+
+
+def test_exhibit_stills_from_recording():
+    from perjury.exhibit import exhibit_stills
+    vote = {"camera": "p1c2", "vote": "yes", "yes_panels": [2], "zoom_ok": True,
+            "juror": {"camera": "p1c2", "source": "s3://x/seg.mp4", "times": TOW_TIMES}}
+    evs = [{"event": "juror", "data": {"atom_id": "a1", "vote": vote}},
+           {"event": "ground", "data": {"atom_id": "a1", "camera": "p1c2", "panel": 2, "bbox_2d": [1, 2, 3, 4]}},
+           {"event": "juror", "data": {"atom_id": "a1", "vote": {**vote, "vote": "no", "camera": "p1c3"}}}]
+    st = exhibit_stills(evs)
+    assert st == [{"source": "s3://x/seg.mp4", "t": 1.8, "camera": "p1c2", "panel": 2, "bbox_2d": [1, 2, 3, 4],
+                   "atom_id": "a1", "zoom_ok": True}]
+    assert exhibit_stills(evs, atom_id="a9") == []
+
+
+def test_store_falls_back_to_jsonl(tmp_path, monkeypatch):
+    from perjury import store
+    monkeypatch.setattr(store, "JSONL", tmp_path / "verdicts.jsonl")
+    where = store.append_verdict({"run_id": "r1", "text": "t", "scene": 2, "verdict": "FALSE", "atoms": []},
+                                 Settings({**LIVE, "PERJURY_VASTDB_VERDICTS": "0"}))
+    row = json.loads((tmp_path / "verdicts.jsonl").read_text())
+    assert where == "jsonl" and row["verdict"] == "FALSE" and row["scene"] == 2

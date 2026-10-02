@@ -136,7 +136,7 @@ async def run_ffmpeg(args: list[str], timeout: float = 60.0) -> bytes:
         out, err = await asyncio.wait_for(proc.communicate(), timeout)
     except asyncio.TimeoutError:
         proc.kill()
-        raise MediaError("ffmpeg timeout")
+        raise MediaError("ffmpeg timeout") from None
     if proc.returncode != 0:
         raise MediaError(f"ffmpeg rc={proc.returncode}: {err.decode(errors='replace')[-300:]}")
     return out
@@ -240,8 +240,9 @@ class Media:
         return grid2x2(frames, labels)
 
     async def crop_clip(self, source: str, t: float, box_px: tuple[int, int, int, int], dur: float = 0.5, *,
-                        bus=None, pad: float = 0.10) -> bytes:
-        """dur-second mp4 of the 4K crop around box_px (padded), longer side scaled to 640 for YOLO."""
+                        bus=None, pad: float = 0.0) -> bytes:
+        """dur-second mp4 of the 4K crop around box_px (+pad per side; callers that pad box_px leave pad=0),
+        longer side scaled to 640 for YOLO."""
         x1, y1, x2, y2 = box_px
         w, h = max(8, x2 - x1), max(8, y2 - y1)
         x, y = max(0, int(x1 - w * pad)), max(0, int(y1 - h * pad))

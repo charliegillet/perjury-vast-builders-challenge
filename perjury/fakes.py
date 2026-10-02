@@ -18,7 +18,7 @@ import re
 import time
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, Optional
+from typing import Optional
 
 from PIL import Image, ImageDraw
 
@@ -222,7 +222,7 @@ class FakeMedia(Media):
         return buf.getvalue()
 
     async def crop_clip(self, source: str, t: float, box_px: tuple[int, int, int, int], dur: float = 0.5, *,
-                        bus=None, pad: float = 0.10) -> bytes:
+                        bus=None, pad: float = 0.0) -> bytes:
         with ribbon(bus, self.service, request={"source": source, "t": t, "box_px": list(box_px)}) as c:
             await _nap(self.s, 120)
             c.note = FIXTURE

@@ -51,25 +51,25 @@ def pick_parents(index: dict, n: int, per_scene: int) -> list[dict]:
 async def _verify(sentence: str, scene: int, ctx) -> dict:
     from perjury import pipeline
     bus = EventBus(f"witness-{uuid.uuid4().hex[:8]}")
-    fn = getattr(pipeline, "verify", None) or pipeline.testify
-    v = await fn(sentence, scene, ctx, bus, transcript_source="witness")
+    v = await pipeline.testify(sentence, scene, ctx, bus, transcript_source="typed")
     d = v.model_dump(mode="json") if hasattr(v, "model_dump") else dict(v)
     return {"text": sentence, "verdict": d.get("verdict"), "explanation": d.get("explanation"),
             "run_id": d.get("run_id"), "atoms": d.get("atoms"), "atom_verdicts": d.get("atom_verdicts"),
             "parser": d.get("parser")}
 
 
-async def run(n: int = 9, per_scene: int = 3, out: Path | None = None) -> dict:
+async def run(n: int = 9, per_scene: int = 3, out: Path | None = None, ctx=None) -> dict:
+    """ctx: an existing pipeline Context (the app passes its own); built from settings() when None."""
     from perjury import pipeline
-    s = settings()
-    ctx = pipeline.load_context(s)
+    ctx = ctx or pipeline.load_context(settings())
+    s = ctx.settings
     clients = ctx.clients
     index = json.loads(s.index_path.read_text())
     parents = pick_parents(index, n, per_scene)
     result = {"version": 1, "mode": "live" if s.mode == "live" else "fixture",
               "ran_at": datetime.now().astimezone().isoformat(timespec="seconds"), "parents": []}
     for p in parents:
-        rec = {**p, "question": "Summarize what happens in this video"}
+        rec = {**p, "who": "videos/synthesize", "question": "Summarize what happens in this video"}
         try:
             syn = await clients.vss.synthesize(p["original_video"], rec["question"], 20)
             rec["answer"] = (syn or {}).get("answer") or (syn or {}).get("llm_synthesis") or ""

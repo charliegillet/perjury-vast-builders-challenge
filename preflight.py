@@ -12,14 +12,13 @@ import argparse
 import asyncio
 import json
 import re
-import socket
 import statistics
 import sys
 import time
 import urllib.parse
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Awaitable, Callable
 
 from perjury.config import CACHE, Settings, settings
 
@@ -217,7 +216,7 @@ async def tow_juror(ctx: Ctx, seg: dict) -> dict:
         out["zoom_ok"] = False
         return out
     w, h = _video_wh(seg)
-    crop = await m.crop_clip(seg["source"], t, xyxy1000_to_pixels(box, w, h))
+    crop = await m.crop_clip(seg["source"], t, xyxy1000_to_pixels(box, w, h), pad=0.15)   # as tiers.py pads
     z = await ctx.c.yolo.zoom_check(crop, None)
     out.update(zoom_ok=z.ok, zoom=z.model_dump(), grounded=box)
     return out

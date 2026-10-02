@@ -72,7 +72,7 @@ async def run(events_path: Path, atom_id: Optional[str] = None, dry_run: bool = 
     stills = exhibit_stills(events, atom_id)
     if not stills:
         raise SystemExit(f"no grounded yes-votes in {events_path.name}{' for ' + atom_id if atom_id else ''}")
-    mp4 = await build_reel(stills, c.media, f"verdict {verdict}")   # FakeMedia renders the stills in fixture mode
+    mp4 = await build_reel(stills, c.media, f"verdict {verdict}" + (" · FIXTURE" if c.mode != "live" else ""))   # FakeMedia renders the stills in fixture mode
     out = CACHE / "exhibits" / f"{run_id}.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(mp4)
