@@ -30,6 +30,8 @@ Applications required (space limited); registration closes one week before each 
 | [docs/GEMINI-FALLBACK.md](docs/GEMINI-FALLBACK.md) | Gemini as an outage-only fallback verifier; Cosmos vs Gemini benchmarks (VANTAGE) |
 | [src/verifier_backends.py](src/verifier_backends.py) | Cosmos + Gemini verifier backends with circuit breaker (base for ASSAY's verify step); [src/eval_backends.py](src/eval_backends.py) runs a Weave comparison |
 | `.firecrawl/`, `docs/sources/` | Raw scrapes of the pages the kept docs rely on |
+| [docs/REUSE-FROM-UNWANTED.md](docs/REUSE-FROM-UNWANTED.md) | 85 files restored from `unwanted/` and what each is for: verify-prompt evidence, Gemini fallback gotchas, Weave/tuner precedent, UI starter, pitch receipts |
+| [docs/JUDGE-BRIEF.md](docs/JUDGE-BRIEF.md) · [docs/ideas-round3-judge-brief.md](docs/ideas-round3-judge-brief.md) | The judge's brief ("interesting · uses the services provided · amazed"), the 13-service scorecard, and round-3 ideas (ARGUS, PERJURY, REWATCH…) |
 | [unwanted/](unwanted/README.md) | Files not needed for ASSAY (superseded UNWATCHED plan, round-1 ideation, Gemini deep-dives, duplicate or junk scrapes). Paths are preserved, and [MANIFEST.tsv](unwanted/MANIFEST.tsv) gives the reason for each |
 
 ## Idea

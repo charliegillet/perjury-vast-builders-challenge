@@ -6,17 +6,15 @@ Files moved out of the working tree on **2026-10-02** because they aren't needed
 
 **[MANIFEST.tsv](MANIFEST.tsv)** lists every moved file with its reason. To restore one: `git mv unwanted/<path> <path>`.
 
-**What's here (717 files):**
+**What's here (632 files):**
 
 | Area | Files |
 |---|---|
-| `.firecrawl` | 395 |
-| `docs/sources` | 262 |
-| `.firecrawl/starter-repos` | 46 |
-| `docs` | 6 |
-| `docs/deep-research` | 4 |
+| `.firecrawl` | 367 |
+| `docs/sources` | 215 |
+| `.firecrawl/starter-repos` | 44 |
+| `docs` | 4 |
 | `(root)` | 2 |
-| `docs/trends` | 2 |
 
 **Main categories:**
 - **Superseded idea:** UNWATCHED (`docs/FINAL-IDEA.md`, `docs/DEEP-RESEARCH.md`, `docs/research.md`), the round-1 ideation files, and UNWATCHED-only competitor and surveillance-market captures (`dr-comp-*`, `dr-judge-mkt-*`).
@@ -25,5 +23,7 @@ Files moved out of the working tree on **2026-10-02** because they aren't needed
 - **Junk captures:** empty or error files, 404s, sign-in walls and cookie pages.
 - **Raw search-result JSONs** whose useful content is already captured or summarized.
 - **Very large, low-value pages:** for example nemoclaw.md and the full Cosmos community index.
+
+**Second pass (same day):** a "can it help make the project?" review restored 85 files to their original paths. See [docs/REUSE-FROM-UNWANTED.md](../docs/REUSE-FROM-UNWANTED.md).
 
 `lastframe/` and `docs/LAST-FRAME.md` were deliberately left alone.

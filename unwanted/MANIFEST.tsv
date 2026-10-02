@@ -91,7 +91,6 @@ original_path	reason
 .firecrawl/.err-s44-vss-alert-agents	Empty firecrawl error log
 .firecrawl/.err-search	Firecrawl error/rate-limit log, no content
 .firecrawl/.tm-err	Firecrawl error/rate-limit log, no content
-.firecrawl/ava-paper.md	Generic agentic video analytics paper; uncited
 .firecrawl/clips-spaces-p01-hf-sdg-warehouse.md	borderline: near-duplicate of p02 SDG-Warehouse README
 .firecrawl/clips-spaces-p11-vss-dt3d-skill.md	GitHub error page (unicorn), no content
 .firecrawl/clips-spaces-p20-isaac-envs.md	Isaac Sim asset list; source-list only, Pack C/E context
@@ -107,7 +106,7 @@ original_path	reason
 .firecrawl/clips-spaces-s08-wh-2d-sample.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s09-sf-dataset.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s10-vast-sf.json	Raw search JSON; findings summarized in corpus/02
-.firecrawl/clips-spaces-s11-neighborhood.json	borderline: raw search; Pack D "no public dataset" in corpus/02
+.firecrawl/clips-spaces-s11-neighborhood.json	"borderline: raw search; Pack D ""no public dataset"" in corpus/02"
 .firecrawl/clips-spaces-s12-cosmos3-sdg.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s13-vss2-blurred.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s14-isaac-warehouse.json	Raw search JSON; findings summarized in corpus/02
@@ -115,7 +114,7 @@ original_path	reason
 .firecrawl/clips-spaces-s16-caltrans.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s17-nvidia-sf.json	Raw search JSON; findings summarized in corpus/02
 .firecrawl/clips-spaces-s18-vbc-corpus.json	borderline: raw search; Pack D finding summarized in corpus/02
-.firecrawl/clips-traffic-i24-access-data.md	"Not authorized" access wall, no content
+.firecrawl/clips-traffic-i24-access-data.md	Not authorized access wall, no content
 .firecrawl/clips-traffic-pie-gpt4v-aaai.md	Empty PDF.js viewer stub, no content
 .firecrawl/clips-traffic-s-cosmos-reason-traffic.json	Raw search JSON; findings captured in clips-traffic scrapes + corpus/01
 .firecrawl/clips-traffic-s-i24-3d-followups.json	Raw search JSON; findings captured in clips-traffic scrapes + corpus/01
@@ -158,41 +157,29 @@ original_path	reason
 .firecrawl/search-vss.json	Raw initial-research search JSON; results scraped/summarized
 .firecrawl/tokensand-vastlondon.md	404 page; fact already noted in EVENT-DETAILS
 .firecrawl/trend-mkt-p01-gemini-agentic-video.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p02-twelvelabs-seriesb.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p03-coram-b.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p04-hakimo.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p05-verkada-nvidia.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p06-orchestra.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p07-metropolis-jul.md	Exact dup of docs/sources/dr-judge-nvidia-metropolis-gtc.md
 .firecrawl/trend-mkt-p08-memories-tc.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p09-overshoot-yc.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p10-ambient-pulsar.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p11-lumana-tnw.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p12-archetype-agents.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p13-seedrealtime.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p14-openai-dots.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p15-gemini-live-challenge.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p16-aitinkerers-nyc.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p17-neo4j-video-hack.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p21-forbes-axon.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p22-latent-video-agents.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p23-chandra-efficient.md	Exact dup of trend-models-p17; UNWATCHED trend sweep
 .firecrawl/trend-mkt-p24-tl-la-hack.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p25-muse-glimmer.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p26-spotai-shortlist.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p27-forasoft-vms.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p28-cv-voice-hack.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p29-showhn-iris.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p30-metropolis-japan.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p31-tl-seriesb-blog.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p32-nvidia-vision-agent-omni.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p33-frigate-018.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p34-devdigest-agentic.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p35-hn-gemini37.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p36-hn-gpt56-vision.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p37-gemini38-flash.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p40-ambient-arr.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
-.firecrawl/trend-mkt-p41-qwen38-omni.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p42-conntour-tc.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p43-verkada-mcp.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
 .firecrawl/trend-mkt-p44-aitinkerers-anomaly.md	UNWATCHED market/startup/buzz capture; no ASSAY fact
@@ -207,7 +194,6 @@ original_path	reason
 .firecrawl/trend-mkt-s08-lumana-ambient.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s09-gemini-video.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s10-openai-video.json	Raw search JSON for UNWATCHED market sweep
-.firecrawl/trend-mkt-s11-nvidia-metropolis.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s12-meta-perception.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s13-nova-video.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s14-archetype.json	Raw search JSON for UNWATCHED market sweep
@@ -226,7 +212,6 @@ original_path	reason
 .firecrawl/trend-mkt-s27-hn-video.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s28-axon-bodycam.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s29-retail-video.json	Raw search JSON for UNWATCHED market sweep
-.firecrawl/trend-mkt-s31-physical-ai-fund.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s32-ambient-spot.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s33-showhn-vlm-cam.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s34-frigate-genai.json	Raw search JSON for UNWATCHED market sweep
@@ -241,18 +226,13 @@ original_path	reason
 .firecrawl/trend-mkt-s43-cosmos-reason-hack.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-mkt-s44-vss-alert-agents.json	Raw search JSON for UNWATCHED market sweep
 .firecrawl/trend-models-p01-cosmos3-blog.md	dup of docs/sources/dr-gem-cmp-p02-cosmos3-blog.md (kept)
-.firecrawl/trend-models-p04-cosmos-github.md	borderline: Cosmos repo page; latency in p21, card in p03
 .firecrawl/trend-models-p06-vantage-arxiv.md	dup of docs/sources/dr-gem-cmp-p21-vantage-arxiv.md (kept)
-.firecrawl/trend-models-p07-cosmos-embed-ad.md	768-d anomaly embedder not on stack; dup docs/sources
 .firecrawl/trend-models-p08-vss-embed.md	Embed1 facts covered by starter kit and 01-technical
 .firecrawl/trend-models-p09-streamingvlm.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p12-nemotron-omni-vllm.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
-.firecrawl/trend-models-p14-simplestream.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p15-streamingbench.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p16-ovobench-llmstats.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
-.firecrawl/trend-models-p17-efficient-video-2026.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p18-marengo3.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
-.firecrawl/trend-models-p19-mixpeek-embed.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p20-jetson-reason2.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p22-dynamo-epd.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p23-minicpm45.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
@@ -263,7 +243,6 @@ original_path	reason
 .firecrawl/trend-models-p28-internvl35.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p29-gemma4-cv.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p30-qwen3vl-sglang.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
-.firecrawl/trend-models-p31-compact-vlm-vad.md	Exact dup of docs/sources/dr-gem-cmp-p07; UNWATCHED VAD
 .firecrawl/trend-models-p32-perception-models.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p33-specvlm.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
 .firecrawl/trend-models-p34-forestprune.md	UNWATCHED trend sweep model/technique page; no ASSAY fact
@@ -304,7 +283,6 @@ original_path	reason
 .firecrawl/trend-models-s34-streamingbench.json	Raw search JSON for UNWATCHED trend sweep; key URLs scraped
 .firecrawl/trend-models-s35-vss-perf.json	Raw search JSON for UNWATCHED trend sweep; key URLs scraped
 .firecrawl/trend-oss-agentdvr-ai.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-artesca-vss.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-cascade-vad.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-claude-real-video.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-claude-video.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
@@ -314,7 +292,6 @@ original_path	reason
 .firecrawl/trend-oss-dvd.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-frigate-017-release.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-frigate-genai-objects.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-frigate-genai-review.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-gh-frigate.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-gh-stats.tsv	borderline: OSS star stats for UNWATCHED trends/02; not ASSAY
 .firecrawl/trend-oss-gopro-blog.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
@@ -329,8 +306,6 @@ original_path	reason
 .firecrawl/trend-oss-open-nvr.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-panda.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-pixeltable-video.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-qdrant-vae-gh.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-qdrant-vae-p1.md	Exact dup of docs/sources/dr-comp-qdrant-vad1; UNWATCHED prior art
 .firecrawl/trend-oss-scrypted-ai.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-search-agentdvr.json	Raw search JSON for UNWATCHED OSS sweep
 .firecrawl/trend-oss-search-anomaly.json	Raw search JSON for UNWATCHED OSS sweep
@@ -367,12 +342,10 @@ original_path	reason
 .firecrawl/trend-oss-search-vss.json	Raw search JSON for UNWATCHED OSS sweep
 .firecrawl/trend-oss-search-xviral.json	Raw search JSON for UNWATCHED OSS sweep
 .firecrawl/trend-oss-streamingvlm.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-sv-zones.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-topic-video-analytics.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-topic-video-rag.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-topic-video-understanding.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-topic-vlm.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
-.firecrawl/trend-oss-trackers.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-trending-py-monthly.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-trio-retina.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
 .firecrawl/trend-oss-vera.md	UNWATCHED OSS prior-art capture; not cited for ASSAY
@@ -388,7 +361,6 @@ original_path	reason
 .firecrawl/vast-dev-resources.md	Nav-heavy community post linking developer page
 .firecrawl/vast-github-org.md	VAST GitHub org listing; not needed for ASSAY
 .firecrawl/vast-insightengine.md	InsightEngine marketing page, no fact used
-.firecrawl/vast-research-agent.md	Unrelated research-assistant agent repo page
 .firecrawl/vast-smartcities-blog.md	Duplicate of clips-traffic-vast-cosmos-blog.md (same blog)
 .firecrawl/vast-vss-blueprint.md	Duplicate of clips-spaces-p07 README plus GitHub nav chrome
 .firecrawl/vastsf-projects-live.md	Exact duplicate of tokensand-vastsf-projects.md
@@ -396,7 +368,6 @@ original_path	reason
 .firecrawl/wandb-aria-agent.md	Garbled ARIA marketing page; coreweave-aria.md covers ARIA
 .firecrawl/starter-repos/official-vast-data/docs/hackathon/vss-dasboard-tab.png	unreferenced near-duplicate of docs/images/vss-dashboard.png
 .firecrawl/starter-repos/official-vast-data/docs/hackathon/vss-login.png	unreferenced 670 KB login-screen screenshot; no fact
-.firecrawl/starter-repos/official-vast-data/docs/hackathon/vss-search-tab.png	unreferenced near-duplicate of docs/images/vss-search.png
 .firecrawl/starter-repos/relaxedtomato/.cursor/README.md	older superseded version of official file (outdated corpus/auth)
 .firecrawl/starter-repos/relaxedtomato/.cursor/rules/build-day.mdc	exact duplicate of official-vast-data copy (cmp identical)
 .firecrawl/starter-repos/relaxedtomato/.cursor/skills/ask-cosmos/SKILL.md	exact duplicate of official-vast-data copy (cmp identical)
@@ -439,7 +410,6 @@ original_path	reason
 .firecrawl/starter-repos/relaxedtomato/docs/images/vss-search.png	exact duplicate of official-vast-data copy (cmp identical)
 .firecrawl/starter-repos/relaxedtomato/docs/images/vss-ui-load.png	exact duplicate of official-vast-data copy (cmp identical)
 .firecrawl/starter-repos/virtualsheng-team-a/.gitignore	trivial dry-run gitignore; no fact we use
-.firecrawl/starter-repos/virtualsheng-team-a/safety-board/static/index.html	dry-run team UI for different project; app.py kept as reference
 ambient	stray root firecrawl search JSON; competitor captured in docs/sources
 spotai	stray root firecrawl search JSON; competitor captured in docs/sources
 docs/sources/dr-comp-aclu.json	Raw search results; UNWATCHED competitive research only
@@ -447,19 +417,13 @@ docs/sources/dr-comp-ambient-sig.md	UNWATCHED competitor (Ambient.ai); uncited, 
 docs/sources/dr-comp-ambient.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-anomalyruler-abs.md	UNWATCHED VAD prior art; not used by ASSAY/NIGHTSHIFT
 docs/sources/dr-comp-anomalyruler.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-auc-not-deployable.md	kNN anomaly-detection critique; UNWATCHED-only rebuttal
-docs/sources/dr-comp-avigilon-docs.md	UNWATCHED competitor (Avigilon UMD); not used by ASSAY
-docs/sources/dr-comp-avigilon-pr.md	UNWATCHED competitor (Avigilon PR); not used by ASSAY
 docs/sources/dr-comp-avigilon.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-briefcam.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-cameron.md	Devpost prompt-rule watcher; UNWATCHED collision research only
-docs/sources/dr-comp-conntour.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-contrarian-novelty.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-cookbook-anomaly.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-cookoff.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-coram.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-coram2.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-cosmos-embed-anomaly.md	UNWATCHED anomaly embedder; dup of .firecrawl/trend-models-p07-cosmos-embed-ad.md
 docs/sources/dr-comp-damiba.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-digest.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-euaiact.json	Raw search results; UNWATCHED competitive research only
@@ -468,21 +432,15 @@ docs/sources/dr-comp-googlebrief.json	Raw search results; UNWATCHED competitive 
 docs/sources/dr-comp-holmes-abs.md	UNWATCHED VAD prior art; not used by ASSAY
 docs/sources/dr-comp-holmes.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-ipvm-umd.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-ipvm-umd.md	UNWATCHED learned-normal forum thread; not used by ASSAY
 docs/sources/dr-comp-kloudspot.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-lavad-abs.md	UNWATCHED VAD prior art; not used by ASSAY
 docs/sources/dr-comp-lavad.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-lumana-blog.md	UNWATCHED competitor (Lumana); not used by ASSAY
-docs/sources/dr-comp-lumana-normal.md	UNWATCHED competitor (Lumana); not used by ASSAY
 docs/sources/dr-comp-lumana-via.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-lumana-via1.md	UNWATCHED competitor (Lumana VIA-1); not used by ASSAY
 docs/sources/dr-comp-lumana.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-nest-summary.md	Nest digest hallucination; UNWATCHED digest Q&A only
 docs/sources/dr-comp-nv-anomaly.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-qdrant-blog.md	Qdrant VAD reference; UNWATCHED prior art only
-docs/sources/dr-comp-qdrant-vad1.md	Qdrant VAD; UNWATCHED only; dup of .firecrawl/trend-oss-qdrant-vae-p1.md
 docs/sources/dr-comp-rhombus.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-spotai-agents.md	UNWATCHED competitor (Spot AI); not used by ASSAY
 docs/sources/dr-comp-spotai.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-svid.md	UNWATCHED digest competitor (Svid); not used by ASSAY
 docs/sources/dr-comp-tl-denver.md	Twelve Labs hackathon winners; UNWATCHED-era collision research
@@ -491,9 +449,7 @@ docs/sources/dr-comp-twelvelabs.json	Raw search results; UNWATCHED competitive r
 docs/sources/dr-comp-vad-critique.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-vad-failure.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-vendor-reports.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-vera-html.md	VERA VAD paper, 118 KB; UNWATCHED prior art only
 docs/sources/dr-comp-vera.json	Raw search results; UNWATCHED competitive research only
-docs/sources/dr-comp-verge-gemini.md	Gemini for Home review; UNWATCHED/Gemini only
 docs/sources/dr-comp-verkada-ai.json	Raw search results; UNWATCHED competitive research only
 docs/sources/dr-comp-verkada-occlusion.md	UNWATCHED competitor (Verkada); not used by ASSAY
 docs/sources/dr-comp-verkada.json	Raw search results; UNWATCHED competitive research only
@@ -503,17 +459,11 @@ docs/sources/dr-comp-volt-actuate.json	Raw search results; UNWATCHED competitive
 docs/sources/dr-gem-cmp-p01-reason2-hf.md	Identical duplicate of dr-tech-hf-cosmos-reason2-8b.md
 docs/sources/dr-gem-cmp-p03-spatial-arxiv.md	SiT-Bench text-only spatial paper, 187 KB; Gemini comparison only
 docs/sources/dr-gem-cmp-p05-gemini-video-docs.md	Legacy Gemini video doc; identical to dr-gem-docs-gc-video.md; Gemini-only
-docs/sources/dr-gem-cmp-p06-surveillance-vllm.md	Surveillance VLM paper; UNWATCHED/Gemini comparison only
-docs/sources/dr-gem-cmp-p07-pmc-compact-vlm.md	Compact VLM VAD paper; dup of .firecrawl/trend-models-p31-compact-vlm-vad.md
 docs/sources/dr-gem-cmp-p09-sanand-fps.md	Gemini fps blog; Gemini-only
 docs/sources/dr-gem-cmp-p10-gemini-terms.md	Gemini API terms; identical to dr-gem-docs-terms.md; Gemini-only
-docs/sources/dr-gem-cmp-p12-ars-gemini-home.md	Gemini for Home press; UNWATCHED/Gemini only
 docs/sources/dr-gem-cmp-p14-androidauth-names.md	Gemini Home naming article; Gemini-only
 docs/sources/dr-gem-cmp-p15-llmstats-videomme.md	Video-MME aggregator, low quality; Gemini comparison only
 docs/sources/dr-gem-cmp-p16-jetson-reason2.md	Jetson edge Reason2 page; ASSAY uses CoreWeave endpoints
-docs/sources/dr-gem-cmp-p17-sveta-field-notes.md	Medium Gemini video field notes; uncited, Gemini-only
-docs/sources/dr-gem-cmp-p18-gemini-safety.md	Gemini safety settings; Gemini-only
-docs/sources/dr-gem-cmp-p19-prohibited-use.md	Google prohibited-use policy; Gemini/surveillance only
 docs/sources/dr-gem-cmp-p20-rate-limits.md	Gemini rate limits; triplicate of dr-gem-docs-rate-limits.md
 docs/sources/dr-gem-cmp-p22-vantage-site.md	Dup of .firecrawl/trend-models-p05-vantage.md; VANTAGE paper p21 kept
 docs/sources/dr-gem-cmp-p23-gemini35flash-card.md	Gemini 3.5 Flash model card; Gemini-only
@@ -523,20 +473,15 @@ docs/sources/dr-gem-cmp-p26-file-active-regression.md	Gemini Files API regressio
 docs/sources/dr-gem-cmp-p27-latency-inconsistent.md	Gemini latency support thread; Gemini-only
 docs/sources/dr-gem-cmp-p28-aistudio-status.md	AI Studio status page; Gemini-only
 docs/sources/dr-gem-cmp-p29-vanebench.md	VANE-Bench VAD paper; UNWATCHED/Gemini only
-docs/sources/dr-gem-cmp-p30-hn-sentry.md	HN thread, nav-heavy; uncited, Gemini-only
 docs/sources/dr-gem-cmp-p31-google-36flash-blog.md	Gemini 3.6 Flash launch blog; uncited, Gemini-only
 docs/sources/dr-gem-cmp-p32-aa-flashlite-providers.md	Flash-Lite provider latency; Gemini-only
 docs/sources/dr-gem-cmp-r-arxiv-2512.24985.md	DarkQA low-light paper excerpt; Gemini comparison only
-docs/sources/dr-gem-cmp-r-arxiv-2603.25467.md	GridVAD anomaly paper excerpt; UNWATCHED/Gemini only
-docs/sources/dr-gem-cmp-r-arxiv-2605.01512.md	CCTV traffic grounding paper excerpt; Gemini comparison, unused by ASSAY
 docs/sources/dr-gem-cmp-r-arxiv-2609.31823.md	Night human-presence VLM paper excerpt; Gemini comparison only
-docs/sources/dr-gem-cmp-r01-temporal.md	Paper-abstract search dump; Gemini comparison only
 docs/sources/dr-gem-cmp-r02-vad.md	Paper-abstract search dump; VAD, UNWATCHED only
 docs/sources/dr-gem-cmp-r03-lowlight.md	Paper-abstract search dump; Gemini comparison only
 docs/sources/dr-gem-cmp-s01-cosmos-reason2-bench.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-cmp-s02-cosmos-reason3.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-cmp-s03-gemini-vad.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
-docs/sources/dr-gem-cmp-s04-gemini-cctv-hallucination.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-cmp-s05-gemini-latency.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-cmp-s06-gemini-safety-people.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-cmp-s07-gemini-fps.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
@@ -565,8 +510,6 @@ docs/sources/dr-gem-cmp-s29-reddit-30s.json	Raw search results; summarized in 05
 docs/sources/dr-gem-cmp-s30-gemini-flash-lite-ttft.json	Raw search results; summarized in 05, Gemini/UNWATCHED context
 docs/sources/dr-gem-docs-aa-38flash.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-api-caching.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-api-generate.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-api-interactions.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-batch.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-caching.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-changelog.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
@@ -574,25 +517,17 @@ docs/sources/dr-gem-docs-ephemeral.md	Gemini fallback doc beyond the 3 core kept
 docs/sources/dr-gem-docs-file-input.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-files.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-flex.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-gc-video.md	Legacy Gemini video doc; identical to dr-gem-cmp-p05; outage-only fallback
-docs/sources/dr-gem-docs-image.md	Gemini image doc; identical to dr-gem-int-p06; outage-only fallback
 docs/sources/dr-gem-docs-laozhang.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-live-guide.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-live-sdk.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-live-session.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-live.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-m-35flashlite.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-m-38flash.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-m-38live.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-media-res.md	Gemini media-resolution doc; identical to dr-gem-int-p12; outage-only
 docs/sources/dr-gem-docs-migrate.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-mlq-agentic.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-models.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-openai.md	Gemini OpenAI-compat doc; identical to dr-gem-int-p03; outage-only
 docs/sources/dr-gem-docs-pecollective.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-pricing.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
-docs/sources/dr-gem-docs-pypi-genai.md	google-genai PyPI page; identical to dr-gem-int-p01; outage-only
-docs/sources/dr-gem-docs-rate-limits.md	Gemini rate limits; identical to dr-gem-cmp-p20/int-p08; outage-only
 docs/sources/dr-gem-docs-regions.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-robotics-stream.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-robotics-streaming.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
@@ -607,9 +542,6 @@ docs/sources/dr-gem-docs-search-live-concurrent.json	Raw search results; Gemini 
 docs/sources/dr-gem-docs-search-live-video.json	Raw search results; Gemini fallback research only
 docs/sources/dr-gem-docs-search-openai-video.json	Raw search results; Gemini fallback research only
 docs/sources/dr-gem-docs-search-vertex-video.json	Raw search results; Gemini fallback research only
-docs/sources/dr-gem-docs-terms.md	Gemini API terms; identical to dr-gem-cmp-p10; outage-only
-docs/sources/dr-gem-docs-thinking.md	Gemini thinking doc; identical to dr-gem-int-p18; outage-only
-docs/sources/dr-gem-docs-tokens.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-vertex-live-av.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-vertex-names.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
 docs/sources/dr-gem-docs-vertex-pricing.md	Gemini fallback doc beyond the 3 core kept; Gemini is outage-only
@@ -617,26 +549,20 @@ docs/sources/dr-gem-docs-vertex-video.md	Gemini fallback doc beyond the 3 core k
 docs/sources/dr-gem-int-Gemini API video people blocked safety filter surveillance footage refuse identify person.json	Raw search results; summarized in 06, Gemini fallback context
 docs/sources/dr-gem-int-Gemini video 1 fps sampling misses fast action videoMetadata fps custom frame rate.json	Raw search results; summarized in 06, Gemini fallback context
 docs/sources/dr-gem-int-p01-pypi-genai.md	Identical duplicate of dr-gem-docs-pypi-genai.md; Gemini-only
-docs/sources/dr-gem-int-p02-weave-google.md	Weave Google GenAI autopatch; Gemini fallback only
 docs/sources/dr-gem-int-p03-openai-compat.md	Identical duplicate of dr-gem-docs-openai.md; Gemini-only
 docs/sources/dr-gem-int-p04-structured-output.md	Identical duplicate of dr-gem-docs-structured.md (kept)
-docs/sources/dr-gem-int-p05-gc-structured.md	Legacy structured-output doc; Gemini-only, core doc kept
 docs/sources/dr-gem-int-p06-image-understanding.md	Identical duplicate of dr-gem-docs-image.md; Gemini-only
-docs/sources/dr-gem-int-p07-troubleshooting.md	Gemini troubleshooting; outage-only fallback
 docs/sources/dr-gem-int-p08-rate-limits.md	Gemini rate limits; triplicate of dr-gem-docs-rate-limits.md
-docs/sources/dr-gem-int-p09-datature-cr2.md	Datature Reason2 fine-tuning tutorial; one bbox note, fine-tuning not used
 docs/sources/dr-gem-int-p11-vertex-bbox.md	Vertex Gemini bounding-box doc; Gemini-only
 docs/sources/dr-gem-int-p12-media-resolution.md	Identical duplicate of dr-gem-docs-media-res.md; Gemini-only
 docs/sources/dr-gem-int-p13-issue-2019-fps.md	Gemini SDK fps GitHub issue; Gemini-only
 docs/sources/dr-gem-int-p14-issue-854-videometa.md	Gemini SDK VideoMetadata issue; Gemini-only
 docs/sources/dr-gem-int-p16-weave-evaluations.md	Identical duplicate of dr-tech-weave-evaluations.md (kept)
-docs/sources/dr-gem-int-p17-api-errors.md	Gemini API error codes; outage-only fallback
 docs/sources/dr-gem-int-p18-thinking.md	Identical duplicate of dr-gem-docs-thinking.md; Gemini-only
 docs/sources/dr-gem-int-p19-vertex-429-blog.md	Vertex 429 retry blog; Gemini-only
 docs/sources/dr-gem-int-p20-weave-attributes.md	Near-empty capture, 303 bytes
 docs/sources/dr-gem-int-p22-hn-gemini-bbox.md	HN Gemini bbox thread; Gemini-only
 docs/sources/dr-gem-int-p23-discuss-noaudio.md	Gemini no-audio forum thread; Gemini-only
-docs/sources/dr-gem-int-p25-discuss-404-noaudio.md	Gemini no-audio 404 forum thread; Gemini-only
 docs/sources/dr-gem-int-s01-genai-pypi.json	Raw search results; summarized in 06, Gemini fallback context
 docs/sources/dr-gem-int-s02-weave-genai.json	Raw search results; summarized in 06, Gemini fallback context
 docs/sources/dr-gem-int-s03-openai-compat.json	Raw search results; summarized in 06, Gemini fallback context
@@ -656,9 +582,7 @@ docs/sources/dr-judge-bansal-forward.md	Near-empty VAST Forward speaker page, no
 docs/sources/dr-judge-bansal-webinars.md	Junk capture, 15 bytes
 docs/sources/dr-judge-mkt-bls-guards.md	Guard wage stat; UNWATCHED market only, not in FINAL-IDEA-v2
 docs/sources/dr-judge-mkt-ca-cannabis-retention.md	CCTV retention rule; UNWATCHED market only
-docs/sources/dr-judge-mkt-ipvm-unwatched.md	Unwatched-footage stat; UNWATCHED pitch only
 docs/sources/dr-judge-mkt-mnm-vsaas.md	VSaaS market size; UNWATCHED market only, 91 KB
-docs/sources/dr-judge-mkt-omdia.md	Surveillance market size; UNWATCHED market, not in FINAL-IDEA-v2
 docs/sources/dr-judge-mkt-popcenter-falsealarms.md	Burglar false-alarm stats; UNWATCHED pitch only
 docs/sources/dr-judge-mkt-rvm-cost.md	Remote monitoring pricing; UNWATCHED pricing only
 docs/sources/dr-judge-mkt-wavestore-aicost.md	AI analytics cost per camera; uncited, UNWATCHED only
@@ -689,7 +613,6 @@ docs/sources/dr-tech-kb-event-handling.md	DataEngine runtime event handling; UNW
 docs/sources/dr-tech-kb-kafka-protocol.md	Kafka/Event Broker; UNWATCHED architecture only
 docs/sources/dr-tech-kb-runtime-sdk.md	Runtime SDK index page, nav-heavy; UNWATCHED custom functions only
 docs/sources/dr-tech-nvforum-function-not-found.md	Hosted build.nvidia.com 404 thread; ASSAY uses venue COSMOS3 endpoint
-docs/sources/dr-tech-s1-cosmos-reason2-api.json	Raw search results; NIM API page captured as scrape
 docs/sources/dr-tech-s10-slack-file-block.json	Raw search results; Slack-only (UNWATCHED digest)
 docs/sources/dr-tech-s2-reason2-bbox.json	Raw search results; bbox facts captured in repo/NIM scrapes
 docs/sources/dr-tech-s3-reason2-hosted.json	Raw search results; hosted-endpoint issue irrelevant to ASSAY
@@ -705,14 +628,6 @@ docs/sources/dr-tech-slack-issue-1521.md	Slack-only; UNWATCHED digest, not in AS
 docs/sources/dr-tech-slack-python-sdk-web.md	Slack-only; UNWATCHED digest, not in ASSAY
 docs/sources/dr-tech-ultralytics-track.md	Local YOLO tracking docs, nav-heavy; ASSAY calls YOLO_URL endpoint
 docs/DEEP-RESEARCH.md	UNWATCHED synthesis; event/judge/tech facts duplicated in EVENT-DETAILS, 01-technical, 03-judges
-docs/FINAL-IDEA.md	UNWATCHED superseded; pivot fully covered by v2 §6 G4, §10.10, §13
-docs/deep-research/02-competitive.md	UNWATCHED-only surveillance/anomaly prior art; ASSAY comparables live in v2
-docs/deep-research/04-gemini-docs.md	Gemini API reference; Gemini outage-only, code already written
-docs/deep-research/05-gemini-vs-cosmos.md	Gemini-vs-Cosmos for UNWATCHED; VANTAGE kept in trends/01 plus primary capture
-docs/deep-research/06-gemini-integration.md	nw-verifier DataEngine setup (now forbidden); env vars documented in src/verifier_backends.py
-docs/demo-designer-round1.md	Round-1 history for superseded ideas (FOREMAN, NIGHT WATCH, etc.)
 docs/devils-advocate-round1.md	Round-1 history leading to superseded UNWATCHED
 docs/ideas-round1.md	Round-1 ideation for superseded ideas
 docs/research.md	Round-1 brief with pre-starter-kit assumptions; superseded by EVENT-DETAILS, OFFICIAL-STARTER-KIT
-docs/trends/02-trending-oss.md	OSS survey ranked for UNWATCHED positioning (Frigate, Qdrant)
-docs/trends/03-products-startups-buzz.md	Surveillance market/launch buzz for UNWATCHED positioning; demo patterns summarized in TRENDS.md

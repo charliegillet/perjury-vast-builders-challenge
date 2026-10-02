@@ -3,9 +3,9 @@
 > **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
 
 Compiled 2026-10-02, the morning of the SF build. Exhaustive tier, 3 parallel passes: about 55 searches, about 100 pages scraped, and 4 papers read. Detailed reports:
-- [deep-research/04-gemini-docs.md](../unwanted/docs/deep-research/04-gemini-docs.md): the Gemini API reference, with exact parameters and snippets
-- [deep-research/05-gemini-vs-cosmos.md](../unwanted/docs/deep-research/05-gemini-vs-cosmos.md): benchmarks, failure modes, privacy, judge framing
-- [deep-research/06-gemini-integration.md](../unwanted/docs/deep-research/06-gemini-integration.md): setup, env vars, cost, latency, failover rules
+- [deep-research/04-gemini-docs.md](deep-research/04-gemini-docs.md): the Gemini API reference, with exact parameters and snippets
+- [deep-research/05-gemini-vs-cosmos.md](deep-research/05-gemini-vs-cosmos.md): benchmarks, failure modes, privacy, judge framing
+- [deep-research/06-gemini-integration.md](deep-research/06-gemini-integration.md): setup, env vars, cost, latency, failover rules
 - Code: [`src/verifier_backends.py`](../src/verifier_backends.py) and [`src/eval_backends.py`](../src/eval_backends.py)
 
 Raw captures are in `docs/sources/dr-gem-docs-*`, `dr-gem-cmp-*` and `dr-gem-int-*`.

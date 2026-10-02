@@ -1,6 +1,6 @@
 # FINAL IDEA v2: ASSAY
 
-> **Replaces [FINAL-IDEA.md](../unwanted/docs/FINAL-IDEA.md) (UNWATCHED).** Round-2 corpus research showed UNWATCHED's learned-normal story only holds on Pack D, which may be sparse and has one baseline day (n=1). The judge simulation below commits to **ASSAY**, which merges SCENARIO MINER, VOID, and QUORUM's camera wall. **The pre-decided pivot is NIGHTSHIFT + VOID** (§13).
+> **Replaces [FINAL-IDEA.md](FINAL-IDEA.md) (UNWATCHED).** Round-2 corpus research showed UNWATCHED's learned-normal story only holds on Pack D, which may be sparse and has one baseline day (n=1). The judge simulation below commits to **ASSAY**, which merges SCENARIO MINER, VOID, and QUORUM's camera wall. **The pre-decided pivot is NIGHTSHIFT + VOID** (§13).
 > `[A]` marks an assumption that the 10:00–10:45 preflight (§6) must confirm. Every number on screen is computed by code in the repo. If we didn't measure it, it doesn't appear.
 
 ---
