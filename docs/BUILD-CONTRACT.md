@@ -121,3 +121,12 @@ Emits, in order: `run`, `transcript`, `atoms`, then per atom any of `t0`/`t1`/`s
 | clients | `perjury/clients.py`, `cosmos.py`, `llm.py`, `vss.py`, `yolo.py`, `embed.py`, `canary.py`, `media.py`, `fakes.py`, `index_i24.py`, `prerun_scene_probes.py`, `witness.py`, `exhibit.py`, `store.py` (verdict rows: VastDB `perjury_verdicts` if writable else `cache/verdicts.jsonl`), `preflight.py` (repo root), `tests/test_clients_fake.py`, `tests/test_media.py` |
 | app | `app/**`, `deploy/**`, `requirements.txt`, `docs/CHROME-FLAG-CARD.md`, `tests/test_app.py` |
 | bench | `bench/**`, `tests/test_bench.py`, `.cursor/rules/perjury.mdc`, `.cursor/skills/perjury-verify/SKILL.md`, `docs/slides/`, `docs/QA-CARD.md` |
+
+## Alignment with the official BUILD_DAY.md (checked 2026-10-02 against vast-data/vast-builders-challenge@main)
+- **GPU endpoints need no auth token** (config.example, ARCHITECTURE_REFERENCE). `GPU_BEARER_TOKEN` is optional everywhere; the bearer header is sent only when set.
+- **Model ids:** `COSMOS3_REASON_MODEL=nvidia/cosmos3-reason`, `COSMOS_EMBED1_MODEL=nvidia/cosmos-embed1`; `CANARY_1B_MODEL` is unset on purpose (we try it first if set, then the §10 variants).
+- **/config files may be team-prefixed:** `kubeconfig` | `<team>-k8s.yaml`. WANDB_* may live only in the environment.
+- **"Nothing runs on your laptop."** Voice option (c) (laptop localhost copy of the UI) is dropped. The laptop is a browser only (option a).
+- **Max 2 VMs per team.** The §12 four-person table assumes 4 terminals; P3/P4 work through a teammate's VM or the VSS UI.
+- **"You don't call [the models] directly, you query the vectors generated"** (BUILD_DAY recap) describes the default path; the gpu/ skills and ARCHITECTURE_REFERENCE ("Ask Cursor how to call each model", Canary "hook it in") allow direct calls. PERJURY reads the pipeline's vectors/captions/YOLO first (T0/T1) and calls models directly only for T2 jurors, zoom-checks and ASR; say this plainly if asked.
+- **Corpus:** BUILD_DAY now names three kinds of footage (dashcam, I-24 highway, neighborhood). Pack A (`i24_cam-1`) is still there; ASSAY's PIE fallback too.
