@@ -27,3 +27,15 @@ cache/*
 !cache/fixture_truth.json
 !cache/.gitkeep
 .pytest_cache/
+
+# From the official starter repo's .gitignore (secrets, junk)
+secrets.yaml
+secrets.*.yaml
+config.yaml
+*-config.yaml
+!*.config.example
+!*.example.yaml
+*.log
+tmp/
+resp.json
+verify-vm.sh
