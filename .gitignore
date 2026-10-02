@@ -39,3 +39,6 @@ config.yaml
 tmp/
 resp.json
 verify-vm.sh
+
+# run.sh debug logs
+logs/
