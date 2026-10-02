@@ -151,6 +151,18 @@ def test_jury_curve_recomputes_from_stored_votes():
     assert report.jury_curve([run], alpha=0.10, subsets=50, seed=0) == curve   # deterministic
 
 
+def test_presence_counts_only_zoom_passed_yes_when_zoom_required():
+    """Matches quorum.presence_verdict: Y = yes with zoom_ok True under P-TOW; every yes when zoom isn't required."""
+    unzoomed = [_vote(c, "yes", None) for c in _cams(6)]
+    assert report._presence(unzoomed, 6, 4, 0, zoom_required=True) == "UNVERIFIABLE"
+    assert report._presence(unzoomed, 6, 4, 0, zoom_required=False) == "SUPPORTED"
+    assert report._presence([_vote(c, "no") for c in _cams(6)], 6, 4, 0, t1_complete=False) == "UNVERIFIABLE"
+    lie = _towing_result("d01", "lie", "FALSE", [_vote(c, "yes", None) for c in _cams(6)])
+    assert report.measured_alpha([lie])["towing"]["alpha"] == 0.0
+    lie["atom_verdicts"][0]["stats"]["zoom_required"] = False
+    assert report.measured_alpha([lie])["towing"]["alpha"] == 1.0
+
+
 def test_jury_curve_skips_k_larger_than_stored_jury():
     lie = _towing_result("d01", "lie", "FALSE", [_vote(c, "no") for c in _cams(6)])
     curve = report.jury_curve([{"split": "dev", "results": [lie]}], alpha=0.1, subsets=5)

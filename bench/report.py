@@ -155,10 +155,11 @@ def measured_alpha(results: list[dict]) -> dict[str, dict]:
             if not votes:
                 continue
             a = out.setdefault(m["type"], {"false_yes": 0, "valid": 0})
+            zr = _zoom_required(avs.get(m["atom_id"]) or {})
             for v in votes:
                 if v.get("vote") in ("yes", "no"):
                     a["valid"] += 1
-                    a["false_yes"] += v.get("vote") == "yes" and v.get("zoom_ok") is not False
+                    a["false_yes"] += _counted_yes(v, zr)
     for a in out.values():
         a["alpha"] = round(a["false_yes"] / a["valid"], 4) if a["valid"] else None
     return out
@@ -212,25 +213,38 @@ def _choose_m_from_quorum(alpha: float, k: int) -> Optional[int]:
 
 
 # ---------------------------------------------------------------- jury-size curve (§8; no extra GPU)
-def _presence(votes: list[dict], k: int, m: Optional[int], t1_supports: int) -> str:
-    Y = sum(1 for v in votes if v.get("vote") == "yes" and v.get("zoom_ok") is not False)
+def _zoom_required(av: dict) -> bool:
+    """quorum.presence_verdict counts Y = yes votes with zoom_ok True when the atom required the zoom-check
+    (normal P-TOW); P-LEAD / semis runs set stats.zoom_required False and every yes counts."""
+    return bool((av.get("stats") or {}).get("zoom_required", True))
+
+
+def _counted_yes(v: dict, zoom_required: bool) -> bool:
+    return v.get("vote") == "yes" and (v.get("zoom_ok") is True or not zoom_required)
+
+
+def _presence(votes: list[dict], k: int, m: Optional[int], t1_supports: int, *, zoom_required: bool = True,
+              t1_complete: bool = True) -> str:
+    Y = sum(1 for v in votes if _counted_yes(v, zoom_required))
     N = sum(1 for v in votes if v.get("vote") == "no")
     try:
         from perjury.quorum import presence_verdict
-        return presence_verdict(Y, N, k, m, retrieved_top=True, t1_supports=t1_supports).verdict
+        return presence_verdict(Y, N, k, m, retrieved_top=True, t1_supports=t1_supports,
+                                t1_complete=t1_complete).verdict
     except ImportError:
         if m is not None and Y >= m:
             return "SUPPORTED"
-        if Y == 0 and Y + N >= max(1, math.ceil(5 * k / 6)) and t1_supports == 0:
+        if Y == 0 and Y + N >= max(1, math.ceil(5 * k / 6)) and t1_supports == 0 and t1_complete:
             return "CONTRADICTED"
         return "UNVERIFIABLE"
 
 
-def _t1_supports(av: dict) -> int:
-    t1 = (av.get("stats") or {}).get("t1") or {}
+def _t1(av: dict) -> tuple[int, bool]:
+    st = av.get("stats") or {}
+    t1 = st.get("t1")
     if isinstance(t1, dict):
-        return int(t1.get("supports") or 0)
-    return int((av.get("stats") or {}).get("t1_supports") or 0)
+        return int(t1.get("supports") or 0), bool(t1.get("complete", True))
+    return int(st.get("t1_supports") or 0), True
 
 
 def jury_curve(runs: list[dict], alpha: float, ks=JURY_KS, subsets: int = 50, seed: int = 0) -> list[dict]:
@@ -254,7 +268,9 @@ def jury_curve(runs: list[dict], alpha: float, ks=JURY_KS, subsets: int = 50, se
                 votes = [v for v in av.get("votes", []) if v.get("tier", "JURY") == "JURY"
                          and v.get("probe") != LEAD_PROBE]
                 if votes:
-                    items.append({"r": r, "i": i, "votes": votes, "t1": _t1_supports(av),
+                    sup, complete = _t1(av)
+                    items.append({"r": r, "i": i, "votes": votes, "t1": sup, "t1_complete": complete,
+                                  "zoom_required": _zoom_required(av),
                                   "expected_atom": (types.get(av.get("atom_id")) or {}).get("expected"),
                                   "split": run.get("split")})
     out = []
@@ -269,7 +285,7 @@ def jury_curve(runs: list[dict], alpha: float, ks=JURY_KS, subsets: int = 50, se
             r, labels = it["r"], [a.get("verdict") for a in it["r"]["atom_verdicts"]]
             for _ in range(subsets):
                 sub = rng.sample(it["votes"], k)
-                v = _presence(sub, k, m, it["t1"])
+                v = _presence(sub, k, m, it["t1"], zoom_required=it["zoom_required"], t1_complete=it["t1_complete"])
                 labels2 = list(labels)
                 labels2[it["i"]] = v
                 cv = claim_verdict(labels2)
