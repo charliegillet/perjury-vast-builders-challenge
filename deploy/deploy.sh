@@ -68,7 +68,7 @@ fi
 
 command -v kubectl >/dev/null || { echo "kubectl not found" >&2; exit 1; }
 [[ -n "$KUBECONFIG" && -e "$KUBECONFIG" ]] || { echo "no kubeconfig: tried /config/kubeconfig and /config/*-k8s.yaml" >&2; exit 1; }
-kubectl cluster-info >/dev/null
+kubectl -n "$NS" get deployments >/dev/null
 
 echo "== 2/5 Secret ${APP_NAME}-secrets (keys only listed, values never printed)"
 # The env file is written 0600 inside the 0700 temp dir and deleted on exit.
