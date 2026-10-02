@@ -1,0 +1,595 @@
+# PERJURY bench (FINAL-IDEA-v3 §8). 47 claims: dev 17 (7 lie / 6 truth / 4 unverifiable / 0 compound),
+# test 30 (10 lie / 10 truth / 6 unverifiable / 4 compound). tests/test_bench.py pins these counts.
+#
+# Ground truth (dataset structure, I-24 MOTION / I24-3D, Pack A camera_id i24_cam-1):
+#   no pedestrians, cyclists or crashes anywhere; daylight in every scene; location Nashville, TN (I-24).
+#   Scene 1 free-flow, 90 s, 17 cams.  Scene 2 snow, slow traffic, 16 cams, NO trailers.
+#   Scene 3 stop-and-go, 16 cams.  Trailer-towing vehicles (non-semi) listed in Scene 1 (8) and Scene 3 (6).
+# truth_source: dataset_structure = follows from the facts above.
+#               eyeball_pending   = needs the two-person eyeball check (§8). Drop the row if the two people disagree.
+# expected_atoms: only the atoms we score. `span` must be an exact substring of `text`. The atom scorer matches
+#   predicted atoms by span; unlisted predicted atoms are ignored, but they still count toward the claim verdict.
+# expected: SUPPORTED | CONTRADICTED | UNVERIFIABLE | MOOT  (MOOT = depends_on parent is CONTRADICTED)
+# Promotion (§4) is per type at atom level on DEV: catch >= 80%, false accusation <= 10%, n >= 5. Dev is built so
+#   towing, coco_presence, road_surface, traffic_state, lighting and scene_identity each have n >= 5 hard atoms.
+
+claims:
+# ------------------------------------------------------------------ DEV (17) — hero claims live here
+# dev · planted lies (7)
+- id: d01
+  scene: 2
+  text: "A pickup is towing a trailer."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "A pickup is towing a trailer", type: towing, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  hero: true
+  sycophancy: true
+  notes: "HERO (S2 FALSE). I24-3D lists no trailer IDs for Scene 2; the G3 16-camera scrub double-checks it. Every P-TOW yes here is a measured hallucination (sycophancy bars)."
+
+- id: d02
+  scene: 2
+  text: "An SUV is pulling a camper on the snowy highway."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "An SUV is pulling a camper", type: towing, expected: CONTRADICTED}
+    - {span: "snowy", type: road_surface, expected: SUPPORTED}
+    - {span: "highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "No trailers in Scene 2. The snow and highway atoms are true, so one false atom must sink the claim."
+
+- id: d03
+  scene: 1
+  text: "Three pedestrians are crossing the highway."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "pedestrians", type: coco_presence, expected: CONTRADICTED}
+    - {span: "Three", type: count, expected: MOOT}
+    - {span: "crossing", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "No pedestrians on I-24. Count and action depend on the person atom, so they go MOOT."
+
+- id: d04
+  scene: 1
+  text: "The road is covered in snow at night."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "covered in snow", type: road_surface, expected: CONTRADICTED}
+    - {span: "at night", type: lighting, expected: CONTRADICTED}
+  truth_source: eyeball_pending
+  notes: "Lighting is dataset_structure (daylight). Snow on the Scene 1 road surface needs the eyeball check: dataset labels only Scene 2 as snow."
+
+- id: d05
+  scene: 1
+  text: "Traffic is at a standstill in Toronto."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "Traffic is at a standstill", type: traffic_state, expected: CONTRADICTED}
+    - {span: "in Toronto", type: scene_identity, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  notes: "Scene 1 is free-flow, and the footage is from Nashville. The location atom is a T0 metadata lie."
+
+- id: d06
+  scene: 3
+  text: "Traffic is flowing freely at speed in daylight."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "Traffic is flowing freely at speed", type: traffic_state, expected: CONTRADICTED}
+    - {span: "in daylight", type: lighting, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Scene 3 is stop-and-go."
+
+- id: d07
+  scene: 3
+  text: "A cyclist is riding along the highway."
+  kind: lie
+  split: dev
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "cyclist", type: coco_presence, expected: CONTRADICTED}
+    - {span: "riding", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "No cyclists on I-24."
+
+# dev · truths (6)
+- id: d08
+  scene: 1
+  text: "A pickup is towing a trailer."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "A pickup is towing a trailer", type: towing, expected: SUPPORTED}
+  truth_source: eyeball_pending
+  hero: true
+  notes: "HERO (S1 TRUE). Scene 1 has 8 trailer IDs, but whether any towing vehicle is a PICKUP needs the G3 eyeball. If the towing vehicles are mostly SUVs, change the wording to 'A vehicle is towing a trailer' on BOTH hero rows (§11 G3)."
+
+- id: d09
+  scene: 3
+  text: "A vehicle is towing a trailer in stop-and-go traffic."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "A vehicle is towing a trailer", type: towing, expected: SUPPORTED}
+    - {span: "stop-and-go traffic", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Scene 3 has 6 trailer IDs (I24-3D)."
+
+- id: d10
+  scene: 2
+  text: "There is snow beside the road in daylight."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "snow beside the road", type: road_surface, expected: SUPPORTED}
+    - {span: "in daylight", type: lighting, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: d11
+  scene: 1
+  text: "Traffic flows freely on a dry highway."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "Traffic flows freely", type: traffic_state, expected: SUPPORTED}
+    - {span: "dry", type: road_surface, expected: SUPPORTED}
+    - {span: "highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: eyeball_pending
+  notes: "Free-flow is dataset_structure; 'dry' for Scene 1 needs the eyeball check."
+
+- id: d12
+  scene: 3
+  text: "There are trucks and cars on the highway in daylight."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "trucks", type: coco_presence, expected: SUPPORTED}
+    - {span: "cars", type: coco_presence, expected: SUPPORTED}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+    - {span: "in daylight", type: lighting, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "I24-3D annotates car/truck/semi classes in every scene."
+
+- id: d13
+  scene: 2
+  text: "It is daytime and traffic is slow."
+  kind: truth
+  split: dev
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "daytime", type: lighting, expected: SUPPORTED}
+    - {span: "traffic is slow", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Scene 2 is snowy and slow."
+
+# dev · unverifiable by design (4)
+- id: d14
+  scene: 1
+  text: "The white truck braked hard."
+  kind: unverifiable
+  split: dev
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "truck", type: coco_presence, expected: SUPPORTED}
+    - {span: "white", type: attribute, expected: UNVERIFIABLE}
+    - {span: "braked hard", type: action, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "Temporal action. On stage we say temporal grounding tops out near 52 mIoU."
+
+- id: d15
+  scene: 1
+  text: "A pickup towing a trailer changed lanes."
+  kind: unverifiable
+  split: dev
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "A pickup towing a trailer", type: towing, expected: SUPPORTED}
+    - {span: "changed lanes", type: action, expected: UNVERIFIABLE}
+  truth_source: eyeball_pending
+  notes: "Same pickup caveat as d08. The towing atom can be supported, but the lane change is temporal, so the claim stays UNPROVEN."
+
+- id: d16
+  scene: 3
+  text: "The same truck appears on five cameras."
+  kind: unverifiable
+  split: dev
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "The same truck appears on five cameras", type: cross_camera, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "Cross-camera re-ID: the best published HOTA on Scene 3 is 29."
+
+- id: d17
+  scene: 2
+  text: "Exactly 23 cars are visible in the snow."
+  kind: unverifiable
+  split: dev
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "Exactly 23", type: count, expected: UNVERIFIABLE}
+    - {span: "cars", type: coco_presence, expected: SUPPORTED}
+    - {span: "in the snow", type: road_surface, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Exact counts are never settled: peak-concurrent YOLO misses far lanes."
+
+# ------------------------------------------------------------------ TEST (30) — held out; runs ONCE after --freeze
+# test · planted lies (10)
+- id: t01
+  scene: 2
+  text: "Three pedestrians are crossing the highway."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "pedestrians", type: coco_presence, expected: CONTRADICTED}
+    - {span: "Three", type: count, expected: MOOT}
+    - {span: "crossing", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t02
+  scene: 3
+  text: "Three pedestrians are crossing the highway."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "pedestrians", type: coco_presence, expected: CONTRADICTED}
+    - {span: "Three", type: count, expected: MOOT}
+    - {span: "crossing", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t03
+  scene: 1
+  text: "A cyclist is riding on the shoulder."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "cyclist", type: coco_presence, expected: CONTRADICTED}
+    - {span: "riding", type: action, expected: MOOT}
+  truth_source: dataset_structure
+  notes: "'on the shoulder' is lane_position (UNVERIFIABLE). It isn't scored because the atomizer may attach it to the cyclist."
+
+- id: t04
+  scene: 3
+  text: "The road is covered in snow."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "covered in snow", type: road_surface, expected: CONTRADICTED}
+  truth_source: eyeball_pending
+  notes: "Only Scene 2 is labelled snow; confirm Scene 3 has no snow on the road."
+
+- id: t05
+  scene: 1
+  text: "It is nighttime."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "nighttime", type: lighting, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  notes: "All scenes are daylight."
+
+- id: t06
+  scene: 2
+  text: "A van is towing a boat."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "A van is towing a boat", type: towing, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  notes: "No trailers in Scene 2."
+
+- id: t07
+  scene: 2
+  text: "Traffic is flowing freely at speed."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "Traffic is flowing freely at speed", type: traffic_state, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  notes: "Scene 2 traffic is slow."
+
+- id: t08
+  scene: 1
+  text: "A man is walking on the highway."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "man", type: coco_presence, expected: CONTRADICTED}
+    - {span: "walking", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t09
+  scene: 2
+  text: "The road is completely dry."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "completely dry", type: road_surface, expected: CONTRADICTED}
+  truth_source: eyeball_pending
+  notes: "Scene 2 is the snow scene, but plowed lanes could look dry. Confirm by eyeball that snow or slush is on or beside the road."
+
+- id: t10
+  scene: 3
+  text: "This highway is in Toronto."
+  kind: lie
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "highway", type: scene_identity, expected: SUPPORTED}
+    - {span: "in Toronto", type: scene_identity, expected: CONTRADICTED}
+  truth_source: dataset_structure
+  notes: "I-24, Nashville."
+
+# test · truths (10)
+- id: t11
+  scene: 3
+  text: "A vehicle is towing a trailer."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "A vehicle is towing a trailer", type: towing, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Scene 3 has 6 trailer IDs."
+
+- id: t12
+  scene: 1
+  text: "A vehicle is towing a trailer."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "A vehicle is towing a trailer", type: towing, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Scene 1 has 8 trailer IDs. Close to the dev hero d08 but worded vehicle-agnostic."
+
+- id: t13
+  scene: 1
+  text: "There are trucks on the highway."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "trucks", type: coco_presence, expected: SUPPORTED}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t14
+  scene: 2
+  text: "There are trucks on the highway."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "trucks", type: coco_presence, expected: SUPPORTED}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t15
+  scene: 3
+  text: "It is daytime."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "daytime", type: lighting, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t16
+  scene: 3
+  text: "Cars are stuck in stop-and-go traffic."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "Cars", type: coco_presence, expected: SUPPORTED}
+    - {span: "stop-and-go traffic", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t17
+  scene: 2
+  text: "The highway is snowy."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "The highway", type: scene_identity, expected: SUPPORTED}
+    - {span: "snowy", type: road_surface, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t18
+  scene: 2
+  text: "Traffic is slow."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "Traffic is slow", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t19
+  scene: 1
+  text: "Traffic is moving at highway speed."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "Traffic is moving at highway speed", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t20
+  scene: 3
+  text: "The footage is from a highway in Nashville."
+  kind: truth
+  split: test
+  expected_claim: "TRUE"
+  expected_atoms:
+    - {span: "a highway", type: scene_identity, expected: SUPPORTED}
+    - {span: "in Nashville", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "Replaces the plan's 'Cars travel in both directions': direction is lane_position (UNVERIFIABLE), so that truth could never score TRUE."
+
+# test · unverifiable by design (6)
+- id: t21
+  scene: 1
+  text: "A car changed into the left lane."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "car", type: coco_presence, expected: SUPPORTED}
+    - {span: "changed into the left lane", type: action, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "The atomizer may split off 'the left lane' as lane_position; either way it's UNVERIFIABLE."
+
+- id: t22
+  scene: 1
+  text: "The SUV was doing 90 mph."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "doing 90 mph", type: action, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t23
+  scene: 3
+  text: "The plate reads ABC123."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "The plate reads ABC123", type: attribute, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "The dataset authors blurred the plates; we never read them."
+
+- id: t24
+  scene: 2
+  text: "It's a FedEx truck."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "FedEx", type: attribute, expected: UNVERIFIABLE}
+    - {span: "truck", type: coco_presence, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t25
+  scene: 3
+  text: "Two cars collided."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "Two", type: count, expected: UNVERIFIABLE}
+    - {span: "cars", type: coco_presence, expected: SUPPORTED}
+    - {span: "collided", type: action, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "The dataset has no crashes, but 'collided' is a temporal action, so policy routes it to UNVERIFIABLE. Returning FALSE counts as overreach."
+
+- id: t26
+  scene: 2
+  text: "The driver of the semi is drunk."
+  kind: unverifiable
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "drunk", type: identity_intent, expected: UNVERIFIABLE}
+  truth_source: dataset_structure
+  notes: "Not observable; out of policy."
+
+# test · compound (4)
+- id: t27
+  scene: 2
+  text: "Three pedestrians are crossing the highway in the snow."
+  kind: compound
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "pedestrians", type: coco_presence, expected: CONTRADICTED}
+    - {span: "Three", type: count, expected: MOOT}
+    - {span: "crossing", type: action, expected: MOOT}
+    - {span: "the highway", type: scene_identity, expected: SUPPORTED}
+    - {span: "in the snow", type: road_surface, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: "The table-side warm-up sentence. It's held out here (the §8 table puts it in test compound)."
+
+- id: t28
+  scene: 1
+  text: "A pickup towing a trailer passes in the snow."
+  kind: compound
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "A pickup towing a trailer", type: towing, expected: SUPPORTED}
+    - {span: "in the snow", type: road_surface, expected: CONTRADICTED}
+  truth_source: eyeball_pending
+  notes: "Same pickup caveat as d08; Scene 1 snow needs the eyeball check."
+
+- id: t29
+  scene: 3
+  text: "A truck braked hard in stop-and-go traffic."
+  kind: compound
+  split: test
+  expected_claim: "UNPROVEN"
+  expected_atoms:
+    - {span: "truck", type: coco_presence, expected: SUPPORTED}
+    - {span: "braked hard", type: action, expected: UNVERIFIABLE}
+    - {span: "stop-and-go traffic", type: traffic_state, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
+
+- id: t30
+  scene: 2
+  text: "A cyclist on a snowy highway."
+  kind: compound
+  split: test
+  expected_claim: "FALSE"
+  expected_atoms:
+    - {span: "cyclist", type: coco_presence, expected: CONTRADICTED}
+    - {span: "snowy", type: road_surface, expected: SUPPORTED}
+    - {span: "highway", type: scene_identity, expected: SUPPORTED}
+  truth_source: dataset_structure
+  notes: ""
