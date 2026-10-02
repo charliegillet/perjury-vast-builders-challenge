@@ -16,7 +16,23 @@ Applications required (space limited); registration closes one week before each 
 
 ## Start here (teammates)
 
-**New build: [LAST FRAME](lastframe/README.md)** — a video decision trainer built around Packs A–F. Run `python3 lastframe/app.py --port 8787` to try the clearly labeled storyboard demo. The scenario studio connects to the workshop VSS index to author human-reviewed drills from adjacent footage segments. [Idea, corpus fit and demo plan](docs/LAST-FRAME.md).
+**Build: PERJURY** (branch `charlie`, spec [FINAL-IDEA-v3](docs/FINAL-IDEA-v3.md), interfaces [BUILD-CONTRACT](docs/BUILD-CONTRACT.md)).
+
+```bash
+uv venv -p 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt pytest pytest-asyncio
+.venv/bin/python -m pytest -q                                  # unit + fixture end-to-end tests
+PERJURY_MODE=fixture .venv/bin/python -m app.main              # offline demo on fake Pack A data → http://localhost:8080/
+```
+On the event VM (credentials come from the environment / `/config/<team>.config`):
+```bash
+python preflight.py                                  # gates G0–G6 (§11)
+python -m perjury.index_i24                          # VastDB → cache/i24_index.json (G1)
+python -m perjury.prerun_scene_probes                # P-COND / P-COUNT on all cameras → cache/scene_probes.json
+PERJURY_MODE=live python -m app.main                 # dev on the VM at localhost:8080
+deploy/deploy.sh                                     # team K8s at http://video-lab-team-N.cosmos.vastdata.com/app
+python -m bench.run_bench --split dev && python -m bench.report   # bench (test split runs once, after --freeze)
+```
+Fixture mode is labelled FIXTURE everywhere and its numbers never go on a slide (`bench/fill_numbers.py` refuses them). [LAST FRAME](lastframe/README.md), an earlier teammate build, is untouched.
 
 | Doc | What it is |
 |---|---|
