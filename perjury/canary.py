@@ -19,7 +19,11 @@ class Canary(HttpBase):
     def __init__(self, s: Settings):
         super().__init__(s, timeout=30.0)
         self.variant: str | None | bool = False   # False = not yet found; None = "send no model field"
-        self.language = s.env.get("PERJURY_CANARY_LANGUAGE", "")
+        # Riva selects the deployed ASR model by locale when no explicit model is
+        # supplied. The workshop endpoint requires en-US, rather than plain en.
+        self.language = s.env.get("PERJURY_CANARY_LANGUAGE", "en-US")
+        if self.language == "en":
+            self.language = "en-US"
 
     async def health(self) -> bool:
         if not self.s.canary_url:
