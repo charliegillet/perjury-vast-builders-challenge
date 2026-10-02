@@ -185,7 +185,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PERJURY", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])  # §10 option c
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])  # contract: CORS on
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 
@@ -377,6 +377,8 @@ async def _run_pipeline(entry: dict, body: TestifyIn, source: str) -> None:
         else:
             from perjury.pipeline import testify  # noqa: WPS433
         kwargs: dict[str, Any] = {"transcript_source": source, "stock_ab": body.stock_ab}
+        if entry.get("canary_ms"):
+            kwargs["transcript_latency_ms"] = entry["canary_ms"]
         if body.jury_size:
             kwargs["jury_size"] = body.jury_size
         entry["verdict"] = await asyncio.wait_for(testify(body.text, body.scene, ctx, bus, **kwargs),
@@ -406,7 +408,8 @@ async def testify(body: TestifyIn) -> StreamingResponse:
         bus.service("canary", "done", ms=tr["latency_ms"], gpu=True, note=tr.get("model_id") or "",
                     request=tr["request"], response=tr["response"])
     entry = {"run_id": run_id, "bus": bus, "events": bus.events, "verdict": None, "text": body.text,
-             "scene": body.scene, "started_at": time.time(), "replay": False}
+             "scene": body.scene, "started_at": time.time(), "replay": False,
+             "canary_ms": tr["latency_ms"] if source == "canary" else 0}
     _remember(STATE.runs, run_id, entry, MAX_RUNS)
     entry["task"] = asyncio.create_task(_run_pipeline(entry, body, source))
     return StreamingResponse(_sse_from(bus.stream()), media_type="text/event-stream", headers=SSE_HEADERS)
@@ -428,7 +431,7 @@ async def transcribe(request: Request, file: UploadFile = File(...)) -> dict:
     hint = request.headers.get("X-Fixture-Transcript")
     if hint and settings().mode == "fixture":
         # FakeCanary reads the transcript after this marker inside the upload (tests and offline demos only)
-        wav = wav + b"X-Fixture-Transcript:" + hint[:MAX_TEXT].encode("utf-8", "replace") + b"\n"
+        wav = wav + b"\nX-Fixture-Transcript: " + hint[:MAX_TEXT].encode("utf-8", "replace") + b"\n"
     t = time.monotonic()
     try:
         out = await canary.transcribe(wav)
@@ -628,7 +631,7 @@ async def _witness_job() -> None:
         if ctx is None:
             raise RuntimeError(f"pipeline unavailable ({STATE.ctx_error})")
         from perjury import witness as wmod  # noqa: WPS433
-        await wmod.run()   # writes cache/witness.json
+        await wmod.run(n=9, per_scene=3, out=None, ctx=ctx)   # writes cache/witness.json
         STATE.witness_job = {"state": "done", "finished_at": time.time()}
     except Exception as e:
         STATE.witness_job = {"state": "error", "error": obs.redact(f"{type(e).__name__}: {e}")[:300]}
