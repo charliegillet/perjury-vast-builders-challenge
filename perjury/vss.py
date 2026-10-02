@@ -25,7 +25,10 @@ _STOCK_RE = re.compile(r"^\W*(TRUE|FALSE|CANNOT\s+TELL|CAN'?T\s+TELL)\b", re.I)
 def classify_stock(answer: str) -> str:
     """First token of the stock agent's answer -> TRUE | FALSE | CANNOT TELL | UNCLASSIFIED (hand-checked, §6).
     Same labels as perjury.probes.classify_stock."""
-    m = _STOCK_RE.search(answer or "")
+    # The stock agent wraps its answer in an Answer section even when asked to
+    # start with the decision. Remove only that known heading, not later text.
+    answer = re.sub(r"^\s*(?:\*\*Answer\*\*|#{1,6}\s+Answer)\s*\n+", "", answer or "", flags=re.I)
+    m = _STOCK_RE.search(answer)
     if not m:
         return "UNCLASSIFIED"
     return re.sub(r"\s+", " ", m.group(1).upper()).replace("CAN'T", "CANNOT").replace("CANT", "CANNOT")

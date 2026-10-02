@@ -18,7 +18,8 @@ from perjury.atomize import atomize
 from perjury.config import Settings, settings as get_settings
 from perjury.events import BADGES, SERVICES, EventBus
 from perjury.index import SceneIndex
-from perjury.probes import classify_stock, stock_query
+from perjury.probes import stock_query
+from perjury.vss import classify_stock
 from perjury.quorum import claim_verdict
 from perjury.router import FIXTURE_PROMOTION_PATH, PROMOTION_PATH, Router
 from perjury.tiers import RunOpts, evaluate, unverifiable
@@ -125,7 +126,7 @@ async def _stock(text: str, ctx: Context, bus: EventBus) -> dict:
         return {"answer": answer, "classification": classify_stock(answer), "hits": hits,
                 "latency_ms": int((time.monotonic() - t) * 1000), "query": stock_query(text)}
     except Exception as e:
-        return {"answer": None, "classification": "ERROR", "hits": 0, "error": type(e).__name__,
+        return {"answer": None, "classification": "ERROR", "hits": 0, "error": obs.redact(str(e))[:400],
                 "latency_ms": int((time.monotonic() - t) * 1000), "query": stock_query(text)}
 
 
