@@ -18,6 +18,7 @@ Applications required (space limited); registration closes one week before each 
 
 | Doc | What it is |
 |---|---|
+| 🚨 [docs/OFFICIAL-STARTER-KIT.md](docs/OFFICIAL-STARTER-KIT.md) | **Read first.** Official starter repo `vast-data/vast-builders-challenge`: browser VM, pre-deployed stack, skills, corpus packs, dry-run lessons, and how UNWATCHED adapts |
 | [docs/EVENT-DETAILS.md](docs/EVENT-DETAILS.md) | Official rules: **4:30 PM PT deadline**, submit **public repo + demo video**, join VAST Cosmos Community (build env = first 100 arrivals) |
 | [docs/FINAL-IDEA.md](docs/FINAL-IDEA.md) | Locked idea **UNWATCHED** — architecture, demo script, hour-by-hour plan, Q&A (read the corrections banner first) |
 | [docs/DEEP-RESEARCH.md](docs/DEEP-RESEARCH.md) | Cited synthesis: what changed, competitors, judges, market, open questions |

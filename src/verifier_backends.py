@@ -1,7 +1,7 @@
 """nw-verifier backends: Cosmos-Reason2 NIM (primary) + Gemini (drop-in fallback) behind a circuit breaker.
 
 verify(clip_bytes, camera_ctx) -> Verdict. Canonical box_2d = [ymin, xmin, ymax, xmax], 0-1000 (Gemini order).
-Env: COSMOS_NIM_URL (e.g. http://host:8001/v1), COSMOS_MODEL, COSMOS_API_KEY (optional), GEMINI_API_KEY,
+Env: COSMOS3_REASON_URL + COSMOS3_REASON_MODEL + GPU_BEARER_TOKEN (event VM; or override with COSMOS_NIM_URL / COSMOS_MODEL / COSMOS_API_KEY), GEMINI_API_KEY,
 GEMINI_MODEL, GEMINI_FPS, GEMINI_THINKING, GEMINI_API_MODE, COSMOS_TIMEOUT_S, GEMINI_TIMEOUT_S, CB_FAILS, CB_COOLDOWN_MIN. No secrets in code.
 """
 from __future__ import annotations
@@ -98,11 +98,15 @@ class CosmosNIMBackend:
 
     def __init__(self):
         from openai import OpenAI  # NIM is OpenAI-compatible; weave autopatches this client
-        self.model = os.getenv("COSMOS_MODEL", "nvidia/cosmos-reason2-8b")
+        # Event VM (/config/<team>.config) provides COSMOS3_REASON_URL / COSMOS3_REASON_MODEL / GPU_BEARER_TOKEN;
+        # COSMOS_NIM_URL / COSMOS_MODEL / COSMOS_API_KEY override them.
+        self.model = os.getenv("COSMOS_MODEL") or os.getenv("COSMOS3_REASON_MODEL", "nvidia/cosmos3-reason")
         self.timeout = float(os.getenv("COSMOS_TIMEOUT_S", "20"))
         self.scale = float(os.getenv("COSMOS_BBOX_SCALE", "1000"))  # Qwen-family sometimes 1024; verify on-site
         self.fps = os.getenv("COSMOS_FPS")  # unset = NIM default (4 fps)
-        self.client = OpenAI(base_url=os.environ["COSMOS_NIM_URL"], api_key=os.getenv("COSMOS_API_KEY", "not-used"),
+        base_url = os.getenv("COSMOS_NIM_URL") or os.environ["COSMOS3_REASON_URL"].rstrip("/") + "/v1"
+        api_key = os.getenv("COSMOS_API_KEY") or os.getenv("GPU_BEARER_TOKEN", "not-used")
+        self.client = OpenAI(base_url=base_url, api_key=api_key,
                              timeout=self.timeout, max_retries=0)
 
     @weave.op(name="cosmos_verify", postprocess_inputs=_redact)
