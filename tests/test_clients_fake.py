@@ -242,7 +242,7 @@ def test_zoom_rule_cover_and_frames():
 
 # ---- live clients against a mock transport ----
 LIVE = {"PERJURY_MODE": "live", "PERJURY_WEAVE": "0", "GPU_BEARER_TOKEN": "tok-secret",
-        "COSMOS3_REASON_URL": "http://gpu:8001", "YOLO_URL": "http://gpu:8002", "COSMOS_EMBED1_URL": "http://gpu:8003",
+        "COSMOS3_REASON_URL": "http://gpu:8001", "COSMOS3_REASON_MODEL": "nvidia/cosmos3-nano-reasoner", "YOLO_URL": "http://gpu:8002", "COSMOS_EMBED1_URL": "http://gpu:8003",
         "CANARY_1B_URL": "http://gpu:8004", "WANDB_API_KEY": "wb-secret", "VSS_URL": "http://vss",
         "VSS_USERNAME": "u", "VSS_PASSWORD": "p"}
 
@@ -296,6 +296,37 @@ def test_live_cosmos_errors_abstain(mock, tmp_path):
     r = run(cos.probe(b"y", "P", "P-TOW v1", timeout_s=5))
     assert r.parsed is None and "503" in r.error
     assert not list(tmp_path.glob("*.json"))     # failures are never cached
+
+
+def test_live_cosmos_discovers_served_model(mock, tmp_path):
+    """COSMOS3_REASON_MODEL unset: the id comes from /v1/models (the event host serves cosmos3-nano-reasoner)."""
+    from perjury.cosmos import Cosmos, ProbeCache
+    calls, routes = mock
+    routes[("GET", "/v1/models")] = lambda r: httpx.Response(200, json={"data": [{"id": "nvidia/cosmos3-nano-reasoner"}]})
+    routes[("POST", "/v1/chat/completions")] = lambda r: httpx.Response(200, json={"choices": [{"message": {
+        "content": '{"road":"A"}'}}]})
+    env = {k: v for k, v in LIVE.items() if k != "COSMOS3_REASON_MODEL"}
+    cos = Cosmos(Settings(env), cache=ProbeCache(tmp_path))
+    run(cos.probe(b"a", "P", "P-COND v1", timeout_s=5))
+    run(cos.probe(b"b", "P", "P-COND v1", timeout_s=5))
+    assert [c.url.path for c in calls] == ["/v1/models", "/v1/chat/completions", "/v1/chat/completions"]
+    assert json.loads(calls[1].content)["model"] == "nvidia/cosmos3-nano-reasoner"
+
+
+def test_live_llm_disables_thinking_and_drops_flag_if_rejected(mock):
+    """Nemotron 3.5 returns content=null while thinking; the request turns it off, and a server that rejects the
+    field gets the request again without it."""
+    from perjury.llm import LLM
+    calls, routes = mock
+    def handler(r):
+        if "chat_template_kwargs" in json.loads(r.content):
+            return httpx.Response(400, text="unknown field chat_template_kwargs")
+        return httpx.Response(200, json={"choices": [{"message": {"content": '{"atoms": []}'}}]})
+    routes[("POST", "/chat/completions")] = handler
+    llm = LLM(Settings({**LIVE, "WANDB_BASE_URL": "http://wb"}))
+    assert run(llm.complete_json("sys", "user", purpose="atomize")) == {"atoms": []}
+    assert json.loads(calls[0].content)["chat_template_kwargs"] == {"enable_thinking": False}
+    assert "chat_template_kwargs" not in json.loads(calls[-1].content) and llm.no_think is False
 
 
 def test_live_llm_retries_429_then_parses(mock):
