@@ -1,0 +1,510 @@
+[Skip to content](https://github.com/machinefi/trio-retina#start-of-content)
+
+You signed in with another tab or window. [Reload](https://github.com/machinefi/trio-retina) to refresh your session.You signed out in another tab or window. [Reload](https://github.com/machinefi/trio-retina) to refresh your session.You switched accounts on another tab or window. [Reload](https://github.com/machinefi/trio-retina) to refresh your session.Dismiss alert
+
+{{ message }}
+
+[machinefi](https://github.com/machinefi)/ **[trio-retina](https://github.com/machinefi/trio-retina)** Public
+
+- [Notifications](https://github.com/login?return_to=%2Fmachinefi%2Ftrio-retina) You must be signed in to change notification settings
+- [Fork\\
+43](https://github.com/login?return_to=%2Fmachinefi%2Ftrio-retina)
+- [Star\\
+189](https://github.com/login?return_to=%2Fmachinefi%2Ftrio-retina)
+
+
+main
+
+[**4** Branches](https://github.com/machinefi/trio-retina/branches) [**5** Tags](https://github.com/machinefi/trio-retina/tags)
+
+[Go to Branches page](https://github.com/machinefi/trio-retina/branches)[Go to Tags page](https://github.com/machinefi/trio-retina/tags)
+
+Go to file
+
+Code
+
+Open more actions menu
+
+## Latest commit
+
+[![raullenchai](https://avatars.githubusercontent.com/u/989846?v=4&size=40)](https://github.com/raullenchai)[raullenchai](https://github.com/machinefi/trio-retina/commits?author=raullenchai)
+
+[Merge pull request](https://github.com/machinefi/trio-retina/commit/0912cffe6ff179f91875fec56e7f1f34ca486de9) [#12](https://github.com/machinefi/trio-retina/pull/12) [from machinefi/demo/traffic-speed](https://github.com/machinefi/trio-retina/commit/0912cffe6ff179f91875fec56e7f1f34ca486de9)
+
+Open commit detailssuccess
+
+3 months agoJul 7, 2026
+
+[0912cff](https://github.com/machinefi/trio-retina/commit/0912cffe6ff179f91875fec56e7f1f34ca486de9) · 3 months agoJul 7, 2026
+
+## History
+
+[77 Commits](https://github.com/machinefi/trio-retina/commits/main/)
+
+Open commit details
+
+[View commit history for this file.](https://github.com/machinefi/trio-retina/commits/main/) 77 Commits
+
+## Folders and files
+
+| Name | Name | Last commit message | Last commit date |
+| --- | --- | --- | --- |
+| [.github](https://github.com/machinefi/trio-retina/tree/main/.github ".github") | [.github](https://github.com/machinefi/trio-retina/tree/main/.github ".github") | [Release v0.3.0](https://github.com/machinefi/trio-retina/commit/4819883a53e459a4e60a7dc19c436a5e66d9dc47 "Release v0.3.0  The world-model release: shipped latent producers (DinoV2Embedder / VJepa2Embedder), the front-to-back world-model stack + soccer demo, a 'retina' CLI, a typed package (py.typed) with concise reprs, sample-asset helpers, deeper docs, and a multi-dimension pre-launch hardening pass.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [docs](https://github.com/machinefi/trio-retina/tree/main/docs "docs") | [docs](https://github.com/machinefi/trio-retina/tree/main/docs "docs") | [Docs/README: frame Retina as the neutral state standard + four levera…](https://github.com/machinefi/trio-retina/commit/37ec0e20b0ae945d8651b0b497210036215ba1e7 "Docs/README: frame Retina as the neutral state standard + four leverage modes  Reflect the positioning into the canonical places: Retina doesn't try to win a vertical — it's the neutral, structured, multi-sensor state standard world models plug into. Spell out the four ways a world model leverages it (one contract for many sensors; encoder ⟂ dynamics; a state you can read/log/verify; cheap at the edge) in README, DESIGN.md (under the wide-L1 section), and docs/index.md. Also fix a stale docs/index line that still listed the latent producers as roadmap — they ship.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [examples](https://github.com/machinefi/trio-retina/tree/main/examples "examples") | [examples](https://github.com/machinefi/trio-retina/tree/main/examples "examples") | [examples/traffic: embed the live Caltrans radar demo GIF in the README](https://github.com/machinefi/trio-retina/commit/e472291505f5e0ff611be23d0fcda6e8599d9a0e "examples/traffic: embed the live Caltrans radar demo GIF in the README  A 2.9 MB optimized GIF of the pipeline running on a live Caltrans D11 public freeway camera (I-5 NB, San Diego) — real detections, real km/h, over-limit cars flagged at the trap. Credited to the Caltrans D11 public CCTV feed.  Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>") | 3 months agoJul 7, 2026 |
+| [media](https://github.com/machinefi/trio-retina/tree/main/media "media") | [media](https://github.com/machinefi/trio-retina/tree/main/media "media") | [Rebuild soccer world-model demo as a split video→WorldState→radar viz](https://github.com/machinefi/trio-retina/commit/18e4a0dea469dfadd097901ca020fb2c9c0602c1 "Rebuild soccer world-model demo as a split video→WorldState→radar viz  The previous flagship soccer GIF was a detection-style overlay (boxes/ids/ predicted paths on broadcast video with a baked title + legend) and read as a generic Roboflow/Supervision detection demo. It did not show the differentiator: turning perception into one standardized WorldState that a dynamics model PREDICTS the future on.  Rebuild it as a premium split composite (`render_split.py`):    LEFT   the raw broadcast clip, clean — no boxes, ids, or overlays (cropped to          the pitch to drop the ad band + SCOUTINGFEED strip).   MIDDLE a thin arrow with one pill label: WorldState (the only text).   RIGHT  a crisp vector top-down tactical radar: each player a team-coloured dot          with a faint gray past trail and a brand-indigo (#4f46e5) predicted next          run drawn ahead — the dynamics model's imagined future.  Reuses the honest pipeline: real YOLO detector + IoU tracker + frozen DINOv2-small appearance vecs recorded to standardized WorldStates (`record.py`), the multi-player with_appearance dynamics transformer (`dynamics_soccer.py`). Teams are coloured by KMeans on the per-track DINOv2 vectors (the latent knows who's who); the radar uses a fixed homography from the clip's pitch landmarks (no Roboflow pitch-keypoint weights available on this host) with median-flow camera compensation. Honest by design — at this short horizon the learned model roughly ties constant-velocity on held-out error; the appearance latent's measurable win lives in the synthetic ablation.  Removes the superseded `train_and_render.py`. Rendered at 2x and downscaled for crisp vector output; gifsicle-squeezed to ~1.5 MB (1640x613). README + docs captions rewritten to describe the split viz; CHANGELOG noted.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [notebooks](https://github.com/machinefi/trio-retina/tree/main/notebooks "notebooks") | [notebooks](https://github.com/machinefi/trio-retina/tree/main/notebooks "notebooks") | [docs: add three runnable Colab notebooks](https://github.com/machinefi/trio-retina/commit/c57ced00da36ee77776fa749fd2793334c3eac66 "docs: add three runnable Colab notebooks  Add notebooks/ with zero-install Colab demos matching the README badges: quickstart events (+ validate), camera→webhook, and from-Supervision interop. Each runs on synthetic detections with numpy only — no model, GPU, or network — and prints serialized retina.event JSON. Includes a notebooks/README.md index and a CHANGELOG entry.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [retina](https://github.com/machinefi/trio-retina/tree/main/retina "retina") | [retina](https://github.com/machinefi/trio-retina/tree/main/retina "retina") | [World-model state layer: metric locus + action-conditioned latent dyn…](https://github.com/machinefi/trio-retina/commit/e91222695472cf198aabb9f82fb8ac312f1f525f "World-model state layer: metric locus + action-conditioned latent dynamics + CSI PoC  CORE (worldstate.py): add one optional `Entity.locus: tuple[float,...] | None` — a metric position in a world/scene coordinate frame (producer-defined units, e.g. metres), distinct from the pixel-space `bbox`. Emitted omit-empty exactly like bbox/conf/vec; repr notes its presence. Additive and backward-compatible: old WorldStates parse unchanged and never gain a `locus` key. SPEC bumped 0.1 -> 0.2 per the documented \"registered fields are added in minor versions\" rule. Vec and Relation are untouched. SPEC.md updated to document `locus` and bless `ws.scene` as the home for a whole-field/scene latent.  EXAMPLES: extract the action-conditioned JEPA latent dynamics (EMA target + homomorphic transition + VICReg) into a reusable, signal-agnostic `examples/world_model/latent_dynamics.py` (feat/latent/action dims), sitting beside the appearance-ablation `dynamics_model.py`. The CSI demo's csi_dynamics.py becomes a thin CSI adapter over it. csi_state.py now puts the subject's metric position on the native `Entity.locus` (no more attrs-stuffing for position; the velocity action stays in attrs as a transition input, not state).  README: highlight the CSI demo honestly as a synthetic-CSI proof that Retina's state layer is signal-agnostic — the same WorldState/Vec that carried DINOv2 appearance now carries a WiFi CSI channel latent with zero core schema change. Cites arXiv:2409.10045 and arXiv:2603.20048; clear it is a PoC, not real-WiFi.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [tests](https://github.com/machinefi/trio-retina/tree/main/tests "tests") | [tests](https://github.com/machinefi/trio-retina/tree/main/tests "tests") | [World-model state layer: metric locus + action-conditioned latent dyn…](https://github.com/machinefi/trio-retina/commit/e91222695472cf198aabb9f82fb8ac312f1f525f "World-model state layer: metric locus + action-conditioned latent dynamics + CSI PoC  CORE (worldstate.py): add one optional `Entity.locus: tuple[float,...] | None` — a metric position in a world/scene coordinate frame (producer-defined units, e.g. metres), distinct from the pixel-space `bbox`. Emitted omit-empty exactly like bbox/conf/vec; repr notes its presence. Additive and backward-compatible: old WorldStates parse unchanged and never gain a `locus` key. SPEC bumped 0.1 -> 0.2 per the documented \"registered fields are added in minor versions\" rule. Vec and Relation are untouched. SPEC.md updated to document `locus` and bless `ws.scene` as the home for a whole-field/scene latent.  EXAMPLES: extract the action-conditioned JEPA latent dynamics (EMA target + homomorphic transition + VICReg) into a reusable, signal-agnostic `examples/world_model/latent_dynamics.py` (feat/latent/action dims), sitting beside the appearance-ablation `dynamics_model.py`. The CSI demo's csi_dynamics.py becomes a thin CSI adapter over it. csi_state.py now puts the subject's metric position on the native `Entity.locus` (no more attrs-stuffing for position; the velocity action stays in attrs as a transition input, not state).  README: highlight the CSI demo honestly as a synthetic-CSI proof that Retina's state layer is signal-agnostic — the same WorldState/Vec that carried DINOv2 appearance now carries a WiFi CSI channel latent with zero core schema change. Cites arXiv:2409.10045 and arXiv:2603.20048; clear it is a PoC, not real-WiFi.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [.gitignore](https://github.com/machinefi/trio-retina/blob/main/.gitignore ".gitignore") | [.gitignore](https://github.com/machinefi/trio-retina/blob/main/.gitignore ".gitignore") | [Add flagship world-model demo on real soccer footage](https://github.com/machinefi/trio-retina/commit/8f8b786c2cc2ff229e59ed89b06bb07fafa7c61b "Add flagship world-model demo on real soccer footage  Replace the synthetic-only world-model visual with a recognizable, honest demo: a short broadcast clip (Roboflow's MIT-licensed `sports` sample, originally DFL Bundesliga) runs through a real YOLO detector + IoU tracker, a frozen DINOv2-small appearance encoder, and out as standardized Retina WorldStates; a small multi-player dynamics transformer trains offline on those sequences and predicts each tracked player's next run, overlaid on the real frames (indigo = prediction, gray = actual).  Honest by design: player motion is stochastic, so on held-out next-step error the learned model only ties constant-velocity (7.76 vs 7.79 px) — the appearance latent's measurable win stays on the cleaner synthetic ablation. The renderer estimates the broadcast camera pan (median-flow) and predicts in a camera-stabilized frame so arrows track players, not the pan.  - examples/world_model/soccer/{record,dynamics_soccer,train_and_render}.py   the real detect -> track -> DINOv2 -> WorldState -> dynamics pipeline. - media/world_model_soccer.gif: real pipeline output, gifsicle-optimized   (~2.35 MB), recognizable and looping. - README.md / docs/index.md world-model section now leads with the soccer   GIF; the car ablation table + media/world_model_demo.gif are retained as   the cleaner held-out benchmark. - Recorded soccer states + sampled frames are gitignored (large; derived   from third-party footage) — regenerate with record.py.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [.pre-commit-config.yaml](https://github.com/machinefi/trio-retina/blob/main/.pre-commit-config.yaml ".pre-commit-config.yaml") | [.pre-commit-config.yaml](https://github.com/machinefi/trio-retina/blob/main/.pre-commit-config.yaml ".pre-commit-config.yaml") | [Prep v0.1.0 public open-source launch](https://github.com/machinefi/trio-retina/commit/6cb457bdf4d5d03341d76e4b9a16ba386271c77b "Prep v0.1.0 public open-source launch  Developer experience + launch polish:  - pytest runs on a bare checkout (pyproject `pythonpath = [\".\"]`) — no editable   install needed; `pip install numpy pytest` is enough. - Makefile (test / lint / format / docs / build) and a pre-commit config   (ruff lint+format + basic hygiene hooks). - README / docs install now show the working from-source command (a PyPI   `retina-sdk` release is landing shortly); fixes the previously broken   `pip install retina-sdk` first command. - Version 0.0.4 -> 0.1.0 across pyproject / __init__ / CITATION / README / docs. - CHANGELOG [0.1.0] section (grace window + anchor) dated for the launch. - Social-preview banner (media/social-preview.png); ignore uv.lock.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [BENCHMARK.md](https://github.com/machinefi/trio-retina/blob/main/BENCHMARK.md "BENCHMARK.md") | [BENCHMARK.md](https://github.com/machinefi/trio-retina/blob/main/BENCHMARK.md "BENCHMARK.md") | [World-model finale: end-to-end stack + benchmark grid + README reframe](https://github.com/machinefi/trio-retina/commit/25c37fd7d8926c0af5cd67a1f98c3dd1666f3c9e "World-model finale: end-to-end stack + benchmark grid + README reframe  Phase 3 wires the front (any encoder) and back (any dynamics) of the world-model demo end to end through one standardized WorldState, and reframes the README around the now-shipped latent producers.  - examples/world_model/end_to_end.py: the full stack in one runnable script —   perception encoder -> Retina WorldState (symbolic + DINOv2 latent) -> learned   dynamics -> imagination rollout, printing a frame's WorldState and the   imagined-vs-truth trajectory. Reuses Phase-2 dataset/model code. - examples/world_model/benchmark.py + BENCHMARK.md: a small front/back-end   benchmark grid over {const-velocity, pos-only, pos+appearance} x horizon,   writing a held-out position-error table. Captured REAL on Mac Studio (MPS,   real DINOv2): at horizon 7, pos+appearance 1.33 px beats const-velocity   7.68 px (+83%) and pos-only 1.45 px (+8%); the appearance edge widens with   the horizon. Framed as early/illustrative. - README: reconcile every \"producers not shipped / on the roadmap\" statement   (hello paragraph, Dual state details, roadmap) — DinoV2Embedder and   VJepa2Embedder ship now; add a \"the world-model stack\" section telling the   three-part demonstrated story; update the roadmap to more encoders, RL /   imagination-training, and growing the benchmark. - examples/latent_vec.py: drop the stale \"producers on the roadmap\" docstring.  Acceptance: ruff clean; 121 passed / 1 skipped; `import retina` torch-free.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [CHANGELOG.md](https://github.com/machinefi/trio-retina/blob/main/CHANGELOG.md "CHANGELOG.md") | [CHANGELOG.md](https://github.com/machinefi/trio-retina/blob/main/CHANGELOG.md "CHANGELOG.md") | [Release v0.3.0](https://github.com/machinefi/trio-retina/commit/4819883a53e459a4e60a7dc19c436a5e66d9dc47 "Release v0.3.0  The world-model release: shipped latent producers (DinoV2Embedder / VJepa2Embedder), the front-to-back world-model stack + soccer demo, a 'retina' CLI, a typed package (py.typed) with concise reprs, sample-asset helpers, deeper docs, and a multi-dimension pre-launch hardening pass.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [CITATION.cff](https://github.com/machinefi/trio-retina/blob/main/CITATION.cff "CITATION.cff") | [CITATION.cff](https://github.com/machinefi/trio-retina/blob/main/CITATION.cff "CITATION.cff") | [Release v0.3.0](https://github.com/machinefi/trio-retina/commit/4819883a53e459a4e60a7dc19c436a5e66d9dc47 "Release v0.3.0  The world-model release: shipped latent producers (DinoV2Embedder / VJepa2Embedder), the front-to-back world-model stack + soccer demo, a 'retina' CLI, a typed package (py.typed) with concise reprs, sample-asset helpers, deeper docs, and a multi-dimension pre-launch hardening pass.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [CODE\_OF\_CONDUCT.md](https://github.com/machinefi/trio-retina/blob/main/CODE_OF_CONDUCT.md "CODE_OF_CONDUCT.md") | [CODE\_OF\_CONDUCT.md](https://github.com/machinefi/trio-retina/blob/main/CODE_OF_CONDUCT.md "CODE_OF_CONDUCT.md") | [docs: polish README to top-OSS standard + add standard OSS files](https://github.com/machinefi/trio-retina/commit/db18515a7c349233568aada5ed75bee032441a97 "docs: polish README to top-OSS standard + add standard OSS files  Reorganize the README into clean, navigable sections (tagline, TOC, Features, Install, Quickstart, How it works, Supported models, event format, Examples & demos, Roadmap, Contributing, License) while preserving the hero GIF, positioning, and all substantive content.  Add standard OSS files: CODE_OF_CONDUCT.md (Contributor Covenant), SECURITY.md (private reporting), CHANGELOG.md (honest v0.0.x history), and GitHub issue/PR templates.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 15, 2026 |
+| [CONTRIBUTING.md](https://github.com/machinefi/trio-retina/blob/main/CONTRIBUTING.md "CONTRIBUTING.md") | [CONTRIBUTING.md](https://github.com/machinefi/trio-retina/blob/main/CONTRIBUTING.md "CONTRIBUTING.md") | [Prep v0.1.0 public open-source launch](https://github.com/machinefi/trio-retina/commit/6cb457bdf4d5d03341d76e4b9a16ba386271c77b "Prep v0.1.0 public open-source launch  Developer experience + launch polish:  - pytest runs on a bare checkout (pyproject `pythonpath = [\".\"]`) — no editable   install needed; `pip install numpy pytest` is enough. - Makefile (test / lint / format / docs / build) and a pre-commit config   (ruff lint+format + basic hygiene hooks). - README / docs install now show the working from-source command (a PyPI   `retina-sdk` release is landing shortly); fixes the previously broken   `pip install retina-sdk` first command. - Version 0.0.4 -> 0.1.0 across pyproject / __init__ / CITATION / README / docs. - CHANGELOG [0.1.0] section (grace window + anchor) dated for the launch. - Social-preview banner (media/social-preview.png); ignore uv.lock.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [DESIGN.md](https://github.com/machinefi/trio-retina/blob/main/DESIGN.md "DESIGN.md") | [DESIGN.md](https://github.com/machinefi/trio-retina/blob/main/DESIGN.md "DESIGN.md") | [Docs/README: frame Retina as the neutral state standard + four levera…](https://github.com/machinefi/trio-retina/commit/37ec0e20b0ae945d8651b0b497210036215ba1e7 "Docs/README: frame Retina as the neutral state standard + four leverage modes  Reflect the positioning into the canonical places: Retina doesn't try to win a vertical — it's the neutral, structured, multi-sensor state standard world models plug into. Spell out the four ways a world model leverages it (one contract for many sensors; encoder ⟂ dynamics; a state you can read/log/verify; cheap at the edge) in README, DESIGN.md (under the wide-L1 section), and docs/index.md. Also fix a stale docs/index line that still listed the latent producers as roadmap — they ship.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [LICENSE](https://github.com/machinefi/trio-retina/blob/main/LICENSE "LICENSE") | [LICENSE](https://github.com/machinefi/trio-retina/blob/main/LICENSE "LICENSE") | [Retina: the model-agnostic state layer for world models](https://github.com/machinefi/trio-retina/commit/0ad416eec502591c9d3edca70f151563ecb0c31e "Retina: the model-agnostic state layer for world models  Turn any perception model's output into a standard, queryable world-state (symbolic events + optional latent) — the encoder layer of a world model.  We don't compete with the foundation encoders (V-JEPA / DINO / SAM / YOLO); we're model-agnostic and compose them, normalizing their raw, per-frame, heterogeneous output into one coherent, structured, serializable state ready for a dynamics model. \"OpenTelemetry for perception.\"  Contents: - retina/: pure-Python core (numpy only) — Event/Frame data model, the   composable pipeline (| operator / list / JSON workflows), pluggable   Detector/Tracker/EventRule/EventSink, zone/line/count/dwell rules,   IoU + Norfair trackers, YOLO/open-vocab/VLM detector adapters, gates. - SPEC.md: retina.event/0.1 — a JWT-minimal event format + the dual-state   (symbolic + latent `vec`) channel; event.schema.json + a pure-Python validator. - DESIGN.md: the encoder framing, dual output, dynamics-model roadmap. - examples/: runnable demos (no model/GPU) incl. AutoResearch auto-tuning. - 24 tests, ruff clean. Apache-2.0.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 15, 2026 |
+| [Makefile](https://github.com/machinefi/trio-retina/blob/main/Makefile "Makefile") | [Makefile](https://github.com/machinefi/trio-retina/blob/main/Makefile "Makefile") | [Prep v0.1.0 public open-source launch](https://github.com/machinefi/trio-retina/commit/6cb457bdf4d5d03341d76e4b9a16ba386271c77b "Prep v0.1.0 public open-source launch  Developer experience + launch polish:  - pytest runs on a bare checkout (pyproject `pythonpath = [\".\"]`) — no editable   install needed; `pip install numpy pytest` is enough. - Makefile (test / lint / format / docs / build) and a pre-commit config   (ruff lint+format + basic hygiene hooks). - README / docs install now show the working from-source command (a PyPI   `retina-sdk` release is landing shortly); fixes the previously broken   `pip install retina-sdk` first command. - Version 0.0.4 -> 0.1.0 across pyproject / __init__ / CITATION / README / docs. - CHANGELOG [0.1.0] section (grace window + anchor) dated for the launch. - Social-preview banner (media/social-preview.png); ignore uv.lock.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [README.md](https://github.com/machinefi/trio-retina/blob/main/README.md "README.md") | [README.md](https://github.com/machinefi/trio-retina/blob/main/README.md "README.md") | [Docs/README: frame Retina as the neutral state standard + four levera…](https://github.com/machinefi/trio-retina/commit/37ec0e20b0ae945d8651b0b497210036215ba1e7 "Docs/README: frame Retina as the neutral state standard + four leverage modes  Reflect the positioning into the canonical places: Retina doesn't try to win a vertical — it's the neutral, structured, multi-sensor state standard world models plug into. Spell out the four ways a world model leverages it (one contract for many sensors; encoder ⟂ dynamics; a state you can read/log/verify; cheap at the edge) in README, DESIGN.md (under the wide-L1 section), and docs/index.md. Also fix a stale docs/index line that still listed the latent producers as roadmap — they ship.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [SECURITY.md](https://github.com/machinefi/trio-retina/blob/main/SECURITY.md "SECURITY.md") | [SECURITY.md](https://github.com/machinefi/trio-retina/blob/main/SECURITY.md "SECURITY.md") | [Fix front-door friction surfaced by usability test](https://github.com/machinefi/trio-retina/commit/a010b85de336eefc915b3cb164e16520c1e09d12 "Fix front-door friction surfaced by usability test  - README headline quickstart now runs on a bare `pip install trio-retina`   (numpy only): a stand-in ScriptedDetector emits a real retina.event stream   with no model, GPU, or video file. The YOLO + video_frames form moves to a   clearly-labeled \"▶ with a real model + video\" [yolo] block below it. - CountRule: threshold is now positional, so CountRule(3) works (previously a   confusing TypeError from the keyword-only arg); CountRule(threshold=3)   unchanged. Added a positional test. - SECURITY.md: supported-versions wording updated from \"early development   (0.0.x)\" to the current 0.2.x line; trust model unchanged. - CHANGELOG: terse Changed / Fixed lines under [Unreleased].  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 17, 2026 |
+| [SPEC.md](https://github.com/machinefi/trio-retina/blob/main/SPEC.md "SPEC.md") | [SPEC.md](https://github.com/machinefi/trio-retina/blob/main/SPEC.md "SPEC.md") | [World-model state layer: metric locus + action-conditioned latent dyn…](https://github.com/machinefi/trio-retina/commit/e91222695472cf198aabb9f82fb8ac312f1f525f "World-model state layer: metric locus + action-conditioned latent dynamics + CSI PoC  CORE (worldstate.py): add one optional `Entity.locus: tuple[float,...] | None` — a metric position in a world/scene coordinate frame (producer-defined units, e.g. metres), distinct from the pixel-space `bbox`. Emitted omit-empty exactly like bbox/conf/vec; repr notes its presence. Additive and backward-compatible: old WorldStates parse unchanged and never gain a `locus` key. SPEC bumped 0.1 -> 0.2 per the documented \"registered fields are added in minor versions\" rule. Vec and Relation are untouched. SPEC.md updated to document `locus` and bless `ws.scene` as the home for a whole-field/scene latent.  EXAMPLES: extract the action-conditioned JEPA latent dynamics (EMA target + homomorphic transition + VICReg) into a reusable, signal-agnostic `examples/world_model/latent_dynamics.py` (feat/latent/action dims), sitting beside the appearance-ablation `dynamics_model.py`. The CSI demo's csi_dynamics.py becomes a thin CSI adapter over it. csi_state.py now puts the subject's metric position on the native `Entity.locus` (no more attrs-stuffing for position; the velocity action stays in attrs as a transition input, not state).  README: highlight the CSI demo honestly as a synthetic-CSI proof that Retina's state layer is signal-agnostic — the same WorldState/Vec that carried DINOv2 appearance now carries a WiFi CSI channel latent with zero core schema change. Cites arXiv:2409.10045 and arXiv:2603.20048; clear it is a PoC, not real-WiFi.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 19, 2026 |
+| [mkdocs.yml](https://github.com/machinefi/trio-retina/blob/main/mkdocs.yml "mkdocs.yml") | [mkdocs.yml](https://github.com/machinefi/trio-retina/blob/main/mkdocs.yml "mkdocs.yml") | [Add DX docs pages + sample assets so examples run out of the box](https://github.com/machinefi/trio-retina/commit/0c23f9ae1650c70eaee8b59c3450576af6b8beb6 "Add DX docs pages + sample assets so examples run out of the box  Item 7 — docs depth (new mkdocs pages, wired into nav): - concepts.md: Frame → Detection → Track → Event, the dual symbolic + latent   state, the pipeline, and where Retina sits (encoder layer). - cookbook.md: runnable task recipes (zone-intrusion → webhook, counting /   line-crossing, Supervision interop, latent vec, schema validation, the CLI),   each ending in a retina.event / WorldState — not a drawn frame. - cli.md: retina demo / run / validate / bench reference. - extend.md: add your own detector / tracker / rule / sink behind the tiny   Protocols, plus register_node for declarative workflows. - faq.md: which extra, \"no events?\", RTSP reconnect, CPU vs GPU, where examples   live. index.md \"Where to go next\" + mkdocs nav updated. Strict build passes.  Item 8 — sample assets (exported from retina): - sample_events(): path to a small retina.event JSONL bundled in the wheel   (retina/_assets/sample_events.jsonl); offline, ships in the built wheel,   validates clean. Generated from the same synthetic dock scene as `retina demo`. - sample_video(): tiny clip generated synthetically on first call (deterministic   moving shapes via OpenCV), cached under ~/.cache/trio-retina/. Went synthetic   (not third-party footage) to keep zero network + zero licensing risk; it   exercises the video-source plumbing only — the YOLO-on-real-footage path needs   the user's own clip. Friendly [video] hint when OpenCV is missing; atomic   temp-file publish. - tests/test_assets.py: offline sample_events tests + sample_video cache-path /   missing-OpenCV / synthetic-generation (cv2-gated) tests.  Core stays numpy-only and torch-free on import. CHANGELOG updated.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| [pyproject.toml](https://github.com/machinefi/trio-retina/blob/main/pyproject.toml "pyproject.toml") | [pyproject.toml](https://github.com/machinefi/trio-retina/blob/main/pyproject.toml "pyproject.toml") | [Release v0.3.0](https://github.com/machinefi/trio-retina/commit/4819883a53e459a4e60a7dc19c436a5e66d9dc47 "Release v0.3.0  The world-model release: shipped latent producers (DinoV2Embedder / VJepa2Embedder), the front-to-back world-model stack + soccer demo, a 'retina' CLI, a typed package (py.typed) with concise reprs, sample-asset helpers, deeper docs, and a multi-dimension pre-launch hardening pass.  Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>") | 4 months agoJun 18, 2026 |
+| View all files |
+
+## Repository files navigation
+
+# Trio Retina
+
+[Permalink: Trio Retina](https://github.com/machinefi/trio-retina#trio-retina)
+
+![The world-model stack: perception backbones (YOLO, DINOv2, V-JEPA 2, SAM, VLMs) feed Trio Retina — the encoder and standardized WorldState — which world models for dynamics and control build on top of](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/stack.png)
+
+**The state layer of the world-model stack** — bring any perception model on top, get one standard, model-agnostic `WorldState`, build any dynamics underneath. Swap the model or the dynamics; **Retina is the constant in the middle.**
+
+[![CI](https://github.com/machinefi/trio-retina/actions/workflows/ci.yml/badge.svg)](https://github.com/machinefi/trio-retina/actions/workflows/ci.yml)[![PyPI](https://camo.githubusercontent.com/6609dbcbd23fb3701de1f2c4145c9e2ed076c2fa88d255d92ff727e9b4a5d01c/68747470733a2f2f696d672e736869656c64732e696f2f707970692f762f7472696f2d726574696e612e737667)](https://pypi.org/project/trio-retina/)[![Docs](https://camo.githubusercontent.com/b3ab0ebade45b5054d976925c573bb4114b7ae4a4903191d8687ee1a0b381808/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f646f63732d6c6976652d627269676874677265656e2e737667)](https://machinefi.github.io/trio-retina/)[![License: Apache 2.0](https://camo.githubusercontent.com/5b60841bea9e11d9d0b0950d690c9bc554e06385634056a7d5d62a15d1a4eabe/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6963656e73652d4170616368655f322e302d626c75652e737667)](https://github.com/machinefi/trio-retina/blob/main/LICENSE)[![Python](https://camo.githubusercontent.com/13466c63b4f964f1bc47e46eabb6ea9ebff2cb7777cba82af790a55719bbbfda/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f707974686f6e2d332e31302532422d626c75652e737667)](https://www.python.org/)
+
+**[docs](https://machinefi.github.io/trio-retina/)** · **[quickstart](https://github.com/machinefi/trio-retina#-quickstart)** · **[the world-model stack](https://github.com/machinefi/trio-retina#-the-world-model-stack)** · **[benchmark](https://github.com/machinefi/trio-retina/blob/main/BENCHMARK.md)** · **[examples](https://github.com/machinefi/trio-retina/blob/main/examples)** · **[notebooks](https://github.com/machinefi/trio-retina/blob/main/notebooks)**
+
+_A lightweight, model-agnostic **computer-vision pipeline** for **object detection & tracking** that emits structured **events** — zone intrusion, line-crossing, dwell, people-counting — from **YOLO**, **VLM**, or **Grounding DINO** detectors over video, files, or **RTSP**. Runs on CPU at the **edge**; feeds **digital twins**, dynamics models, and LLMs._
+
+> Just want camera events (zone intrusion, line-crossing) pushed to a webhook? → jump to the [5-line quickstart](https://github.com/machinefi/trio-retina#-quickstart), or copy [`examples/rtsp_to_webhook.py`](https://github.com/machinefi/trio-retina/blob/main/examples/rtsp_to_webhook.py).
+
+## 👋 hello
+
+[Permalink: 👋 hello](https://github.com/machinefi/trio-retina#-hello)
+
+**Trio Retina** (Retina for short) turns raw signals — video, sensor — into a **queryable world-state**: readable **events** (`zone.enter`, `dwell`, `line.cross`) _plus_ a standardized **latent**`vec` channel on the same records, on one small model-agnostic standard. The latent channel is a real, serializable interface (attach your own embedding — see [`examples/latent_vec.py`](https://github.com/machinefi/trio-retina/blob/main/examples/latent_vec.py)), and the automatic _producers_ now ship: `DinoV2Embedder` fills per-object `entity.vec` and `VJepa2Embedder` fills the scene latent `ws.scene`. Bring any model (YOLO, V-JEPA, DINO, a VLM, or none); Retina assembles its output into state a dynamics model, rule engine, or LLM can consume — and a small example dynamics model [imagines the future off that state](https://github.com/machinefi/trio-retina#-the-world-model-stack).
+
+Think **OpenTelemetry for perception** — it doesn't build the sensors, it normalizes any of them into one state. In world-model terms it's the **encoder** (`s = Enc(x)`), and _only_ the encoder; dynamics and policy build on top. Retina isn't trying to win a vertical — driving, games, and robotics each already have their own stack — it's the **neutral state standard those structured, multi-sensor world models can share**. → see [`DESIGN.md`](https://github.com/machinefi/trio-retina/blob/main/DESIGN.md).
+
+## 💻 install
+
+[Permalink: 💻 install](https://github.com/machinefi/trio-retina#-install)
+
+```
+pip install trio-retina            # core: numpy only
+pip install 'trio-retina[yolo]'    # + Ultralytics YOLO adapter
+pip install 'trio-retina[video]'   # + OpenCV frame source (files / RTSP / webcam)
+pip install 'trio-retina[all]'     # everything
+```
+
+Then try the CLI — `retina demo` runs a synthetic dock scene and prints the `retina.event` stream (numpy only, no model/GPU/video):
+
+```
+pip install trio-retina && retina demo        # instant event stream, no model
+retina validate events.jsonl                  # check a JSONL stream against the spec
+retina --version                              # also: retina run / retina bench
+```
+
+## 🔥 quickstart
+
+[Permalink: 🔥 quickstart](https://github.com/machinefi/trio-retina#-quickstart)
+
+Runs on a bare `pip install trio-retina` (numpy only) — no model, no GPU, no video file. A stand-in detector walks one "person" across a dock zone; Retina emits the real `retina.event` stream:
+
+```
+import numpy as np
+
+from retina import CountRule, IoUTracker, Retina, Zone, ZoneRule
+from retina.detect import Detection
+
+class ScriptedDetector:
+    """A stand-in model: one 'person' walking across a dock zone."""
+
+    def __init__(self):
+        self._xs = list(range(0, 102, 6))
+
+    def __call__(self, frame):
+        x = self._xs.pop(0) if self._xs else 100
+        return [Detection(label="person", bbox=(x - 10, 40, x + 10, 60), confidence=0.9)]
+
+dock = Zone("dock", [(40, 0), (60, 0), (60, 100), (40, 100)])
+
+cam = Retina(
+    source_id="cam_01",
+    detector=ScriptedDetector(),
+    tracker=IoUTracker(min_hits=2),
+    rules=[\
+        ZoneRule(dock, classes={"person"}, dwell_s=2.0),\
+        CountRule(1, classes={"person"}),\
+    ],
+)
+
+frames = [(np.zeros((100, 100, 3), dtype=np.uint8), float(i)) for i in range(18)]
+for event in cam.run(frames):
+    print(event.to_json())
+    # {"type":"count.threshold","t":1.0,"src":"cam_01","n":1,"frame":1,...}
+    # {"type":"zone.enter","t":7.0,"src":"cam_01","id":1,"label":"person",...}
+    # {"type":"zone.dwell","t":7.0,...,"zone":"dock","dur":2.0,...}
+    # {"type":"zone.exit","t":7.0,...,"zone":"dock","dur":3.0,...}
+```
+
+**▶ with a real model + video** — `pip install 'trio-retina[yolo]'` (add `[video]` for the frame source), then point it at your clip:
+
+```
+from retina import Retina, Zone, ZoneRule, YoloDetector
+from retina.sources import video_frames
+
+dock = Zone("dock", [(0.3, 0.2), (0.7, 0.2), (0.7, 0.9), (0.3, 0.9)], normalized=True)
+
+cam = Retina(
+    source_id="cam_01",
+    detector=YoloDetector("yolo11n.pt", classes={"person"}),
+    rules=[ZoneRule(dock, classes={"person"}, dwell_s=30)],
+)
+for event in cam.run(video_frames("your.mp4")):
+    print(event.to_json())
+    # {"type":"zone.dwell","t":1718254799.8,"src":"cam_01","id":42,
+    #  "label":"person","zone":"dock","dur":31.0,"conf":0.91}
+```
+
+More no-model examples ship with the source (not the wheel) — `git clone` the repo and run `python examples/quickstart.py` (the forecast / video demos need `[video]` \+ a clip).
+
+**▶️ Or run it in your browser — no install:**
+
+| notebook | what it shows |
+| --- | --- |
+| [![Open in Colab](https://camo.githubusercontent.com/eff96fda6b2e0fff8cdf2978f89d61aa434bb98c00453ae23dd0aab8d1451633/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/machinefi/trio-retina/blob/main/notebooks/01_quickstart_events.ipynb) | **quickstart** — detector → `zone` / `line` / `count` / `dwell` events + `validate()` |
+| [![Open in Colab](https://camo.githubusercontent.com/eff96fda6b2e0fff8cdf2978f89d61aa434bb98c00453ae23dd0aab8d1451633/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/machinefi/trio-retina/blob/main/notebooks/02_camera_to_webhook.ipynb) | **camera → webhook** — a restricted-zone alert pushed to your endpoint |
+| [![Open in Colab](https://camo.githubusercontent.com/eff96fda6b2e0fff8cdf2978f89d61aa434bb98c00453ae23dd0aab8d1451633/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/machinefi/trio-retina/blob/main/notebooks/03_from_supervision.ipynb) | **from Supervision** — pipe your existing `sv.Detections` straight in |
+
+### compose models with `|`
+
+[Permalink: compose models with |](https://github.com/machinefi/trio-retina#compose-models-with-)
+
+Wire models like n8n / LangChain, no GUI. Add a cheap gate and a VLM enricher anywhere in the chain:
+
+```
+from retina import MotionGate, GateNode, YoloDetector, IoUTracker, EnricherNode, ZoneRule, JsonlSink
+
+pipe = (
+    GateNode(MotionGate())                 # skip static frames (cut model calls)
+    | YoloDetector("yolo11n.pt", classes={"person", "forklift"})
+    | IoUTracker()
+    | EnricherNode(my_vlm_describe)        # attach a VLM read to frame.user
+    | ZoneRule(dock, dwell_s=30)
+    | JsonlSink("events.jsonl")
+)
+```
+
+Two more ways to wire it (explicit list · declarative JSON) + the node catalog
+
+```
+# explicit node list
+from retina import Pipeline, DetectorNode, TrackerNode, RuleNode
+pipe = Pipeline([DetectorNode(yolo), TrackerNode(), RuleNode(ZoneRule(dock))])
+
+# declarative workflow file (shareable, no code)
+pipe = Pipeline.from_json("workflow.json")   # see examples/workflow.json
+```
+
+| node | what it does | wraps |
+| --- | --- | --- |
+| `DetectorNode` | image → detections | any `callable(image)->[Detection]` |
+| `TrackerNode` | detections → tracks | `IoUTracker` / `NorfairTracker` |
+| `RuleNode` | tracks → events | `ZoneRule` / `LineRule` / `CountRule` |
+| `GateNode` | drop uninteresting frames | any `callable(image,t)->bool` (e.g. `MotionGate`) |
+| `EnricherNode` | attach context to `frame.user` | any `callable(frame)->dict` (VLM / V-JEPA) |
+| `SinkNode` | emit events | `JsonlSink` / `WebhookSink` |
+
+Register your own for `from_json` with `register_node("my_type", builder)`.
+
+## 🎛️ supported models
+
+[Permalink: 🎛️ supported models](https://github.com/machinefi/trio-retina#%EF%B8%8F-supported-models)
+
+Retina imports no model — **any** detector plugs in, and out comes one standard event stream. That seam _is_ the point:
+
+| plug in any detector… | → | …out comes one `retina.event` stream |
+| --- | :-: | --- |
+| **YOLO** (Ultralytics: v5–v12, RT-DETR) | → | `{"type":"zone.enter", "id":42, "label":"person", …}` |
+| **any VLM** (GPT-4o · Qwen-VL · Gemini · Claude) | → | `{"type":"line.cross", "dir":"a_to_b", …}` |
+| **Grounding DINO** (open-vocab, no training) | → | `{"type":"zone.dwell", "dur":31.0, …}` |
+| your existing **`sv.Detections`** (Supervision) | → | `{"type":"count.threshold", "n":12, …}` |
+| any **`callable(image) -> [Detection]`** | → | …\+ an optional latent `vec` on the same record |
+
+Supervision gives you boxes on a screen; Retina turns _any_ of those into a serializable state + event stream the next layer (dynamics, twin, agent) can consume. Batteries-included adapters:
+
+- **YOLO family** — `YoloDetector("<weights>.pt")` (Ultralytics): YOLOv5/8/9/10/11/12, RT-DETR. Open-vocab via YOLO-World.
+- **Open-vocab from text** — `GroundingDinoDetector(["forklift", "hard hat"])`, no training.
+- **Any VLM** — `VlmDetector(client, prompt)` (Qwen-VL / Gemini / GPT-4o / Claude / local), as a detector or an event-source enricher.
+- **Supervision interop** — `Detection.from_supervision(sv_detections)` ingests a Roboflow `sv.Detections`, so anything that already converts to Supervision pipes straight into Retina's event layer.
+- **Latent producers (shipped)** — `DinoV2Embedder()` fills per-object `entity.vec` (frozen DINOv2, `pip install 'trio-retina[dino]'`); `VJepa2Embedder()` fills the scene latent `ws.scene` from a rolling clip (frozen V-JEPA 2 video encoder, `pip install 'trio-retina[vjepa]'`). Swap either underneath the same fixed state schema — see [`examples/world_model/multi_encoder.py`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/multi_encoder.py).
+
+Trackers are pluggable too: `IoUTracker` (pure-Python default) or `NorfairTracker`.
+
+## 📦 the event format
+
+[Permalink: 📦 the event format](https://github.com/machinefi/trio-retina#-the-event-format)
+
+The `retina.event` standard is tiny, like a JWT — three required fields, everything else optional and omitted when absent. Full spec in [`SPEC.md`](https://github.com/machinefi/trio-retina/blob/main/SPEC.md).
+
+```
+{"type":"zone.dwell","t":1718254799.8,"src":"cam_01","id":42,"label":"person","zone":"dock","dur":31.0}
+```
+
+```
+from retina import validate
+validate(event)   # -> [] if valid, else a list of problems  (pure-Python, ships a JSON Schema)
+```
+
+## 🌍 the world-model stack
+
+[Permalink: 🌍 the world-model stack](https://github.com/machinefi/trio-retina#-the-world-model-stack)
+
+Retina is the **encoder** (`s = Enc(x)`) in a world model. It doesn't try to win
+any one vertical — driving, games, and robotics each already have their own
+stack; it's the **neutral state layer those structured, multi-sensor world models**
+**plug into**, in four ways:
+
+- **One contract for many sensors.** A camera embedding, a radar return, an IMU stream, a WiFi CSI latent — heterogeneous encoders all land in the _same_`WorldState`, fused on a model-tagged `vec` and a typed `locus` / `scene`. Retina doesn't build the sensors; it normalizes any of them into one state.
+- **Swap the front or the back, never both.** Encoder and dynamics meet on a frozen state contract — change the perception model without retraining the dynamics, or change the dynamics without touching perception. The seam is the product.
+- **A state you can read, log, and verify.** Small, serializable, half-symbolic — the state doubles as the world model's observability layer: eval it against ground truth, stream it to a digital twin, alert on a `retina.event`, even when the dynamics itself is a black box.
+- **Cheap at the edge.** The encode-to-state step runs on CPU; the heavy dynamics lives wherever you like. Retina is the lightweight front door that turns raw signals into state before the expensive layer sees them.
+
+The scope is deliberate — Retina is for world models that **reason over**
+**structured, multi-sensor state**, not monolithic pixel-to-pixel video generators.
+With the latent producers shipped, that seam is now demonstrable end to end — on a
+synthetic scene, as a small but honest proof of concept ( [`examples/world_model/`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model)):
+
+**1 · swap the encoder, the state is constant.** The same pipeline, run three
+ways — symbolic-only, `+ DinoV2Embedder` (per-object `entity.vec`), and
+`+ VJepa2Embedder` (scene-level `ws.scene`) — yields the _identical_ WorldState
+schema; only which model filled the latent changes. → [`multi_encoder.py`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/multi_encoder.py)
+
+**2 · a dynamics model imagines the future off that state.** A small transformer
+trained offline on recorded `WorldState` sequences predicts where each entity is
+headed, and rolls out _imagination_ trajectories inside the learned model. The
+honest ablation — does Retina's appearance latent actually help? — on **held-out**
+data with **real DINOv2** vecs (Mac Studio, MPS), mean held-out 7-step position
+error (px, lower is better):
+
+| dynamics input | 7-step error |
+| --- | --- |
+| constant-velocity baseline | 7.68 px |
+| learned, pos-only | 1.45 px |
+| **learned, pos + appearance latent** | **1.33 px** |
+
+**The latent channel measurably improves prediction: +83% over constant-velocity,**
+**+8% over pos-only at horizon 7** — and the edge _widens with the horizon_, because
+that's where local velocity runs out and object _type_ (legible only from
+appearance) decides the future. → [`dynamics.py`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/dynamics.py), full grid in [`BENCHMARK.md`](https://github.com/machinefi/trio-retina/blob/main/BENCHMARK.md)
+
+![Left: raw broadcast soccer clip. Middle: a WorldState arrow. Right: a top-down tactical radar where each player is a team-coloured dot with a brand-indigo predicted next run and a faint gray past trail.](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/world_model_soccer.gif)![Left: raw broadcast soccer clip. Middle: a WorldState arrow. Right: a top-down tactical radar where each player is a team-coloured dot with a brand-indigo predicted next run and a faint gray past trail.](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/world_model_soccer.gif)[Open Left: raw broadcast soccer clip. Middle: a WorldState arrow. Right: a top-down tactical radar where each player is a team-coloured dot with a brand-indigo predicted next run and a faint gray past trail. in new window](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/world_model_soccer.gif)
+
+> **Raw video → one standardized Retina `WorldState` → predicted player runs.** Left is a real broadcast clip (Roboflow's MIT-licensed [`sports`](https://github.com/roboflow/sports) sample, originally DFL Bundesliga). It goes through a real YOLO detector + tracker and a frozen DINOv2-small appearance encoder, and comes out as one model-agnostic `WorldState`; the right panel renders that state as a **top-down tactical radar**, and the small dynamics transformer — trained offline on those sequences — draws each player's **predicted next run** ahead in brand indigo (faint gray = where they came from). Teams are coloured by clustering the players' DINOv2 appearance vectors into two groups — the latent knows who's who. The radar is a stylized perspective top-down (no Roboflow pitch-keypoint weights on this host, so a fixed homography from the clip's pitch landmarks, not per-frame). Honest by design: player motion is stochastic, so at this short horizon the learned model roughly _ties_ a constant-velocity baseline on held-out error — the appearance latent's _measurable_ win lives in the cleaner synthetic ablation above, not on free-running humans. Real pipeline, end to end — [`examples/world_model/soccer/`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/soccer). The synthetic car rollout (held-out, where the latent earns its keep) lives in [`make_demo_gif.py`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/make_demo_gif.py) · [`media/rollout.png`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/media/rollout.png).
+
+**3 · the state layer is signal-agnostic — the same schema carries a WiFi CSI world model.** The `WorldState`/`Vec` that carried DINOv2 _appearance_ above also carries a **WiFi CSI channel latent**, with **zero core schema change** to express an RF world model: the global channel latent drops into `ws.scene`, and the subject's metric room position rides the typed `Entity.locus` (metres, distinct from the pixel `bbox`). On **synthetic CSI** (a documented forward model, fully offline) we reproduce the _recipe_ of two CSI world-model papers — a JEPA that predicts the next latent ( [arXiv:2409.10045](https://arxiv.org/abs/2409.10045)) under an action-conditioned homomorphic transition ( [arXiv:2603.20048](https://arxiv.org/abs/2603.20048)) — and route it through Retina's state layer. Real numbers from one run (seed 0, CPU): action-conditioning improves next-latent prediction **+72.9%** over an action-blind ablation; the latent self-organizes into a **metric room map (~0.33 m** probe error in a 6×5 m room); and the imagination rollout **beats a constant-velocity baseline by ~22%** over a 14-step horizon, with the edge _growing_ past ~7 steps. Honest scope: those papers are channel/comms-side world models trained on **real** CSI; **our** contribution is showing the _recipe runs through a signal-agnostic state layer_ — this is a synthetic-CSI proof of concept, **not** a real-WiFi result. → [`examples/world_model/csi/`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/csi)
+
+**4 · front + back compose through one standard.** Any encoder in front, any
+dynamics behind, meeting on one serializable state — a pip-installable world-model
+seam you can run in one script. → [`end_to_end.py`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model/end_to_end.py)
+
+```
+pip install 'trio-retina[dynamics,dino]'
+python examples/world_model/dataset.py --n 12 --len 24 --out examples/world_model/data/sequences.json
+python examples/world_model/end_to_end.py   # encoder → WorldState → dynamics → imagined rollout
+```
+
+> Honest scope: a synthetic scene, a tiny model, reproducible on MPS with
+> run-to-run variance. The _producers_ ship; the _trained dynamics_ is a small
+> example, not a product. The point is the seam — that front and back compose
+> through one standardized state.
+
+## 🎬 demos
+
+[Permalink: 🎬 demos](https://github.com/machinefi/trio-retina#-demos)
+
+Two more ways Retina's state feeds the next layer — same standard, different consumers:
+
+|     |     |
+| --- | --- |
+| **Forecast — the dynamics layer on Retina**<br>![Trio Retina: YOLO object tracking with two dynamics models forecasting entity trajectories from one world-state — gray constant-velocity baseline vs magenta learned model](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/retina_demo.gif)![Trio Retina: YOLO object tracking with two dynamics models forecasting entity trajectories from one world-state — gray constant-velocity baseline vs magenta learned model](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/retina_demo.gif)[Open Trio Retina: YOLO object tracking with two dynamics models forecasting entity trajectories from one world-state — gray constant-velocity baseline vs magenta learned model in new window](https://raw.githubusercontent.com/machinefi/trio-retina/main/media/retina_demo.gif)<br>One world-state → **two dynamics models forecast** where each entity is headed off the _same_ state (gray = constant-velocity, magenta = learned). A dynamics model eats structured **state**, not pixels. → [`examples/forecast/`](https://github.com/machinefi/trio-retina/blob/main/examples/forecast) | **iTwin.js — a live, predictive digital twin**<br>![Trio Retina perception events and forecast arrows rendered live on a Bentley iTwin.js digital twin (Baytown plant)](https://raw.githubusercontent.com/machinefi/trio-retina/main/examples/itwin/media/retina_itwin_demo.gif)![Trio Retina perception events and forecast arrows rendered live on a Bentley iTwin.js digital twin (Baytown plant)](https://raw.githubusercontent.com/machinefi/trio-retina/main/examples/itwin/media/retina_itwin_demo.gif)[Open Trio Retina perception events and forecast arrows rendered live on a Bentley iTwin.js digital twin (Baytown plant) in new window](https://raw.githubusercontent.com/machinefi/trio-retina/main/examples/itwin/media/retina_itwin_demo.gif)<br>Retina's entities, forecast arrows, and `retina.event` alerts on a real Bentley **iTwin.js** iModel (Baytown), one neutral JSON contract, fully headless — it gives the twin _live eyes_. → [`examples/itwin/`](https://github.com/machinefi/trio-retina/blob/main/examples/itwin) |
+
+All examples
+
+The examples live in this repo (not in the installed wheel) — `git clone` to run them. The top-level quickstarts run with **no model and no GPU** (synthetic detections):
+
+```
+python examples/quickstart.py          # zone / line / count / dwell events
+python examples/three_apps.py          # one stream -> security, retail, safety
+python examples/any_model.py           # swap the detector, rest unchanged
+python examples/gate_savings.py        # a cheap gate cuts detector calls 100 -> 23
+python examples/pipeline_compose.py    # compose with | (n8n without a GUI)
+python examples/rtsp_to_webhook.py     # camera -> restricted-zone alert -> webhook
+python examples/from_supervision.py    # ingest a Roboflow sv.Detections pipeline
+python examples/latent_vec.py          # populate the latent vec channel by hand
+python examples/dino_embeddings.py     # REAL DINOv2 per-object vecs (needs [dino])
+```
+
+Real-footage / dynamics demos need a clip and the extras — `pip install 'trio-retina[all]'`:
+
+```
+python examples/yolo_video.py v.mp4    # YOLO on a video file
+examples/forecast/                     # dynamics layer on the WorldState stream (needs [video] + a clip)
+examples/itwin/                        # events + forecasts on a Bentley iTwin.js iModel
+```
+
+The **world-model stack** lives in [`examples/world_model/`](https://github.com/machinefi/trio-retina/blob/main/examples/world_model) (needs `[dynamics]`, plus `[dino]`/`[vjepa]` for real encoders):
+
+```
+python examples/world_model/multi_encoder.py   # swap encoder, state schema stays constant
+python examples/world_model/dynamics.py        # train + the honest appearance ablation
+python examples/world_model/benchmark.py       # the front/back-end benchmark grid → BENCHMARK.md
+python examples/world_model/end_to_end.py      # encoder → WorldState → dynamics → imagined rollout
+```
+
+**Send events anywhere.**`WebhookSink(url)` POSTs each event as JSON (stdlib urllib, no `requests`); `JsonlSink(path)` streams to a file. For a live camera, `video_frames(src, live=True)` reads RTSP / HLS / webcam with wall-clock timestamps — see [`examples/rtsp_to_webhook.py`](https://github.com/machinefi/trio-retina/blob/main/examples/rtsp_to_webhook.py).
+
+## 🎯 use cases
+
+[Permalink: 🎯 use cases](https://github.com/machinefi/trio-retina#-use-cases)
+
+One state layer, many domains — the _same_`retina.event` stream, read differently above:
+
+- **Security & intrusion detection** — `zone.enter` / `line.cross` on cameras and RTSP feeds.
+- **Retail analytics & people-counting** — footfall, queue dwell, zone occupancy from any detector.
+- **Workplace safety** — PPE, forklift, and restricted-zone alerts via open-vocab detectors.
+- **Smart city & traffic monitoring** — vehicle/pedestrian counting and crossings at the edge.
+- **Industrial digital twins** — feed live entities + forecasts into a twin ( [iTwin.js demo](https://github.com/machinefi/trio-retina/blob/main/examples/itwin)).
+
+## 🧠 how it works
+
+[Permalink: 🧠 how it works](https://github.com/machinefi/trio-retina#-how-it-works)
+
+Everything flows through one append-only data unit, the **`Frame`**. Each stage _enriches_ it and never overwrites upstream fields:
+
+```
+                      ┌──────────────── Frame (append-only) ───────────────┐
+ frame ─► Detector ─► │ .detections ─► Tracker ─► .tracks ─► Rule ─► .events │ ─► Sink
+   ▲        ▲         │                  ▲                    ▲              │     ▲
+ source   any model   │   Gate (skip?)   tracker     zone/line/count/dwell  │  jsonl/
+                      │   Enricher (VLM / V-JEPA → .user)                    │  webhook
+                      └─────────────────────────────────────────────────────┘
+```
+
+- The **detector** is the model-agnostic seam: any `callable(image) -> [Detection]`.
+- The **tracker** gives objects identity over time; **rules** turn tracks into **events**; **enrichers** attach context; **gates** skip work; **sinks** push out.
+- Output is **dual**: a readable symbolic stream _and_ an optional model-tagged latent channel — never collapsed.
+
+Why "encoder", the dual state, and how it compares to DeepStream / Supervision
+
+**Two senses of "encoder."** Foundation backbones (V-JEPA, DINO, SAM, YOLO) turn pixels into features — that race is theirs, and Retina rides it. Retina is the encoder _layer_ on top: it **fuses** many models into one record, gives objects **persistent identity**, **structures** it into entities + relations + events, carries the **dual** symbolic + latent channels, as an **event-sourced stream** — one small, serializable, model-agnostic standard.
+
+**Dual state.** The same entities on two linked channels: _symbolic_ (readable `events` / entity records, for rules / LLMs / dashboards) and _latent_ (optional model-tagged embeddings, for a downstream dynamics model). Symbols you can read; vectors a model can predict on. The latent channel is a standardized, serializable interface — populate `entity.vec` with your own embedding ( [`examples/latent_vec.py`](https://github.com/machinefi/trio-retina/blob/main/examples/latent_vec.py)), or let a built-in producer fill it: `DinoV2Embedder` (per-object) and `VJepa2Embedder` (scene-level) both ship today.
+
+**vs DeepStream / Holoscan** — same good ideas (event semantics, metadata model, composable graph), none of the weight:
+
+|  | DeepStream / Holoscan | **Retina** |
+| --- | --- | --- |
+| Install | CUDA + TensorRT + containers | `pip install trio-retina` |
+| Hardware | NVIDIA / Jetson locked | any machine — CPU is fine |
+| Model | tied to the NV stack | **bring any model** (or none) |
+| Shape | a platform you build _inside_ | a library you `import` |
+| Core deps | a lot | **numpy** |
+
+**vs Supervision** — Supervision turns a model's output into detections + overlays (great toolbox, ends at the screen). Retina is a level up: it emits a serializable **state + event stream** that the _next_ layer (dynamics, twin, agent) consumes. We compose Supervision / detectors, not compete with them.
+
+Full rationale, references, and the world-model stack: [`DESIGN.md`](https://github.com/machinefi/trio-retina/blob/main/DESIGN.md).
+
+## 🗺️ roadmap
+
+[Permalink: 🗺️ roadmap](https://github.com/machinefi/trio-retina#%EF%B8%8F-roadmap)
+
+Early but real (`v0.3.0`). Stable: the event layer + JSON Schema/validator, the composable pipeline (`|` / list / JSON), YOLO + open-vocab + VLM detectors (plus `from_supervision` interop), IoU + Norfair trackers, and jitter-robust rules (`exit_grace_s` · `anchor` · `min_frames`).
+
+Next: ByteTrack / OC-SORT · `proximity` / `anomaly` events · VLM-as-event-source · Kafka / MQTT sinks · **more encoders** behind the latent channel · **model-based RL / latent-rollout imagination** on the learned state · growing the [front/back-end benchmark](https://github.com/machinefi/trio-retina/blob/main/BENCHMARK.md). See [`CHANGELOG.md`](https://github.com/machinefi/trio-retina/blob/main/CHANGELOG.md).
+
+Retina is the open **perception encoder** extracted from [Trio](https://machinefi.com/); the layers above (dynamics, policy / judgment) are Trio's commercial platform. Retina is, and stays, model-agnostic and free.
+
+## 🤝 contributing
+
+[Permalink: 🤝 contributing](https://github.com/machinefi/trio-retina#-contributing)
+
+Contributions that keep Retina small and beautiful are very welcome — see [`CONTRIBUTING.md`](https://github.com/machinefi/trio-retina/blob/main/CONTRIBUTING.md) for dev setup and how to add a detector / tracker / rule / sink. By participating you agree to the [Code of Conduct](https://github.com/machinefi/trio-retina/blob/main/CODE_OF_CONDUCT.md); to report a vulnerability see [`SECURITY.md`](https://github.com/machinefi/trio-retina/blob/main/SECURITY.md).
+
+## license
+
+[Permalink: license](https://github.com/machinefi/trio-retina#license)
+
+[Apache-2.0](https://github.com/machinefi/trio-retina/blob/main/LICENSE).
+
+## About
+
+Model-agnostic state layer for world models — turn any detector (YOLO · VLM · DINO) into one standard, queryable stream of events + latent state. numpy-only, runs on CPU at the edge.
+
+[machinefi.github.io/trio-retina/](https://machinefi.github.io/trio-retina/)
+
+### Topics
+
+[computer-vision](https://github.com/topics/computer-vision) [edge-ai](https://github.com/topics/edge-ai) [event-stream](https://github.com/topics/event-stream) [object-detection](https://github.com/topics/object-detection) [object-tracking](https://github.com/topics/object-tracking) [perception](https://github.com/topics/perception) [python](https://github.com/topics/python) [rtsp](https://github.com/topics/rtsp) [video-analytics](https://github.com/topics/video-analytics) [vlm](https://github.com/topics/vlm) [world-models](https://github.com/topics/world-models) [yolo](https://github.com/topics/yolo)
+
+### Resources
+
+[Readme](https://github.com/machinefi/trio-retina#readme-ov-file)
+
+[Apache-2.0 license](https://github.com/machinefi/trio-retina#Apache-2.0-1-ov-file)
+
+### Code of conduct
+
+[Code of conduct](https://github.com/machinefi/trio-retina#coc-ov-file)
+
+### Contributing
+
+[Contributing](https://github.com/machinefi/trio-retina#contributing-ov-file)
+
+### Security policy
+
+[Security policy](https://github.com/machinefi/trio-retina#security-ov-file)
+
+Cite this repository
+
+[Activity](https://github.com/machinefi/trio-retina/activity)
+
+[Custom properties](https://github.com/machinefi/trio-retina/custom-properties)
+
+### Stars
+
+**189** stars
+
+### Watchers
+
+**43** watching
+
+### Forks
+
+[**43** forks](https://github.com/machinefi/trio-retina/forks)
+
+[Report repository](https://github.com/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fmachinefi%2Ftrio-retina&report=machinefi+%28user%29)
+
+## Releases
+
+## Packages
+
+## Contributors
+
+## Languages
+
+You can’t perform that action at this time.

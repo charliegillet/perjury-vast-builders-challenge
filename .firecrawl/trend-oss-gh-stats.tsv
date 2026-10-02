@@ -1,0 +1,70 @@
+video-db/Director	1542	253	MIT	2026-01-23	2024-10-14	AI video agents framework for next-gen video interactions and workflows.
+video-db/agent-toolkit	47	10	none	2026-03-26	2025-03-19	An open-source agent toolkit that auto-syncs SDK versions, docs, and examples—built for seamless integration w
+video-db/videodb-python	97	16	Apache-2.0	2026-09-15	2023-12-18	VideoDB Python SDK
+HKUDS/VideoRAG	3388	476	NOASSERTION	2026-03-18	2025-02-03	[KDD'2026] "VideoRAG: Chat with Your Videos"
+Leon1207/Video-RAG-master	459	46	none	2026-06-26	2024-11-19	✨✨[NeurIPS 2025] This is the official implementation of our paper "Video-RAG: Visually-aligned Retrieval-Augme
+HKUDS/VideoAgent	1918	243	MIT	2026-07-22	2025-07-16	[EMNLP2026] "VideoAgent: All-in-One Agentic Framework for Video Understanding and Editing, and Remaking"
+YueFan1014/VideoAgent	332	31	Apache-2.0	2024-12-05	2024-05-21	This is the official code of VideoAgent: A Memory-augmented Multimodal Agent for Video Understanding (ECCV 202
+microsoft/DeepVideoDiscovery	422	20	MIT	2025-11-03	2025-06-04	**Deep Video Discovery (DVD)** is a deep-research style question answering agent designed for understanding ex
+om-ai-lab/OmAgent	2667	291	Apache-2.0	2025-03-19	2024-07-04	[EMNLP-2024] Build multimodal language agents for fast prototype and production
+NVIDIA-AI-Blueprints/video-search-and-summarization	1895	401	NOASSERTION	2026-10-02	2024-10-22	NVIDIA AI Blueprint for video search and summarization (VSS) is a GPU-accelerated reference architecture for b
+NVIDIA/context-aware-rag	90	28	Apache-2.0	2026-10-01	2025-04-04	Context-Aware RAG library for Knowledge Graph ingestion and retrieval functions.
+pixeltable/pixeltable	1634	226	Apache-2.0	2026-10-02	2023-05-10	The backend agents build with - Multimodal database, orchestration, and serving in one file
+Eventual-Inc/Daft	5793	564	Apache-2.0	2026-10-01	2022-04-25	High-performance data engine for AI and multimodal workloads. Process images, audio, video, and structured dat
+blakeblackshear/frigate	36313	3660	MIT	2026-10-01	2019-01-26	NVR with realtime local object detection for IP cameras
+roboflow/inference	2466	324	NOASSERTION	2026-10-02	2023-07-31	Turn any computer or edge device into a command center for your computer vision projects.
+roboflow/supervision	51103	4866	MIT	2026-10-01	2022-11-28	We write your reusable computer vision tools. 💜
+roboflow/trackers	3899	417	Apache-2.0	2026-10-01	2025-04-14	Trackers gives you clean, modular re-implementations of leading multi-object tracking algorithms released unde
+roboflow/rf-detr	9675	1221	Apache-2.0	2026-10-01	2025-03-19	RF-DETR is a real-time object detection and segmentation model architecture developed by Roboflow, SOTA on COC
+ultralytics/ultralytics	62151	11811	AGPL-3.0	2026-10-01	2022-09-11	Ultralytics YOLO27, YOLO26, YOLO11, YOLOv8 — object detection, instance segmentation, semantic segmentation, i
+NVIDIA/DeepStream	266	58	NOASSERTION	2026-10-01	2026-05-08	NVIDIA DeepStream Monorepo: DeepStream SDK and reference apps for building GPU‑accelerated, real-time video an
+NVIDIA-AI-IOT/deepstream_python_apps	1896	534	NOASSERTION	2026-04-01	2019-10-29	DeepStream SDK Python bindings and sample applications
+nvidia-holoscan/holohub	237	162	Apache-2.0	2026-09-28	2022-12-05	Central repository for the Holoscan Ecosystem
+livekit/agents	14441	3832	Apache-2.0	2026-10-01	2023-10-19	A framework for building realtime voice AI agents 🤖🎙️📹 
+livekit-examples/vision-demo	86	20	Apache-2.0	2026-03-10	2024-12-12	Open-source voice + video AI assistant built on LiveKit
+pipecat-ai/pipecat	16127	2802	BSD-2-Clause	2026-10-02	2023-12-27	Open Source framework for voice agents, multimodal apps, and realtime AI. Maintained by Daily and the communit
+m87-labs/moondream	10081	796	Apache-2.0	2026-04-20	2023-12-29	tiny vision language model
+ngxson/smolvlm-realtime-webcam	5582	897	NOASSERTION	2025-05-12	2025-05-12	Real-time webcam demo with SmolVLM and llama.cpp server
+huggingface/nanoVLM	5037	508	Apache-2.0	2025-10-27	2025-05-02	The simplest, fastest repository for training/finetuning small-sized VLMs.
+ggml-org/llama.cpp	130093	23980	MIT	2026-10-02	2023-03-10	LLM inference in C/C++
+ollama/ollama	182026	18074	MIT	2026-10-02	2023-06-26	Get up and running with Kimi, GLM, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.
+Blaizzy/mlx-vlm	5560	810	MIT	2026-10-02	2024-04-16	MLX-VLM is a package for inference and fine-tuning of Vision Language Models (VLMs) on your Mac using MLX.
+lucazanella/lavad	151	13	none	2024-07-15	2024-03-27	Official implementation of "Harnessing Large Language Models for Training-free Video Anomaly Detection", CVPR 
+vera-framework/VERA	87	6	none	2026-03-23	2025-04-14	This is the code repo for the paper VERA: Explainable Video Anomaly Detection via Verbalized Learning of Visio
+pipixin321/HolmesVAD	157	7	MIT	2025-03-22	2024-06-12	Official implementation of "Holmes-VAD: Towards Unbiased and Explainable Video Anomaly Detection via Multi-mod
+Yuchen413/AnomalyRuler	107	15	MIT	2024-12-16	2024-07-12	Implementation for paper "Follow the Rules: Reasoning for Video Anomaly Detection with Large Language Model"
+qdrant/video-anomaly-edge	15	3	none	2026-09-02	2026-03-15	Real-time video anomaly detection from edge to cloud using Qdrant, Twelve Labs, and NVIDIA VSS
+koush/scrypted	5992	401	NOASSERTION	2026-09-28	2021-08-21	Scrypted is a high performance video integration and automation platform
+valentinfrlch/ha-llmvision	1479	146	Apache-2.0	2026-09-17	2024-05-14	Visual intelligence for your home.
+roflcoopter/viseron	3558	434	MIT	2026-10-01	2020-08-30	Self-hosted, local only NVR and AI Computer Vision software.  With features such as object detection, motion d
+SharpAI/DeepCamera	3081	484	MIT	2026-09-17	2019-03-05	Open-Source AI Camera Skills Platform, AI NVR & CCTV Surveillance. Local VLM video analysis with Qwen, DeepSee
+ispysoftware/iSpy	1627	580	NOASSERTION	2026-02-13	2015-08-30	Open source surveillance software
+twelvelabs-io/twelvelabs-python	51	6	none	2026-10-01	2023-05-18	Official TwelveLabs SDK for Python
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}MISSING NVIDIA/Cosmos-Reason2
+nvidia-cosmos/cosmos-reason2	454	92	Apache-2.0	2026-06-07	2025-09-08	Cosmos-Reason2 models understand the physical common sense and generate appropriate embodied decisions in natu
+QwenLM/Qwen3-VL	20032	1861	Apache-2.0	2026-01-30	2024-08-29	Qwen3-VL is the multimodal large language model series developed by Qwen team, Alibaba Cloud.
+browser-use/video-use	27827	3286	MIT	2026-09-24	2026-04-12	Edit videos with coding agents
+GetStream/Vision-Agents	8151	688	Apache-2.0	2026-10-02	2025-08-11	false	Open Vision Agents by Stream. Build voice and vision agents quickly with any model or video provider. Uses Stream's edge
+mit-han-lab/streaming-vlm	1086	69	MIT	2025-10-15	2025-10-11	false	StreamingVLM: Real-Time Understanding for Infinite Video Streams
+showlab/PANDA	34	2	Apache-2.0	2025-10-02	2025-09-30	false	[NeurIPS 2025] PANDA: Towards Generalist Video Anomaly Detection via Agentic AI Engineer
+HUANGCHIHHUNGLeo/claude-real-video	2190	195	MIT	2026-10-01	2026-06-30	false	Let Claude (or any LLM) actually watch a video — scene-aware, deduplicated frames + transcript, from a URL or local file
+bradautomates/claude-video	17913	1850	MIT	2026-09-25	2026-04-24	false	Give Claude the ability to watch any video. /watch downloads, extracts frames, transcribes, hands it all to Claude.
+wenlongli10/VADTree	20	1	none	2026-06-09	2025-07-04	false	[NeurIPS 2025] VADTree: Explainable Training-Free Video Anomaly Detection via Hierarchical Granularity-Aware Tree
+cosmo-wander-ai/cosmo-edge	1244	232	Apache-2.0	2026-09-30	2026-06-09	false	Production-grade C++ edge AI engine for video analytics and on-device VLM across Sophon, Rockchip RKNN, and x86, with vi
+machinefi/trio-retina	189	43	Apache-2.0	2026-07-21	2026-06-15	false	Model-agnostic state layer for world models — turn any detector (YOLO · VLM · DINO) into one standard, queryable stream 
+open-nvr/open-nvr	141	18	AGPL-3.0	2026-09-30	2026-03-30	false	Open-source AI video platform: a self-hosted NVR (ONVIF/RTSP, recording, WebRTC) plus any AI model through one adapter c
+securade/hub	291	31	AGPL-3.0	2025-07-15	2025-01-22	false	Securade.ai HUB - A generative AI based edge platform for computer vision that connects to existing CCTV cameras and mak
+scality/artesca-vss-console	0	0	Apache-2.0	2026-10-01	2026-08-06	false	Operator console for NVIDIA VSS on Scality ARTESCA+ — in-cluster Next.js UI for cameras, scenarios, VLM prompt, incident
+earvienne305/unblink	0	0	AGPL-3.0	2026-10-01	2025-11-28	false	👀 Monitor camera streams in real-time with AI vision models for object detection, contextual understanding, and intellig
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}MISSING tri2820/unblink
+vast-data/mattsvlm	21	4	none	2026-03-26	2025-05-12	false	Processing Video POC with Multimodal LLMs
+smallthinkingmachines/video-context-mcp	2	0	MIT	2026-10-01	2026-07-20	false	Local-first MCP server that turns video into queryable context with transcripts, keyframes, OCR, and semantic search.
+ivyanalyst/Industrial-CCTV-Video-RAG	0	0	none	2026-09-16	2026-09-16	false	Real-time RTSP video stream ingestion and VideoRAG pipeline for explainable industrial CCTV alert generation using VLMs.
+fredluz/watch-video	0	0	MIT	2026-10-01	2026-10-01	false	Let your coding agent watch videos: a Claude Code skill + CLI that sends a video to Gemini 3.8 Flash and returns a times
+EvolvingLMMs-Lab/lmms-eval	4440	665	NOASSERTION	2026-10-01	2024-03-07	false	One-for-All Multimodal Evaluation Toolkit Across Text, Image, Video, and Audio Tasks
+georgia-tech-db/evadb	2675	258	Apache-2.0	2024-05-17	2018-09-10	false	Database system for AI-powered apps
+Morimi-Kazuha/VideoMind	1	0	MIT	2026-09-30	2026-09-26	false	VideoMind 是一个面向长视频理解的多模态 AI Agent 工作台，通过时序 ASR/OCR、Evidence Grounding、AgentLoop、受限 Tool Calling、Jev 模型路由与预算控制，实现从 AI 回答到
+PixelML/av	7	1	Apache-2.0	2026-09-21	2026-02-14	false	Video Memory CLI: index once, search/ask forever (dense captions + transcripts + timestamps). Built for agents.
+machnevegor/frameverse	2	1	MIT	2026-03-16	2026-03-14	false	Frameverse is a new way to search for movies 🎞️ Describe a moment, motive, or scene to jump to the exact fragment
+IliasHad/edit-mind	1809	NOASSERTION	2026-06-30	2025-10-20
+YsTvT/MoniTor	30	none	2025-10-01	2025-06-09
