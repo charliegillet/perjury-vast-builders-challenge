@@ -14,6 +14,7 @@ import argparse
 import base64
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -46,6 +47,15 @@ def collect(mode: str) -> tuple[list[tuple[str, Path]], list[tuple[str, Path]], 
 
 def entry(rel: str, p: Path) -> dict:
     raw = p.read_bytes()
+    if rel == "app/static/index.html":
+        # Each deploy gets URLs derived from the actual asset bytes, so an open
+        # browser cannot retain stale scripts after a code ConfigMap changes.
+        text = raw.decode("utf-8")
+        for name in ("app.js", "wav.js", "style.css"):
+            asset = ROOT / "app" / "static" / name
+            version = hashlib.sha256(asset.read_bytes()).hexdigest()[:12]
+            text = re.sub(r"static/" + re.escape(name) + r"(?:\?v=[^\"']*)?", f"static/{name}?v={version}", text)
+        raw = text.encode("utf-8")
     key = rel.replace("/", "__")
     try:
         text = raw.decode("utf-8")

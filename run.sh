@@ -20,7 +20,12 @@ fi
 MODE="${1:-$DEFAULT_MODE}"
 PORT="${PORT:-8080}"
 LOG_LEVEL="${LOG_LEVEL:-DEBUG}"
-VENV=.venv
+VENV="${PERJURY_VENV:-.venv}"
+# live mode on the VM: endpoints and model overrides (gitignored; see live-env.example.sh)
+if [[ "$MODE" == live && -f live-env.sh ]]; then
+  # shellcheck disable=SC1091
+  source ./live-env.sh
+fi
 PY="$VENV/bin/python"
 START_EPOCH="$(date +%s)"
 
@@ -66,8 +71,16 @@ fi
 section "python environment"
 if [[ ! -x "$PY" ]]; then
   say "creating $VENV"
-  if command -v uv >/dev/null; then uv venv -p 3.12 "$VENV"; else python3 -m venv "$VENV"; fi
+  if command -v uv >/dev/null; then
+    uv venv -p 3.12 "$VENV"
+  elif command -v python3.12 >/dev/null; then
+    python3.12 -m venv "$VENV"
+  else
+    python3 -c 'import sys; assert sys.version_info >= (3, 12), "Python 3.12 or newer is required"'
+    python3 -m venv "$VENV"
+  fi
 fi
+"$PY" -c 'import sys; assert sys.version_info >= (3, 12), "This virtual environment needs Python 3.12 or newer; set PERJURY_VENV to a compatible environment"'
 say "venv python: $("$PY" --version 2>&1) at $PY"
 STAMP="$VENV/.requirements.sha"
 SHA="$(shasum requirements.txt | cut -d' ' -f1)"

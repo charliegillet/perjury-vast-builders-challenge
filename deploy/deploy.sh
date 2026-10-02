@@ -70,12 +70,39 @@ command -v kubectl >/dev/null || { echo "kubectl not found" >&2; exit 1; }
 [[ -n "$KUBECONFIG" && -e "$KUBECONFIG" ]] || { echo "no kubeconfig: tried /config/kubeconfig and /config/*-k8s.yaml" >&2; exit 1; }
 kubectl -n "$NS" get deployments >/dev/null
 
+# Keep only real app results across the emptyDir replacement. No configuration
+# or secrets enter this archive; it remains private in this VM's repository.
+STATE_DIR="$REPO/cache/deploy-state"
+mkdir -p "$STATE_DIR"; chmod 700 "$STATE_DIR"
+STATE_ARCHIVE="$STATE_DIR/results.zip"
+OLD_POD="$(kubectl -n "$NS" get pods -l "app=$APP_NAME" --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+if [[ -n "$OLD_POD" ]]; then
+  if kubectl -n "$NS" exec "$OLD_POD" -- python -c '
+import io, sys, zipfile
+from pathlib import Path
+root = Path("/code/cache")
+buf = io.BytesIO()
+with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+    files = list((root / "runs").glob("*.jsonl"))
+    files += [root / n for n in ("feedback.jsonl", "witness.json", "bench_report.json")]
+    for p in files:
+        if p.is_file(): z.write(p, str(p.relative_to(root)))
+sys.stdout.buffer.write(buf.getvalue())
+' > "$STATE_ARCHIVE.tmp"; then
+    chmod 600 "$STATE_ARCHIVE.tmp"; mv "$STATE_ARCHIVE.tmp" "$STATE_ARCHIVE"
+    echo "   existing app results backed up privately on VM"
+  else
+    rm -f "$STATE_ARCHIVE.tmp"
+    echo "   WARNING: existing app results could not be backed up" >&2
+  fi
+fi
+
 echo "== 2/5 Secret ${APP_NAME}-secrets (keys only listed, values never printed)"
 # The env file is written 0600 inside the 0700 temp dir and deleted on exit.
 "$PY" - "$OUT/secret.env" <<'PYEOF'
 import os, sys
 e = os.environ
-alias = {"VSS_URL": e.get("INGRESS_URL") or e.get("VSS_URL"),
+alias = {"VSS_URL": e.get("PERJURY_VSS_URL") or "http://video-backend-service:8000",
          "VSS_USERNAME": e.get("USERNAME") or e.get("VSS_USERNAME"),
          "VSS_PASSWORD": e.get("PASSWORD") or e.get("VSS_PASSWORD")}
 # GPU endpoints need no token per config.example; GPU_BEARER_TOKEN ships only if it happens to be set.
@@ -114,6 +141,24 @@ kubectl -n "$NS" apply -f "$OUT/app.yaml"
 
 echo "== 5/5 rollout (pip install at start takes 1-3 min)"
 kubectl -n "$NS" rollout status "deploy/${APP_NAME}" --timeout=420s
+if [[ -s "$STATE_ARCHIVE" ]]; then
+  NEW_POD="$(kubectl -n "$NS" get pods -l "app=$APP_NAME" --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')"
+  kubectl -n "$NS" exec -i "$NEW_POD" -- python -c '
+import io, sys, zipfile
+from pathlib import Path
+root = Path("/code/cache")
+with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as z:
+    for name in z.namelist():
+        p = Path(name)
+        allowed = name in ("feedback.jsonl", "witness.json", "bench_report.json") or (len(p.parts) == 2 and p.parts[0] == "runs" and p.suffix == ".jsonl")
+        if not allowed or ".." in p.parts or p.is_absolute(): continue
+        target = root / p
+        if target.exists(): continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(z.read(name))
+' < "$STATE_ARCHIVE"
+  echo "   saved app results restored (newer deployed files kept)"
+fi
 kubectl -n "$NS" get pods,svc,ingress -l "app=${APP_NAME}"
 code="$(curl -sS -o /dev/null -w '%{http_code}' "http://${APP_HOST}/app/" || true)"
 echo "   GET http://${APP_HOST}/app/ -> $code"

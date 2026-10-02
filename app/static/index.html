@@ -15,6 +15,7 @@
 </head>
 <body>
   <div id="banners">
+    <div class="banner coverage" id="banner-coverage" role="status" hidden></div>
     <div class="banner fixture" id="banner-fixture" hidden>FIXTURE DATA · offline fakes · <span id="banner-fixture-note">no live services were called</span></div>
     <div class="banner replay" id="banner-replay" hidden>REPLAY · recorded <span id="replay-when">--:--</span> · <span id="replay-name"></span> <button type="button" class="link" id="replay-exit">back to live</button></div>
   </div>
@@ -22,24 +23,27 @@
   <header class="top">
     <div class="brand">
       <div class="logo">PERJURY</div>
-      <div class="motto">every claim about the footage takes the stand</div>
+      <div class="motto">Every claim takes the stand</div>
     </div>
-    <nav class="scenes" id="scenes" aria-label="Scene"></nav>
     <nav class="tabs" role="tablist">
       <button type="button" class="tab on" data-tab="courtroom">Courtroom</button>
       <button type="button" class="tab" data-tab="witness">Witness stand</button>
       <button type="button" class="tab" data-tab="bench">Bench</button>
       <button type="button" class="tab" data-tab="log">Ribbon log</button>
     </nav>
+    <div class="team-badge"><span class="avatar">41</span><span class="team-copy">Team 41<small>Builders Challenge</small></span></div>
   </header>
+  <div class="workspace-heading"><div><span class="workspace-eyebrow">WORKSPACE</span><h1>Evidence review</h1></div><span class="workspace-caption">Verify claims against recorded footage</span></div>
+  <section class="scene-bar"><strong>Scene</strong><nav class="scenes" id="scenes" aria-label="Scene"></nav><span class="scene-context" id="scene-context"></span></section>
 
-  <section class="testify-bar">
+  <section class="source-controls"><span class="source-status" id="source-status">VAST video streaming · Recorded footage</span><a class="ghost" href="https://team-41-vss.thecosmoslabs.com/explore" target="_blank" rel="noopener">Browse VAST videos ↗</a></section>
+  <section class="testify-bar"><label class="claim-label" for="claim">Your claim</label>
     <button type="button" class="mic" id="mic" title="Hold to speak (or hold the space bar)">
-      <span class="mic-dot"></span><span class="mic-label" id="mic-label">HOLD TO TESTIFY</span>
+      <span class="mic-dot" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg></span><span class="mic-label" id="mic-label">Hold to testify</span>
       <span class="mic-level" id="mic-level"></span>
     </button>
     <form id="claim-form" class="claim-form" autocomplete="off">
-      <input id="claim" maxlength="500" list="claim-examples" placeholder="or type a claim about the footage…" spellcheck="false" />
+      <input id="claim" maxlength="500" list="claim-examples" placeholder="Type a claim about the footage…" spellcheck="false" />
       <datalist id="claim-examples">
         <option value="Three pedestrians are crossing the highway in the snow."></option>
         <option value="A pickup is towing a trailer."></option>
@@ -49,53 +53,66 @@
       </datalist>
       <button type="submit" class="go" id="go">Testify</button>
     </form>
-    <button type="button" class="ghost" id="upload-btn" title="Upload a recorded clip (m4a, mp3, wav): works over plain HTTP">⤒ recording</button>
+    <section class="testimony-block">
+      <div class="row-label">Testimony <span class="heard" id="heard-by"></span></div>
+      <p class="testimony" id="testimony"><span class="placeholder">Say anything about this footage. We'll tell you if it's true — and when we can't.</span></p>
+    </section>
+    <button type="button" class="ghost" id="edit-claim" hidden>Edit claim</button>
+    <details class="composer-options workspace-detail"><summary>Options</summary><div class="detail-surface"><button type="button" class="detail-close ghost">Close</button><div class="composer-settings">
+    <button type="button" class="ghost" id="upload-btn" title="Upload a recorded clip (m4a, mp3, wav): works over plain HTTP">↥ Upload recording</button>
     <input type="file" id="upload" accept="audio/*,.m4a,.mp3,.wav,.webm,.ogg" hidden />
-    <label class="check"><input type="checkbox" id="stock-ab" /> also ask stock VSS agent</label>
+    <label class="check"><input type="checkbox" id="stock-ab" /> Compare VSS</label>
     <select id="replay" class="replay-select" title="Replay a recorded run"><option value="">Replay ▾</option></select>
+    </div></div></details>
   </section>
   <div class="mic-hint" id="mic-hint" hidden></div>
   <div class="toast" id="toast" hidden></div>
 
   <main class="tabpane" id="tab-courtroom">
-    <section class="testimony-block">
-      <div class="row-label">TESTIMONY <span class="heard" id="heard-by"></span></div>
-      <p class="testimony" id="testimony"><span class="placeholder">Say anything about this footage. We'll tell you if it's true — and when we can't.</span></p>
-      <div class="row-label">ATOMS <span class="heard" id="parser"></span></div>
-      <div class="atoms" id="atoms"><span class="muted">Atomic claims appear here, each sent to the cheapest witness that can settle it.</span></div>
-    </section>
+
+
 
     <section class="court">
       <div class="wall-wrap">
         <div class="wall-head">
-          <div class="row-label">JURY WALL <span class="heard" id="wall-atom"></span></div>
+          <div class="row-label">Camera jury <span class="heard" id="wall-atom"></span></div>
           <div class="legend">
             <span class="lg yes">yes</span><span class="lg no">no</span><span class="lg abstain">abstain</span><span class="lg delib">deliberating</span><span class="lg cached">cached</span>
           </div>
         </div>
+        <div class="live-preview" id="live-preview" hidden><video id="live-video" muted autoplay playsinline controls></video></div>
         <div class="wall" id="wall"></div>
         <div class="wall-foot muted" id="wall-foot"></div>
+        <details class="exhibits-panel workspace-detail"><summary>Exhibits <span class="muted">Inspect assessment frames</span></summary><div class="detail-surface"><button type="button" class="detail-close ghost">Close</button>
+          <div class="row-label">Exhibits <span class="heard" id="exhibits-note"></span></div>
+          <div class="exhibits" id="exhibits"><span class="muted">Juror keyframes land here.</span></div>
+        </div></details>
       </div>
 
       <aside class="rail">
+    <section class="atom-block">
+      <div class="row-label">Atomic claims <span class="heard" id="parser"></span></div>
+      <div class="atoms" id="atoms"><span class="muted">Atomic claims appear here, each sent to the cheapest witness that can settle it.</span></div>
+    </section>
         <div class="verdict-box" id="verdict-box">
-          <div class="row-label">VERDICT</div>
-          <div class="stamp-zone"><div class="stamp idle" id="stamp">AWAITING TESTIMONY</div></div>
-          <div class="why" id="why"></div>
+          <div class="row-label">Verification verdict</div>
+          <div class="stamp-zone"><div class="stamp idle" id="stamp" role="status" aria-live="polite">AWAITING TESTIMONY</div></div>
+          <h2 id="verdict-headline">Awaiting a claim</h2>
+          <div class="verdict-summary" id="verdict-summary"></div>
+          <div class="selected-claim" id="selected-claim"></div>
+          <details class="workspace-detail"><summary>Reasoning and claim breakdown</summary><div class="detail-surface"><button type="button" class="detail-close ghost">Close</button><div class="why" id="why"></div>
+          <div class="verdict-breakdown" id="verdict-breakdown"></div></div></details>
         </div>
         <div class="stock-panel" id="stock-panel" hidden>
           <div class="row-label">STOCK VSS AGENT <span class="heard">agent/search-and-answer · same sentence</span></div>
           <div class="stock-body" id="stock-body"></div>
         </div>
-        <div class="exhibits-panel">
-          <div class="row-label">EXHIBITS <span class="heard" id="exhibits-note"></span></div>
-          <div class="exhibits" id="exhibits"><span class="muted">Juror keyframes land here.</span></div>
-        </div>
+
       </aside>
     </section>
 
-    <section class="trace-block">
-      <div class="row-label">TRACE <span class="heard" id="trace-total"></span></div>
+<section class="trace-block">
+      <div class="row-label">Execution trace <span class="heard" id="trace-total"></span><a id="trace-weave" class="trace-weave" target="_blank" rel="noopener" hidden>Open in Weave ↗</a></div>
       <div class="trace" id="trace"><span class="muted">Each call appears as a bar, in ms from the moment you finished speaking.</span></div>
     </section>
   </main>
@@ -115,7 +132,7 @@
     <div class="pane-head">
       <div>
         <h2>Bench</h2>
-        <p class="muted">Held-out <b>test</b> numbers, with dev in grey. Every number comes from <code>cache/bench_report.json</code>, produced by code.</p>
+        <p class="muted">Measured evaluation results. Check the scope and exclusions below before interpreting the numbers.</p>
       </div>
       <a class="ghost" id="bench-weave" target="_blank" rel="noopener" hidden>Weave leaderboard ↗</a>
     </div>
@@ -133,8 +150,8 @@
   </main>
 
   <footer class="dock">
-    <div class="ribbon" id="ribbon"></div>
-    <div class="receipt" id="receipt"><span class="muted">RECEIPT · appears when the verdict lands</span></div>
+    <details class="service-details"><summary>Service activity <span class="muted">View integrations and requests</span></summary><div class="ribbon" id="ribbon"></div></details>
+    <div class="receipt" id="receipt"><span class="muted">Service receipt · Real service usage appears after verification</span></div>
   </footer>
 
   <div class="overlay" id="drawer" hidden>

@@ -476,6 +476,17 @@ async def atomize(text: str, llm: Any = None, *, bus: Any = None) -> tuple[list[
                                           bus=bus, purpose="atomize")
             atoms = validate_llm_atoms(text, raw)
             if atoms:
+                # Preserve explicit pack/place claims even when the model folds
+                # them into a traffic or road-condition atom. These are exact
+                # transcript spans from the same routing lexicon as the rules
+                # parser; they do not replace any other valid model atoms.
+                for match in _scene_re().finditer(text):
+                    span = match.group(0)
+                    if not any(a.type == AtomType.scene_identity and
+                               re.search(rf"\b{re.escape(span)}\b", a.value or a.span, re.I)
+                               for a in atoms):
+                        atoms.append(Atom(id=f"a{len(atoms) + 1}", span=span,
+                                          type=AtomType.scene_identity, value=span.lower()))
                 return atoms, "llm"
         except Exception as e:  # 429, timeout, bad JSON: the rules parser takes over (§17)
             if bus is not None:

@@ -66,6 +66,8 @@ const S = {
   rec: null,
   micStream: null,
   tab: "courtroom",
+  live: null,
+  editing: false,
 };
 
 function newRun(opts) {
@@ -83,6 +85,8 @@ document.addEventListener("DOMContentLoaded", boot);
 async function boot() {
   buildRibbon();
   bindUI();
+  $$(".detail-close").forEach((b) => b.addEventListener("click", () => { b.closest("details").open = false; }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") $$(".workspace-detail[open]").forEach((d) => { d.open = false; }); });
   setupMic();
   try {
     S.health = await getJSON("health");
@@ -103,6 +107,14 @@ async function refreshHealth() {
 function applyHealth() {
   const h = S.health || {};
   const fixture = h.mode === "fixture";
+  const coverage = h.coverage;
+  const banner = $("#banner-coverage");
+  banner.hidden = !coverage || coverage.complete !== false || fixture;
+  if (!banner.hidden) {
+    const actual = coverage.actual || {};
+    const cameras = Object.values(actual.cameras_per_scene || {}).reduce((a, n) => a + Number(n), 0);
+    banner.textContent = `RECORDED FOOTAGE · ${(actual.scenes || []).length} scene(s) · ${cameras} cameras · ${actual.segments || 0} segments. Coverage is incomplete; claims requiring a larger jury may return UNPROVEN.`;
+  }
   $("#banner-fixture").hidden = !fixture;
   if (fixture) {
     $("#banner-fixture-note").textContent = h.dev_stub ? "DEV STUB (scripted run, pipeline not loaded)" : "no live services were called";
@@ -119,7 +131,7 @@ async function loadScenes() {
   results.forEach((r) => { S.scenes[r.scene] = r; });
   nav.innerHTML = results.map((r) => {
     const available = !r.error && r.cameras?.length > 0;
-    const label = available ? `${esc(r.label)} · ${r.cameras.length} cams` : "unavailable · no indexed footage";
+    const label = available ? `${r.cameras.length} cameras` : "Unavailable";
     return `<button type="button" class="scene-btn" data-scene="${r.scene}" ${available ? "" : "disabled"}><b>Scene ${r.scene}</b> · ${label}</button>`;
   }).join("");
   $$(".scene-btn", nav).forEach((b) => b.addEventListener("click", () => {
@@ -134,6 +146,8 @@ async function loadScenes() {
 function selectScene(n, opts) {
   S.scene = n;
   $$(".scene-btn").forEach((b) => b.classList.toggle("on", +b.dataset.scene === n));
+  const meta = S.scenes[n] || {};
+  $("#scene-context").textContent = [meta.location, "Recorded footage"].filter(Boolean).join(" · ");
   buildWall();
   if (opts && opts.clear) {
     S.run = null;
@@ -158,6 +172,7 @@ async function loadReplays() {
 }
 
 function bindUI() {
+  $("#edit-claim").addEventListener("click", () => { S.editing = true; document.body.classList.remove("submitted"); $("#claim").focus(); });
   $("#claim-form").addEventListener("submit", (e) => {
     e.preventDefault();
     testify($("#claim").value, { source: "typed" });
@@ -265,6 +280,9 @@ async function testify(text, opts) {
   text = (text || "").replace(/\s+/g, " ").trim();
   if (!text) return toast("Type or say a claim first.", "info");
   if (text.length > 500) return toast("Keep testimony under 500 characters.");
+  if (S.busy) return toast("Wait for the current assessment to finish.", "info");
+  if (S.live && (!S.live.lastReceived || Date.now() - S.live.lastReceived > 30000)) return toast("Live evidence is unavailable or stale. Reconnect the source.");
+  S.editing = false;
   exitReplay();
   $("#claim").value = text;
   S.run = newRun({ text, scene: S.scene });
@@ -276,7 +294,8 @@ async function testify(text, opts) {
   const body = { text, scene: S.scene, stock_ab: $("#stock-ab").checked, transcript_source: opts.source || "typed" };
   if (opts.transcript_id) body.transcript_id = opts.transcript_id;
   if (S.tab !== "courtroom") showTab("courtroom");
-  await runStream("api/testify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const endpoint = S.live ? `api/live/${encodeURIComponent(S.live.id)}/testify` : "api/testify";
+  await runStream(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 }
 
 function startReplay(name, at) {
@@ -412,11 +431,14 @@ const HANDLERS = {
   },
   verdict(d) {
     S.run.verdict = d;
+    $("#verdict-headline").textContent = {TRUE:"The claim is supported", FALSE:"The claim is contradicted", UNPROVEN:"The full claim cannot be established"}[d.verdict] || "Assessment complete";
     if (!S.run.pinned) chooseDecisive();
     settleDeliberating();
     setStamp(d.verdict, d.verdict);
     $("#why").innerHTML = `<span class="lbl">WHY</span>${esc(d.explanation || "")}`;
     renderPills();
+    renderVerdictSummary();
+    renderSelectedClaim();
     paintWall();
     renderExhibits();
   },
@@ -507,8 +529,14 @@ function setActive(id, pinned) {
   if (pinned) r.pinned = true;
   $$(".pill").forEach((p) => p.classList.toggle("on", p.dataset.atom === id));
   $$(".sp").forEach((p) => p.classList.toggle("focus", (p.dataset.atoms || "").split(",").includes(id)));
-  paintWall();
-  renderExhibits();
+  if (!S.live) { paintWall(); renderExhibits(); }
+  renderSelectedClaim();
+}
+
+function renderSelectedClaim() {
+  const r = S.run;
+  const st = r && r.activeAtom ? atomState(r.activeAtom) : null;
+  $("#selected-claim").innerHTML = st && st.atom ? `<strong>${esc(st.atom.span)}</strong><p>${esc((st.verdict || {}).reason || "Assessment in progress")}</p>` : "Select a claim to inspect its evidence.";
 }
 
 // ------------------------------------------------------------------ board reset
@@ -518,13 +546,20 @@ function resetBoard() {
   $("#parser").textContent = "";
   $("#atoms").innerHTML = `<span class="muted">Atomic claims appear here, each sent to the cheapest witness that can settle it.</span>`;
   $("#why").innerHTML = "";
+  document.body.classList.remove("submitted");
+  $("#edit-claim").hidden = true;
+  $("#verdict-headline").textContent = "Awaiting a claim";
+  $("#verdict-summary").textContent = "";
+  $("#selected-claim").textContent = "Select a claim to inspect its evidence.";
+  $("#verdict-breakdown").innerHTML = "";
   $("#wall-atom").textContent = "";
   $("#stock-panel").hidden = true;
   $("#exhibits").innerHTML = `<span class="muted">Juror keyframes land here.</span>`;
   $("#exhibits-note").textContent = "";
   $("#trace").innerHTML = `<span class="muted">Each call appears as a bar, in ms from the moment you finished speaking.</span>`;
   $("#trace-total").textContent = "";
-  $("#receipt").innerHTML = `<span class="muted">RECEIPT · appears when the verdict lands</span>`;
+  $("#trace-weave").hidden = true;
+  $("#receipt").innerHTML = `<span class="muted">Service receipt · Real service usage appears after verification</span>`;
   setStamp("idle", "AWAITING TESTIMONY");
   Object.keys(SVC).forEach((id) => {
     const c = S.chips[id];
@@ -582,6 +617,8 @@ function spansHTML(text, atoms, stateOf, reasonOf) {
 
 function renderTestimony() {
   const r = S.run;
+  document.body.classList.toggle("submitted", !!r && !!r.text && !S.editing);
+  $("#edit-claim").hidden = !r || !r.text;
   if (!r) return;
   const reason = (id) => { const st = r.A[id]; return st && st.verdict ? `${st.verdict.verdict}: ${st.verdict.reason}` : "pending"; };
   $("#testimony").innerHTML = `<span class="q">“</span>${spansHTML(r.text, r.atoms, spanStateOf, reason)}<span class="q">”</span>`;
@@ -661,38 +698,34 @@ function renderPills(fresh) {
     b.className = `pill ${state}${r.activeAtom === a.id ? " on" : ""}`;
     const pillTxt = st.verdict && st.verdict.stats && st.verdict.stats.pill ? ` · ${st.verdict.stats.pill}` : "";
     b.title = st.verdict ? `${st.verdict.verdict}: ${st.verdict.reason}${pillTxt}` : (st.t0 && st.t0.summary) || "pending";
-    const note = st.verdict && state !== "supported" && state !== "contradicted" ? `<span class="note">${esc(st.verdict.reason)}</span>` : "";
-    b.innerHTML = `<span class="ic"></span><span class="span">${esc(a.span)}</span><span class="ty">${esc(label)}</span>${tb}${note}`;
+    const note = st.verdict ? `<span class="note">${esc(st.verdict.reason)}</span>` : "";
+    const status = {supported:"Supported", contradicted:"Contradicted", unverifiable:"Unverifiable", moot:"Moot", pending:"Checking"}[state] || "Uncertain";
+    b.innerHTML = `<span class="ic"></span><span class="atom-copy"><span class="span">${esc(a.span)}</span>${note}<span class="atom-meta"><span class="ty">${esc(label)}</span>${tb}</span></span><span class="atom-status">${status}</span>`;
   });
 }
 
 // ------------------------------------------------------------------ jury wall
 function buildWall() {
   const wall = $("#wall");
+  if (S.live) return;
   const meta = S.scenes[S.scene] || {};
-  const present = new Set(meta.cameras || []);
-  let html = `<div></div>` + POLES.map((p) => `<div class="colh">POLE ${p}</div>`).join("");
-  SLOT_ROWS.forEach((c) => {
-    html += `<div class="rowh">CAM ${c}</div>`;
-    POLES.forEach((p) => {
-      const cam = `p${p}c${c}`;
-      if (!present.has(cam)) {
-        html += `<div class="tile outage" data-cam="${cam}"><span class="cam">${cam}</span><span class="nofeed">NO FEED</span></div>`;
-        return;
-      }
+  let html = "";
+  wall.classList.add("available-only");
+  (meta.cameras || []).forEach((cam, cameraIndex) => {
       const t0 = ((meta.t0 || {}).cameras || {})[cam] || {};
       const pr = t0.probes || {};
       const cond = pr.cond ? [COND.road[pr.cond.road], COND.traffic[pr.cond.traffic]].filter(Boolean).join(" · ") : "";
       const cls = Object.entries(t0.segments_with || {}).map(([k, v]) => `${k} ${v}`).join(", ");
       const title = `${cam} · ${t0.segments || 0} segments${cls ? " · YOLO segments with: " + cls : ""}${cond ? " · P-COND: " + cond : ""}`;
-      html += `<div class="tile idle" data-cam="${cam}" data-cond="${esc(cond)}" title="${esc(title)}">
-        <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" loading="eager" />
-        <span class="cam">${cam}</span><span class="mark"></span><div class="gb"></div>
-        <div class="badges"></div></div>`;
-    });
+      html += `<article class="tile idle" aria-label="Camera ${cameraIndex + 1}" data-cam="${cam}" data-cond="${esc(cond)}" title="${esc(title)}">
+        <video src="api/camera-stream?${qs({ scene: S.scene, camera: cam })}" aria-label="Recorded video camera ${cameraIndex + 1}" muted autoplay loop controls playsinline preload="metadata"></video>
+        <span class="cam">Camera ${cameraIndex + 1} <small>${esc(cam)}</small></span><span class="mark"></span><div class="gb"></div>
+        <div class="badges"></div><span class="video-error" hidden>Video playback unavailable</span></article>`;
   });
   wall.innerHTML = html;
-  $$(".tile:not(.outage)", wall).forEach((t) => t.addEventListener("click", () => {
+  $$("video", wall).forEach((video) => video.addEventListener("error", () => { $(".video-error", video.closest(".tile")).hidden = false; }));
+  $$(".tile:not(.outage)", wall).forEach((t) => t.addEventListener("click", (event) => {
+    if (event.target.closest("video")) return;
     const r = S.run;
     const cam = t.dataset.cam;
     if (!r || !r.activeAtom) return;
@@ -707,6 +740,7 @@ function buildWall() {
 }
 
 function paintWall() {
+  if (S.live) return;
   const r = S.run;
   const id = r && r.activeAtom;
   const st = id ? atomState(id) : null;
@@ -728,11 +762,12 @@ function paintWall() {
       tl.flip = false;
     }
     el.dataset.state = state;
+    $(".mark", el).textContent = {yes:"✓ Supports", no:"✕ Contradicts", abstain:"− Abstained", summoned:"Queued", deliberating:"Assessing", idle:"Not assessed"}[state] || state;
     $(".gb", el).innerHTML = tl && tl.ground && tl.ground.bbox_2d ? boxDiv(tl.ground.bbox_2d, "gbox") : "";
     const bits = [];
     if (tl && tl.tier) bits.push(`<span class="tierb ${tl.tier}">${tl.tier}${tl.tier === "YOLO" && tl.info != null ? " " + esc(tl.info) : ""}</span>`);
     if (tl && tl.zoom) bits.push(`<span class="zoomb ${tl.zoom.ok ? "" : "bad"}">ZOOM ${tl.zoom.ok ? "✓" : "✗"}${tl.zoom.conf != null ? " " + (+tl.zoom.conf).toFixed(2) : ""}</span>`);
-    if (tl && tl.cached) bits.push(`<span class="clock">🕓 ${esc(hhmm(tl.cachedAt))}</span>`);
+    if (tl && tl.cached) bits.push(`<span class="clock">Cached · ${esc(hhmm(tl.cachedAt))}</span>`);
     if (tl && tl.timedOut) bits.push(`<span class="clock">timeout</span>`);
     if (!tl && el.dataset.cond) bits.push(`<span class="info">${esc(el.dataset.cond)}</span>`);
     $(".badges", el).innerHTML = bits.join("");
@@ -749,6 +784,16 @@ function boxDiv(b, cls, label, frame) {
 }
 
 // ------------------------------------------------------------------ verdict, stock, exhibits
+function renderVerdictSummary() {
+  const r = S.run;
+  if (!r || !r.verdict) return;
+  const supported = r.atoms.filter((a) => spanStateOf(a.id) === "supported");
+  $("#verdict-summary").textContent = `${supported.length} of ${r.atoms.length} claims supported`;
+  const contradicted = r.atoms.filter((a) => spanStateOf(a.id) === "contradicted");
+  const groups = [["Supported", supported], ...(contradicted.length ? [["Contradicted", contradicted]] : []), ["Needs evidence", r.atoms.filter((a) => !["supported", "contradicted"].includes(spanStateOf(a.id)))]];
+  $("#verdict-breakdown").innerHTML = groups.map(([label, atoms]) => `<section><strong>${label} (${atoms.length})</strong>${atoms.map((a) => `<div class="verdict-item ${spanStateOf(a.id)}"><span>${spanStateOf(a.id) === "supported" ? "✓" : spanStateOf(a.id) === "contradicted" ? "✕" : "!"}</span><span>${esc(a.span)}<small>${esc((atomState(a.id).verdict || {}).reason || "Awaiting evidence")}</small></span></div>`).join("")}</section>`).join("");
+}
+
 function setStamp(kind, text) {
   const s = $("#stamp");
   s.className = "stamp " + kind;
@@ -771,24 +816,30 @@ function showStockPending() {
 function renderStock(d) {
   $("#stock-panel").hidden = false;
   const cls = String(d.classification || "OTHER").toUpperCase().replace(/\s+/g, "_");
+  if (cls === "ERROR") { $("#stock-body").innerHTML = `<p class="stock-error">VSS comparison unavailable: ${esc(d.error || "upstream service error")}</p>`; return; }
   $("#stock-body").innerHTML = `<blockquote>${esc(d.answer || "(no answer)")}</blockquote>
     <span class="cls ${esc(cls)}">${esc(d.classification || "unclassified")}</span>
     <span class="muted"> · search returned ${esc(d.hits ?? "?")} clips for this sentence · ${fmtMs(d.latency_ms)}</span>`;
 }
 
 function renderExhibits() {
+  if (S.live) { $("#exhibits").innerHTML = `<span class="muted">Live assessment applies to the recently received frames, not archived camera evidence.</span>`; return; }
   const r = S.run;
   const box = $("#exhibits");
   if (!r || !r.activeAtom) return;
   const st = atomState(r.activeAtom);
-  const items = Object.entries(st.tiles).filter(([, t]) => t.vote && (t.state === "yes" || t.state === "no"));
-  if (!items.length) return;
+  const items = Object.entries(st.tiles).filter(([, t]) => t.vote);
+  if (!items.length) {
+    $("#exhibits-note").textContent = st.atom ? `“${st.atom.span}”` : "";
+    box.innerHTML = `<span class="muted">No frame assessments are associated with this claim.</span>`;
+    return;
+  }
   items.sort((a, b) => (a[1].state === "yes" ? 0 : 1) - (b[1].state === "yes" ? 0 : 1) || a[0].localeCompare(b[0]));
   $("#exhibits-note").textContent = `“${st.atom ? st.atom.span : ""}” · ${items.length} jurors · click for the keyframe`;
   box.innerHTML = items.slice(0, 12).map(([cam, t]) => `
     <button type="button" class="ex-thumb ${t.state}" data-cam="${cam}" title="${esc(t.vote.probe_version || "")}">
-      <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" />
-      <span>${cam} ${t.state === "yes" ? "✓" : "✗"}</span>
+      <img src="api/exhibit.jpg?${qs({ run_id: r.id, atom_id: r.activeAtom, camera: cam, panel: 1 })}" alt="Assessment frame for ${esc(cam)}" loading="lazy" />
+      <span><strong>${esc(cam)} · Evidence frame</strong><small>${t.state === "yes" ? "Supporting vote" : t.state === "no" ? "Contradicting vote" : "Abstained · not supporting evidence"}</small><em>Open frame →</em></span>
     </button>`).join("");
   $$(".ex-thumb", box).forEach((b) => b.addEventListener("click", () => openExhibit(r.activeAtom, b.dataset.cam)));
 }
@@ -802,6 +853,7 @@ async function openExhibit(atomId, cam) {
   } catch (e) {
     return toast("Exhibit unavailable: " + e.message);
   }
+  if (S.run !== r || r.activeAtom !== atomId) return;
   const a = ex.atom || {};
   const v = ex.vote || {};
   const j = ex.juror || {};
@@ -972,16 +1024,19 @@ function renderReceipt() {
   const sep = `<span class="sep">·</span>`;
   const bits = [
     `<span class="rv ${esc(d.verdict)}">${esc(d.verdict)}</span>`,
-    `${d.atoms ?? r.atoms.length} atoms`,
-    `${d.fired_count ?? (d.fired || []).length} of ${d.total || 13} fired`,
+    `${d.atoms ?? r.atoms.length} claims`,
+    `Services used: ${(d.fired || []).map((id) => SVC[id] ? SVC[id].name : id).join(", ") || "none reported"}`,
     `${d.calls ?? 0} calls`,
     fmtMs(d.elapsed_ms),
-    `${(+d.gpu_s || 0).toFixed(1)} GPU-s`,
+
   ];
+  const weave = $("#trace-weave");
+  weave.hidden = !d.weave_url || !/^https:\/\//.test(d.weave_url);
+  if (!weave.hidden) weave.href = d.weave_url;
   if (d.weave_url) bits.push(`<a href="${esc(d.weave_url)}" target="_blank" rel="noopener">Weave trace ↗</a>`);
   bits.push(`<button type="button" class="thumb" data-t="up" title="Correct">👍</button><button type="button" class="thumb" data-t="down" title="Wrong: goes into the bench">👎</button>`);
   const mode = r.replay || S.replay ? `replay of ${hhmm(S.replay && S.replay.recorded_at)}` : d.mode === "fixture" ? "fixture" : "";
-  $("#receipt").innerHTML = bits.join(` ${sep} `) + ` <span class="small">DataEngine async · Cursor &amp; CoreWeave are badges${mode ? " · " + esc(mode) : ""}</span>`;
+  $("#receipt").innerHTML = bits.join(` ${sep} `) + ` <span class="small">Run ${esc(r.id || "unknown")}${mode ? " · " + esc(mode) : ""}</span>`;
   $$("#receipt .thumb").forEach((b) => b.addEventListener("click", () => sendFeedback(b)));
 }
 
@@ -1013,21 +1068,22 @@ function traceRows() {
     const d = e.data;
     if (e.event === "service" && SVC[d.service]) {
       const lane = SVC[d.service].lane;
-      const label = `${SVC[d.service].name}${d.note ? " · " + d.note : ""}`;
+      const purpose = {atomize:"Claim parsing",t1:"Camera assessment",live_capture_compare:"Live evidence comparison"}[d.note] || d.note;
+      const label = `${SVC[d.service].name}${purpose ? " · " + purpose : ""}`;
       if (d.state === "firing") {
-        const row = { label, lane, start: e.t_ms, end: null, state: "firing", svc: d.service };
+        const row = { label, lane, start: e.t_ms, end: null, state: "firing", svc: d.service, data: d };
         (open[d.service] = open[d.service] || []).push(row);
         rows.push(row);
       } else {
         const q = open[d.service] || [];
         const row = q.shift();
         const pipeline = d.state === "pipeline" || /^pipeline/i.test(d.note || "");
-        if (row) { Object.assign(row, { end: e.t_ms, state: d.state, label, pipeline }); }
-        else rows.push({ label, lane, start: Math.max(0, e.t_ms - (d.ms || 0)), end: e.t_ms, state: d.state, pipeline });
+        if (row) { Object.assign(row, { end: e.t_ms, state: d.state, label, pipeline, data: d }); }
+        else rows.push({ label, lane, start: Math.max(0, e.t_ms - (d.ms || 0)), end: e.t_ms, state: d.state, pipeline, data: d });
       }
     } else if (["transcript", "atoms", "verdict"].includes(e.event)) {
       const label = e.event === "atoms" ? `atomize → ${(d.atoms || []).length} atoms (${d.parser || "?"})` : e.event === "verdict" ? `quorum → ${d.verdict}` : `transcript (${d.source || "?"})`;
-      rows.push({ label, lane: "STEP", start: e.t_ms, end: e.t_ms, state: "done" });
+      rows.push({ label, lane: "STEP", start: e.t_ms, end: e.t_ms, state: "done", data: d });
     }
   });
   return rows;
@@ -1040,15 +1096,23 @@ function renderTrace() {
   const rows = traceRows();
   const last = r.events[r.events.length - 1].t_ms;
   const total = Math.max(1000, last, nowT) * 1.04;
-  $("#trace-total").textContent = `${fmtMs(Math.max(last, r.done ? 0 : nowT))} · ${rows.filter((x) => x.lane !== "STEP").length} calls`;
-  $("#trace").innerHTML = rows.slice(0, 60).map((row) => {
+  $("#trace-total").textContent = `${fmtMs(Math.max(last, r.done ? 0 : nowT))} wall time · ${rows.filter((x) => x.lane !== "STEP").length} service spans · ${rows.filter((x) => x.lane === "STEP").length} processing events`;
+  const axis = `<span></span><div class="trace-axis">${[0, 1, 2, 3, 4].map((i) => `<span>${(total * i / 4000).toFixed(1)}s</span>`).join("")}</div><span></span>`;
+  $("#trace").innerHTML = axis + rows.slice(0, 60).map((row, i) => {
     const end = row.end == null ? Math.max(row.start, nowT) : row.end;
     const left = (row.start / total) * 100;
     const width = Math.max(0.3, ((end - row.start) / total) * 100);
     const cls = ["bar", row.lane, row.state === "firing" ? "firing" : "", row.state === "error" ? "error" : "", row.pipeline ? "outlined" : ""].join(" ");
     const ms = row.lane === "STEP" ? `@${fmtMs(row.start)}` : row.end == null ? "…" : fmtMs(end - row.start);
-    return `<div class="tl" title="${esc(row.label)}">${esc(row.label)}</div><div class="tr"><div class="${cls}" style="left:${left}%;width:${width}%"></div></div><div class="tms">${ms}</div>`;
+    return `<button type="button" class="tl trace-select" data-trace="${i}" title="Inspect ${esc(row.label)}">${esc(row.label)}</button><div class="tr"><div class="${cls}" style="left:${left}%;width:${width}%"></div></div><div class="tms">${ms}</div>`;
   }).join("");
+  $$(".trace-select").forEach((button) => button.addEventListener("click", () => {
+    const row = rows[Number(button.dataset.trace)];
+    $("#chip-title").textContent = row.label;
+    $("#chip-body").innerHTML = `<p>Recorded ${esc(row.lane === "STEP" ? "processing event" : "service span")} · start ${esc(fmtMs(row.start))}${row.end == null ? " · Running" : " · end " + esc(fmtMs(row.end))}</p><pre>${json(row.data || {})}</pre>`;
+    $("#chip-modal").hidden = false;
+    $("#chip-close").focus();
+  }));
 }
 
 function tick() {
@@ -1086,8 +1150,7 @@ function setupMic() {
     mic.addEventListener("click", () => { const h = $("#mic-hint"); h.hidden = !h.hidden; });
     const origin = location.origin;
     $("#mic-hint").innerHTML = `<b>The browser blocks the microphone on plain HTTP.</b> This page is <code>${esc(origin)}</code>, which is not a secure context.
-      <ol><li>Open <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code> (paste it into the address bar).</li>
-      <li>Add <code>${esc(origin)}</code>, set it to <b>Enabled</b>.</li><li>Click <b>Relaunch</b>, then come back here.</li></ol>
+      <p>Open this app using its <b>HTTPS</b> address, or use a local SSH tunnel at <code>http://localhost</code>, then allow microphone access when prompted.</p>
       Meanwhile: <b>⤒ recording</b> uploads a Voice Memos / QuickTime clip (works over HTTP), or type the claim.`;
     return;
   }
@@ -1112,7 +1175,7 @@ function isTyping(t) {
 }
 
 async function startRec() {
-  if (S.rec || S.busy) return;
+  if (S.rec || S.busy || $("#mic").classList.contains("busy")) return;
   const rec = { stop: false, chunks: [], started: 0 };
   S.rec = rec;
   const mic = $("#mic");
@@ -1123,7 +1186,12 @@ async function startRec() {
     return toast("Microphone unavailable: " + e.message + ". Upload a recording or type.");
   }
   if (rec.stop) { S.rec = null; return toast("Hold the button while you speak.", "info"); }
-  const mr = new MediaRecorder(S.micStream);
+  let mr;
+  try { mr = new MediaRecorder(S.micStream); }
+  catch (e) {
+    S.rec = null;
+    return toast("Audio recording unavailable: " + e.message + ". Upload a recording or type.");
+  }
   rec.mr = mr;
   mr.ondataavailable = (ev) => { if (ev.data && ev.data.size) rec.chunks.push(ev.data); };
   mr.onstop = async () => {
@@ -1342,6 +1410,10 @@ async function loadBench() {
   const stockTest = stock && ((stock.splits || {}).test || stock.test || (stock.catch ? stock : null));
   let html = rep.fixture || rep.mode === "fixture"
     ? `<div class="empty-note" style="margin-bottom:14px;color:var(--warn);border-color:#6b4f0c">FIXTURE bench: these numbers come from offline fakes, not the live models. Never put them on a slide.</div>` : "";
+  const evaluationRun = rep.run || (dev && dev.run) || rep;
+  if (evaluationRun.evaluation_scope) {
+    html += `<div class="empty-note" role="status" style="margin-bottom:14px;color:var(--warn)">${esc(evaluationRun.evaluation_scope)}${evaluationRun.held_out_test_run === false ? " No held-out test has been run." : ""} ${(evaluationRun.exclusions || []).length} claims excluded because footage or independently reviewed ground truth is missing.</div>`;
+  }
   if (test || dev) {
     html += `<div class="card"><h3>VERDICT METRICS · claims ${test && test.n_claims ? "· test n=" + test.n_claims : ""}</h3><table class="metrics"><thead><tr><th>metric</th><th>PERJURY · test</th><th>dev</th>${stockTest ? "<th>stock VSS agent · test</th>" : ""}</tr></thead><tbody>` +
       METRICS.map(([key, name, hint]) => {

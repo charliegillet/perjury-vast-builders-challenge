@@ -18,6 +18,7 @@ class SceneIndex:
         data = data or {}
         self.version = data.get("version", 1)
         self.source = data.get("source", "missing")
+        self.coverage = dict(data.get("coverage") or {})
         self.camera_id = data.get("camera_id", "i24_cam-1")
         self.scene_meta: dict[int, dict] = {int(k): v for k, v in (data.get("scenes") or {}).items()}
         self._segs: list[Segment] = [Segment(**s) for s in data.get("segments", [])]
