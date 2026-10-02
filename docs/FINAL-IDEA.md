@@ -1,5 +1,17 @@
 # FINAL IDEA — UNWATCHED
 
+> **⚠️ Corrections from deep research (2026-10-02) — read before pitching.** Full detail in [DEEP-RESEARCH.md](DEEP-RESEARCH.md).
+> 1. **Do NOT say "no shipped product does this" or "first."** Avigilon (Motorola) has shipped rule-free, learned-per-scene "Unusual Activity Detection" since 2018; Lumana/Coram claim per-camera learned normal; Google Home and Svid send unprompted daily digests; a Qdrant + Twelve Labs open-source VSS demo (Mar 2026) does embedding-distance outliers → VLM. What's defensible is the **combination**: per-camera learned normal + Cosmos-Reason2 verify of every outlier + measured suppression counter + push digest over stored archives, all inside VAST DataEngine.
+> 2. **New stage line:** "Cameras that learn what's normal aren't new — Avigilon shipped it in 2018. They never took off because for every real event they flagged a hundred harmless ones. UNWATCHED adds the missing step: Cosmos-Reason2 checks every outlier against what that camera normally sees, nobody gets paged until it passes, and we count and measure everything we chose not to show you."
+> 3. **Cosmos already runs on every segment** in the starter blueprint (ingest captions each 5 s segment). "Cosmos only sees 3%" applies only to our *verify* call — say "only ~3% of segments get the expensive reasoning/verify pass."
+> 4. **Segments are 5 s** (not 10 s). Upload 5 s live-cam chunks. Embeddings are 256-d; skip all-zero vectors when building the centroid.
+> 5. **No Kafka/DB-row triggers in DataEngine** — triggers are `Element` (S3 object events) and `Schedule` (Quartz cron). Fan the scorer out from the embedder output; use DataEngine conditional routing (or a poller) to reach the verifier. Digest: schedule every minute, post once at 15:31 PT (cron timezone undocumented); laptop cron as backup.
+> 6. **Try NVIDIA's `Cosmos-Embed1-448p-anomaly-detection` embedder** for the baseline — and credit VSS's "temporal dedup" step openly.
+> 7. **Market:** video surveillance ≈ **$27B (Omdia, 2025)**, $60–80B+ on broad definitions — not "$50B+". IPVM: **<1%** of recorded footage is watched live. NVIDIA: **2B+ cameras**. Price **$8/camera/month** is supported by comps.
+> 8. **Use the venue's Cosmos NIM** (hosted build.nvidia.com Reason2 has been returning 404). VSS 3.2.1+ defaults to Cosmos Reason 3 Nano — confirm which model the event serves at 10:00.
+> 9. **Privacy framing:** private operational spaces (stockrooms, server cages, after-hours docks), no face ID, no "suspicious person" language.
+
+
 > **The archive that watches itself and doesn't cry wolf.**
 > Every camera-hour that lands in VAST gets scored against what that camera *normally* sees. Cosmos-Reason2 checks only the outliers. You get pinged only when a clip is worth your time, plus a morning digest you never asked for: "8 hours of footage last night, 3 things you should see, 41 seconds total."
 
@@ -43,7 +55,7 @@ Merge of NIGHT WATCH (push, not pull: the archive triages itself) with FOREMAN (
 Rejected. It inherits FOREMAN's prior-art problem and BLACKBOX's snapshot risk, and it still reacts to a rule someone already wrote. The one piece worth keeping from BLACKBOX goes into UNWATCHED as a stretch goal: each dismissal records the VastDB snapshot ID of the baseline it was judged against, so you can audit why something was suppressed.
 
 ### Verdict: **COMMIT to UNWATCHED.**
-Two teammates really believe in it (the Ideator ranked it #1, and it's the Devil's Advocate's top surviving pick). No shipped product does it (the prior art is academic only: LAVAD, VERA). It matches the theme word for word. Its one weakness was a demo score of 7, fixed below. We are not settling for FOREMAN, the safe option everyone else will build.
+Two teammates really believe in it (the Ideator ranked it #1, and it's the Devil's Advocate's top surviving pick). Its individual pieces exist (Avigilon learned-normal since 2018, consumer digests, a Qdrant/Twelve Labs VSS demo — see corrections above), but the combination with a verify gate and measured suppression is unclaimed. It matches the theme word for word. Its one weakness was a demo score of 7, fixed below. We are not settling for FOREMAN, the safe option everyone else will build.
 
 ---
 
@@ -59,8 +71,8 @@ The contrast is the point. A cheap gate fires twice and only one of those matter
 ## 3. Problem and buyer
 - **Buyer:** the security or loss-prevention operations manager at a multi-site operator (3PL warehouses, self-storage, car dealerships, school districts) with 50–500 cameras on NVRs or VMS and 30-day retention. **Nobody reviews overnight footage.** It gets deleted unwatched, or someone scrubs through it at 2x speed after a loss is discovered.
 - **Pain:** rule-based analytics (line crossing, PPE, loitering) only catch what someone thought to configure, and they spam false alarms, so operators mute them. The footage that matters is the stuff nobody wrote a rule for.
-- **Market / comparables:** video surveillance is a roughly $50B+ market. Comparables are Verkada and Rhombus (cloud VMS) and Ambient.ai (AI alert triage, venture-backed). All of them are rule- or signature-first. UNWATCHED learns "normal" for each camera, needs no rules, and works on the archive as well as live feeds.
-- **Business model:** add-on priced per camera per month (roughly $5–10). The price holds because Cosmos only runs on the ~3% of segments that are outliers. Go-to-market: through VMS/NVR integrators and a VAST AI OS marketplace listing.
+- **Market / comparables:** video surveillance is ~$27B (Omdia 2025; $60–80B+ on broad definitions), and <1% of recorded footage is watched live (IPVM). Comparables are Verkada and Rhombus (cloud VMS) and Ambient.ai (AI alert triage, venture-backed). All of them are rule- or signature-first. UNWATCHED learns "normal" for each camera, needs no rules, and works on the archive as well as live feeds.
+- **Business model:** add-on priced per camera per month (~$8). The price holds because only ~3% of segments get the extra Cosmos verify pass. Go-to-market: through VMS/NVR integrators and a VAST AI OS marketplace listing.
 
 ## 4. Why this is past the baseline
 | | vss-blueprint (starter kit) | NVIDIA `vss-alert-verification` | **UNWATCHED** |
@@ -78,7 +90,7 @@ One-liner for judges: *"Alert-verification checks the alerts you already wrote r
 ## 5. Architecture
 
 ```
-[laptop webcam] ffmpeg 10s mp4 → boto3 PUT s3://vss-chunks/cam-05-live/…   (just another camera)
+[laptop webcam] ffmpeg 5s mp4 → boto3 PUT s3://vss-chunks/cam-05-live/…   (just another camera)
 [sample footage x4 cams] ─────────→ s3://vss-chunks/cam-0{1..4}/…            (the "overnight" archive)
         │
 REUSED blueprint DataEngine chain:
@@ -119,7 +131,7 @@ Buckets: archive cameras use hour-of-day buckets. The live camera uses a single 
 **Cosmos-Reason2 verify prompt (8B; 2B as fallback):**
 ```
 You are a night-shift video verifier for camera {camera_id} ({camera_context}).
-A statistical baseline flagged this 10-second clip as unusual compared with what this camera normally shows.
+A statistical baseline flagged this 5-second clip as unusual compared with what this camera normally shows.
 What is normal here: {baseline.summary_text}
 Why it was flagged: embed_dist={dist} (p99={p99}); class deltas={class_deltas}.
 Decide whether a human should be interrupted. Think step by step inside <think></think>, then output ONLY JSON:
@@ -189,7 +201,7 @@ Roles: **Nihal** = agent/backend lead (scorer, verifier, prompts). **P2** = VAST
 - [ ] Is there a DataEngine **schedule/cron trigger**? (If not, run the updater and digest as laptop cron jobs.)
 - [ ] Does the embedder depend on the reasoner caption? (It decides live latency and whether the archive can skip captioning.)
 - [ ] Pipeline throughput: time for 1 min of video from upload to row. Multiply out to size the "overnight" archive we can finish by 15:00.
-- [ ] Cosmos-Reason2 endpoint: 8B vs 2B available, p50 latency for a 10s clip, RPM quota (40 RPM on the free tier; is it shared by the whole venue?). Does 2D grounding return usable coordinates?
+- [ ] Cosmos-Reason2 endpoint: 8B vs 2B available, p50 latency for a 5s clip (`SELECT avg(processing_time)` on segments), RPM quota (40 RPM on the free tier; is it shared by the whole venue?). Does 2D grounding return usable coordinates?
 - [ ] Kafka / Event Broker topic create, produce, and consume from a function.
 - [ ] Venue Wi-Fi: webcam PUT to S3 sustained; is outbound Slack allowed? (Tether a phone as backup.)
 - [ ] W&B Inference key, model IDs for Nemotron 3 Ultra / 3.5 Lightning; Weave project logging works.
