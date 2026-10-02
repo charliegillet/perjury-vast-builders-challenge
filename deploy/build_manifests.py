@@ -89,6 +89,7 @@ def app_docs(app: str, host: str, mode: str, bins: list[dict], digest: str, port
         "set -euo pipefail",
         "for f in /seed/*; do cp -rL \"$f\" /code/; done",   # glob skips the projected volume's ..data dirs
         "mkdir -p /code/cache/runs",
+        "apt-get update -qq && apt-get install -y -qq --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*",
         "pip install --no-cache-dir -q --disable-pip-version-check -r requirements.txt",
         "exec python main.py",
     ])
@@ -107,6 +108,7 @@ def app_docs(app: str, host: str, mode: str, bins: list[dict], digest: str, port
                         "ports": [{"containerPort": port}],
                         "env": [{"name": "PORT", "value": str(port)},
                                 {"name": "PERJURY_MODE", "value": mode},
+                                {"name": "IMAGEIO_FFMPEG_EXE", "value": "/usr/bin/ffmpeg"},
                                 {"name": "PYTHONUNBUFFERED", "value": "1"}],
                         "envFrom": [{"secretRef": {"name": f"{app}-secrets", "optional": mode == "fixture"}}],
                         "volumeMounts": [{"name": "seed", "mountPath": "/seed", "readOnly": True},

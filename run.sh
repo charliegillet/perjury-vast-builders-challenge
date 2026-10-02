@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Run PERJURY from the repo root, writing a thorough debug log of every run to logs/.
-#   ./run.sh              offline demo on fake Pack A data (FIXTURE banner) → http://localhost:8080/
+#   ./run.sh              live on the event VM (a /config/*.config or INGRESS_URL exists), else the offline demo
+#   ./run.sh fixture      offline demo on fake Pack A data (FIXTURE banner) → http://localhost:8080/
 #   ./run.sh live         real endpoints (event VM: needs INGRESS_URL etc. in the env or /config/<team>.config)
 #   ./run.sh test         run the test suite
 #   PORT=9000 ./run.sh    another port
@@ -12,7 +13,11 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-MODE="${1:-fixture}"
+DEFAULT_MODE=fixture
+if [[ -n "${INGRESS_URL:-}${VSS_URL:-}${PERJURY_TEAM_CONFIG:-}" ]] || compgen -G "/config/*.config" >/dev/null; then
+  DEFAULT_MODE=live
+fi
+MODE="${1:-$DEFAULT_MODE}"
 PORT="${PORT:-8080}"
 LOG_LEVEL="${LOG_LEVEL:-DEBUG}"
 VENV=.venv
@@ -114,7 +119,8 @@ case "$MODE" in
     ;;
   live)
     export PERJURY_MODE=live
-    if [[ -z "${INGRESS_URL:-}" ]]; then
+    # On the VM, pick up this team's config if the env doesn't already have it (values are never printed).
+    if [[ -z "${INGRESS_URL:-}" && -z "${VSS_URL:-}" && -z "${PERJURY_TEAM_CONFIG:-}" ]]; then
       cfg="$(find /config -maxdepth 1 \( -type f -o -type l \) -name '*.config' 2>/dev/null | sort | head -n 1 || true)"
       if [[ -n "$cfg" ]]; then export PERJURY_TEAM_CONFIG="$cfg"; say "team config: $cfg"
       else say "WARNING: INGRESS_URL unset and no /config/*.config found: live calls will fail"; fi

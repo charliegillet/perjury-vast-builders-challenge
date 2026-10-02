@@ -118,14 +118,17 @@ async function loadScenes() {
   const results = await Promise.all([1, 2, 3].map((n) => getJSON(`api/scene/${n}`).catch((e) => ({ scene: n, error: e.message }))));
   results.forEach((r) => { S.scenes[r.scene] = r; });
   nav.innerHTML = results.map((r) => {
-    const label = r.error ? "unavailable" : `${esc(r.label)} · ${r.cameras.length} cams`;
-    return `<button type="button" class="scene-btn" data-scene="${r.scene}"><b>Scene ${r.scene}</b> · ${label}</button>`;
+    const available = !r.error && r.cameras?.length > 0;
+    const label = available ? `${esc(r.label)} · ${r.cameras.length} cams` : "unavailable · no indexed footage";
+    return `<button type="button" class="scene-btn" data-scene="${r.scene}" ${available ? "" : "disabled"}><b>Scene ${r.scene}</b> · ${label}</button>`;
   }).join("");
   $$(".scene-btn", nav).forEach((b) => b.addEventListener("click", () => {
     if (S.busy) return toast("A run is in progress; wait for the verdict.", "info");
     selectScene(+b.dataset.scene, { clear: true });
   }));
-  selectScene(S.scene, { clear: true });
+  const available = results.filter((r) => !r.error && r.cameras?.length > 0);
+  const initial = available.find((r) => r.scene === S.scene) || available[0];
+  if (initial) selectScene(initial.scene, { clear: true });
 }
 
 function selectScene(n, opts) {

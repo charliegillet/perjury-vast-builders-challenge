@@ -561,6 +561,11 @@ async def exhibit_jpg(run_id: str, atom_id: str, camera: str, panel: int = Query
     data = None
     scene = ex.get("scene")
     source, times = juror.get("source"), juror.get("times") or []
+    scene_probes = ((probes_raw() or {}).get("scenes") or {}).get(str(scene)) or {}
+    panel_sources = (scene_probes.get(camera) or {}).get("panel_sources") or []
+    if ex.get("cached") and len(panel_sources) >= panel:
+        source, offset = panel_sources[panel - 1]
+        times = [float(offset)] * panel
     if not source and scene:
         # scene-wide pre-run juror: the P-COND/P-COUNT grid came from the scene parent at grid_times
         idx = getattr(STATE.ctx, "index", None)
@@ -779,8 +784,11 @@ def main() -> None:
     level = os.getenv("PERJURY_LOG_LEVEL", "INFO").upper()
     logging.basicConfig(level=level, format="%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(message)s",
                         datefmt="%H:%M:%S")
-    for noisy in ("httpcore", "httpx", "PIL", "asyncio", "multipart", "urllib3"):
+    for noisy in ("PIL", "asyncio", "multipart", "urllib3"):
         logging.getLogger(noisy).setLevel(max(logging.INFO, logging.getLevelName(level)))
+    # Playback URLs contain authentication tokens; httpx/httpcore log request URLs, so keep them at WARNING.
+    for leaky in ("httpx", "httpcore"):
+        logging.getLogger(leaky).setLevel(logging.WARNING)
     log.info("PERJURY starting: mode=%s log_level=%s pid=%d", settings().mode, level, os.getpid())
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8080")), log_level=level.lower(),
                 proxy_headers=True, log_config=None)

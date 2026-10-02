@@ -35,7 +35,10 @@ class Settings:
             for k, v in _load_team_config(e["PERJURY_TEAM_CONFIG"]).items():
                 e.setdefault(k, v)
         self.env = e
-        self.mode = e.get("PERJURY_MODE", "fixture" if not e.get("INGRESS_URL") and not e.get("VSS_URL") else "live")
+        # live on the event VM (team config or VSS URL present), fixture offline; PERJURY_MODE overrides
+        on_vm = bool(e.get("INGRESS_URL") or e.get("VSS_URL") or e.get("PERJURY_TEAM_CONFIG")) or (
+            env is None and any(Path("/config").glob("*.config")))
+        self.mode = e.get("PERJURY_MODE", "live" if on_vm else "fixture")
         # VSS (deploy-app-no-registry injects VSS_URL / VSS_USERNAME / VSS_PASSWORD)
         self.vss_url = (e.get("INGRESS_URL") or e.get("VSS_URL") or "").rstrip("/")
         self.vss_user = e.get("USERNAME") or e.get("VSS_USERNAME") or ""
@@ -55,7 +58,7 @@ class Settings:
         self.wandb_project = (f"{e['WANDB_TEAM']}/{e.get('WANDB_PROJECT', 'perjury')}"
                               if e.get("WANDB_TEAM") else e.get("WANDB_PROJECT", "perjury"))
         self.wandb_base = e.get("WANDB_BASE_URL", "https://api.inference.wandb.ai/v1").rstrip("/")
-        self.atomizer_model = e.get("PERJURY_ATOMIZER_MODEL", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B")
+        self.atomizer_model = e.get("PERJURY_ATOMIZER_MODEL", "Qwen/Qwen3-30B-A3B-Instruct-2507")
         # S3 / VastDB
         self.s3_endpoint = e.get("S3_ENDPOINT", "")
         self.s3_access = e.get("ACCESS_KEY", "")

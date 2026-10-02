@@ -26,6 +26,7 @@ SCENE_RES = (re.compile(r"scene(\d)_p(\d)c(\d)", re.I),
              re.compile(r"Scene(\d)[_/-]p(\d)c(\d)", re.I),
              re.compile(r"scene(\d).*?p(\d+)c(\d+)", re.I))
 CAM_RE = re.compile(r"p(\d+)c(\d+)", re.I)
+CHUNK_RE = re.compile(r"chunk[_-](\d+)", re.I)
 SEG_RE = re.compile(r"seg(?:ment)?[_-]?(\d+)", re.I)
 VECTOR_COLS = {"vectors", "vectors_visual"}
 G1_MIN_ROWS, G1_MIN_CAMS = 600, 14
@@ -125,6 +126,23 @@ def build_index(raw_rows: Iterable[dict], camera_id: str, source_label: str) -> 
                                 object_counts=counts, persist=r.get("persist") or {}, caption=r["caption"],
                                 processing_time=_num(r, "processing_time"), video_shape=_shape(r.get("video_shape")),
                                 location=r.get("location"), camera_id=r.get("camera_id") or camera_id))
+    # Pipeline parents are 30-second upload chunks, each with local segment times.
+    # Reconstruct the camera timeline from the explicit chunk sequence rather than
+    # confusing upload wall-clock timestamps with capture times.
+    chunked: dict[tuple[int, str], dict[str, list[Segment]]] = defaultdict(lambda: defaultdict(list))
+    for seg in segs:
+        if CHUNK_RE.search(seg.original_video):
+            chunked[(seg.scene, seg.camera)][seg.original_video].append(seg)
+    for group in chunked.values():
+        spans = [max(s.end for s in ss) for ss in group.values()]
+        span = max(spans)  # the final chunk can be shorter
+        for parent, ss in group.items():
+            chunk = int(CHUNK_RE.search(parent).group(1))
+            for seg in ss:
+                seg.start += chunk * span
+                seg.end += chunk * span
+        for number, seg in enumerate(sorted((s for ss in group.values() for s in ss), key=lambda s: s.start)):
+            seg.seg = number
     segs.sort(key=lambda s: (s.scene, s.camera, s.start))
     scenes: dict[str, dict] = {}
     for sc in sorted({s.scene for s in segs}):

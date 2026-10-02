@@ -40,15 +40,19 @@ def plan(index: dict, scenes: list[int] | None = None) -> list[dict]:
             fallback = []
             for t in times:
                 seg = next((s for s in segs if s["start"] <= t < s["end"]), segs[-1])
-                fallback.append((seg["source"], round(t - seg["start"], 2)))
+                parent_start = min(s["start"] for s in segs if s["original_video"] == seg["original_video"])
+                fallback.append((seg["original_video"], round(t - parent_start, 2)))
             jobs.append({"scene": int(sc), "camera": cam, "parent": segs[0]["original_video"], "times": times,
-                         "fallback": fallback})
+                         "fallback": fallback, "multiple_parents": len({s["original_video"] for s in segs}) > 1})
     return jobs
 
 
 async def grid_for(job: dict, media) -> bytes:
     try:
-        frames = await media.keyframes(job["parent"], job["times"])
+        if job.get("multiple_parents"):
+            frames = [(await media.keyframes(src, [t]))[0] for src, t in job["fallback"]]
+        else:
+            frames = await media.keyframes(job["parent"], job["times"])
     except Exception:
         frames = [(await media.keyframes(src, [t]))[0] for src, t in job["fallback"]]
     return media.grid2x2(frames, [f"t={t:.0f}s" for t in job["times"]])
@@ -76,7 +80,7 @@ async def run(concurrency: int = 4, scenes: list[int] | None = None, out: Path |
                 print(f"[prerun] scene{job['scene']} {job['camera']} keyframes failed: {type(e).__name__}",
                       file=sys.stderr)
                 return
-            rec = {"grid_times": job["times"]}
+            rec = {"grid_times": job["times"], "panel_sources": job["fallback"]}
             for p in (p_cond, p_count):
                 r = await c.cosmos.probe(grid, p.prompt, p.version, timeout_s=30.0)
                 rec[p.name] = {"parsed": r.parsed, "latency_ms": r.latency_ms, "cached": r.cached,
@@ -86,6 +90,11 @@ async def run(concurrency: int = 4, scenes: list[int] | None = None, out: Path |
 
     await asyncio.gather(*(one(j) for j in jobs))
     out = out or CACHE / ("scene_probes.json" if s.mode == "live" else "scene_probes.fixture-run.json")
+    if not result["scenes"] and jobs:
+        failed_out = out.with_name(out.stem + ".failed" + out.suffix)
+        failed_out.write_text(json.dumps(result, indent=1))
+        print(f"prerun failed: preserving existing probes; diagnostics -> {failed_out}", file=sys.stderr)
+        return result
     out.write_text(json.dumps(result, indent=1))
     print(f"prerun: cameras={len(jobs)} answers ok={stats['ok']} null={stats['null']} grid_fail={stats['fail']} -> {out}")
     return result

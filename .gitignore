@@ -42,3 +42,6 @@ verify-vm.sh
 
 # run.sh debug logs
 logs/
+
+# real endpoints for the live VM run (see live-env.example.sh)
+live-env.sh

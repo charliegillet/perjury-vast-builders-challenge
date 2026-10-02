@@ -23,7 +23,7 @@ class SceneIndex:
         self._segs: list[Segment] = [Segment(**s) for s in data.get("segments", [])]
         self._by_scene: dict[int, list[Segment]] = defaultdict(list)
         self._by_source: dict[str, Segment] = {}
-        for s in sorted(self._segs, key=lambda s: (s.scene, s.camera, s.seg)):
+        for s in sorted(self._segs, key=lambda s: (s.scene, s.camera, s.start, s.source)):
             self._by_scene[s.scene].append(s)
             self._by_source[s.source] = s
 
