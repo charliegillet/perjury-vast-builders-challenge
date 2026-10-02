@@ -36,6 +36,7 @@ Fixture mode is labelled FIXTURE everywhere and its numbers never go on a slide 
 
 | Doc | What it is |
 |---|---|
+| 🧭 [docs/PLAN.md](docs/PLAN.md) | **Start here: the plan built to the judge's brief.** 3-act demo, all 13 services doing real work, pre-build list, event-day timeline (NYC Oct 9 / London Oct 17) |
 | ⭐ [docs/FINAL-IDEA-v3.md](docs/FINAL-IDEA-v3.md) | **Current plan: PERJURY.** Say anything about the footage; each atomic claim goes to the cheapest witness that can settle it (VastDB records, YOLO, captions, or a jury of I-24 cameras watched by Cosmos3), and gets SUPPORTED / CONTRADICTED / "the pixels can't tell" with evidence and measured error rates. Routing table, 13-service roles, bench, gates, hour plan, scripts |
 | [docs/FINAL-IDEA-v2.md](docs/FINAL-IDEA-v2.md) | **Fallback: ASSAY.** Plain-English scenario mining over the PIE dashcam archive, Cosmos3-verified, graded against human labels, with I-24 as a no-pedestrian negative control. Includes the 10:45 decision tree and the pre-build list for tonight |
 | [docs/corpus/](docs/corpus/) | What's actually in each footage pack (A–F) plus the organizer overview-video analysis |
