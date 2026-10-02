@@ -1,0 +1,1 @@
+Snapshot of https://github.com/vast-data/vast-builders-challenge at 4987d8e (2026-10-02 09:49 PT). PDFs omitted: they duplicate the .md files. Refresh: git fetch upstream && git checkout upstream/main -- <path> into a scratch dir.

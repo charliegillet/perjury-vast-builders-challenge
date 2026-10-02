@@ -28,21 +28,36 @@ serving. You build something cool that searches and acts.
 
 ## 2. Launch VM
 
-<a href="https://community.vastdata.com/t/about-the-workshop-category/1969?utm_campaign=event26-builders-challenge" target="_blank" rel="noopener">Visit and join Cosmos</a> to access the VM and ask questions! 
+> 💡 We want to make sure everyone can access the environment, so VM connections per team
+> are limited: max 2 people per team can launch a VM. If two teammates already have a VM
+> running, follow along with them.
+
+<a href="https://community.vastdata.com/t/about-the-workshop-category/1969?utm_campaign=event26-builders-challenge" target="_blank" rel="noopener">Visit and join Cosmos</a> to ask questions and access the VM! 
 
 To load the VM, click on `Open Desktop`:
+
+> 💡 We'll share the passcode during the event.
+
 <p align="center"><img src="docs/images/vm-load.png" alt="The VM link on the VAST workshop home page" width="90%"></p>
 
-
-> 💡 All commands run on the workshop VM via the terminal in your browser. Nothing runs on your laptop.
-
-Wait for the VM to load. That's it. You're in! No setup. Nothing to install, no config to paste :) 
+**All commands run on the workshop VM via the terminal in your browser. Nothing runs on your laptop.**
 
 ### Your team
-> ⚠️ **IMPORTANT: Ensure you select the assigned team (e.g. `team-1`) so each team members accesses the same video ingestion pipeline.**
+Form your team and sit together first, decide on who's launching a VM before
+selecting your assigned team number.
+
+> ⚠️ **IMPORTANT:** First create a team if you haven't. If you are on a team and waiting
+> to be assigned a team number, form your team through <a href="https://discord.com/invite/VyhUqgn6pc" target="_blank" rel="noopener">tokens&'s Discord</a>.
+>
+> Ensure you select the assigned team (e.g. `team-1`) so all team members access
+> the same video ingestion pipeline.
+
+<p align="center"><img src="docs/images/team-select.png" alt="Please select your team: choose the team number you were assigned, you can only do this once" width="90%"></p>
 
 You build as a team. Your team shares one video ingestion instance, one index, and one set of
 credentials, so anything a teammate ingests shows up in every team members searches.
+
+Wait for the VM to load. That's it. You're in! No setup. Nothing to install, no config to paste :) 
 
 ### Coding Agent
 
@@ -50,10 +65,7 @@ credentials, so anything a teammate ingests shows up in every team members searc
 
 Describe what you want in plain language and let the code agent build. That's how the skills are meant to be used.
 To get started, sign in using the Cursor IDE:
-
-<p align="center"><video src="https://github.com/user-attachments/assets/a77e2fb2-7ad1-49a8-b824-2af4ce1a58d5" controls width="90%">
-  <a href="https://github.com/user-attachments/assets/a77e2fb2-7ad1-49a8-b824-2af4ce1a58d5">Watch how to sign in to Cursor</a>
-</video></p>
+[Watch how to sign in to Cursor](https://github.com/user-attachments/assets/a77e2fb2-7ad1-49a8-b824-2af4ce1a58d5)
 
 > 💡 If Cursor asks you to sign in, use the personal email you applied to the Builders Challenge. Expect one or two tries; that's normal.
 
@@ -72,10 +84,7 @@ Once it's running, set the model to Auto to save tokens:
 ```
 
 Here is a video overview of the steps from this section:
-
-<p align="center"><video src="https://github.com/user-attachments/assets/73eace1b-c4ca-42f7-a59f-5a6e77e34a93" controls width="90%">
-  <a href="https://github.com/user-attachments/assets/73eace1b-c4ca-42f7-a59f-5a6e77e34a93">Watch the Launch VM walkthrough</a>
-</video></p>
+[Watch the Launch VM walkthrough](https://github.com/user-attachments/assets/73eace1b-c4ca-42f7-a59f-5a6e77e34a93)
 
 > 💡 **Useful VM Keybindings.**
 > - **Copy and paste.** In the terminal it's `Ctrl+Shift+C` and `Ctrl+Shift+V`
