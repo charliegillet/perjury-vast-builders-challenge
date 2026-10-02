@@ -18,12 +18,21 @@ done
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_NAME="${APP_NAME:-perjury}"
-export KUBECONFIG="${KUBECONFIG:-/config/kubeconfig}"
+# kubeconfig: canonical /config/kubeconfig first, then the team-prefixed alias /config/<team>-k8s.yaml
+if [[ -z "${KUBECONFIG:-}" ]]; then
+  if [[ -e /config/kubeconfig ]]; then
+    KUBECONFIG=/config/kubeconfig
+  else
+    KUBECONFIG="$(find /config -maxdepth 1 \( -type f -o -type l \) -name '*-k8s.yaml' 2>/dev/null | sort | head -n 1 || true)"
+  fi
+fi
+export KUBECONFIG
 PY="$(command -v python3 || command -v python)"
 
-# --- this team's config only (exactly one /config/*.config); values stay in this process's env
+# --- this team's config only (exactly one /config/*.config, possibly team-prefixed; files or symlinks).
+# Values stay in this process's env; WANDB_* etc. already exported in your shell are kept as a fallback.
 TEAM_CONFIGS=()
-while IFS= read -r f; do TEAM_CONFIGS+=("$f"); done < <(find /config -maxdepth 1 -type f -name '*.config' 2>/dev/null | sort)
+while IFS= read -r f; do TEAM_CONFIGS+=("$f"); done < <(find /config -maxdepth 1 \( -type f -o -type l \) -name '*.config' 2>/dev/null | sort)
 if (( ${#TEAM_CONFIGS[@]} == 1 )); then
   set -a
   # shellcheck disable=SC1090
@@ -58,6 +67,7 @@ if (( DRY == 1 )); then
 fi
 
 command -v kubectl >/dev/null || { echo "kubectl not found" >&2; exit 1; }
+[[ -n "$KUBECONFIG" && -e "$KUBECONFIG" ]] || { echo "no kubeconfig: tried /config/kubeconfig and /config/*-k8s.yaml" >&2; exit 1; }
 kubectl cluster-info >/dev/null
 
 echo "== 2/5 Secret ${APP_NAME}-secrets (keys only listed, values never printed)"
@@ -68,8 +78,9 @@ e = os.environ
 alias = {"VSS_URL": e.get("INGRESS_URL") or e.get("VSS_URL"),
          "VSS_USERNAME": e.get("USERNAME") or e.get("VSS_USERNAME"),
          "VSS_PASSWORD": e.get("PASSWORD") or e.get("VSS_PASSWORD")}
+# GPU endpoints need no token per config.example; GPU_BEARER_TOKEN ships only if it happens to be set.
 keys = ["GPU_BEARER_TOKEN", "COSMOS3_REASON_URL", "COSMOS3_REASON_MODEL", "COSMOS_BBOX_SCALE",
-        "COSMOS_EMBED1_URL", "COSMOS_EMBED1_MODEL", "YOLO_URL", "CANARY_1B_URL",
+        "COSMOS_EMBED1_URL", "COSMOS_EMBED1_MODEL", "YOLO_URL", "CANARY_1B_URL", "CANARY_1B_MODEL",
         "WANDB_API_KEY", "WANDB_TEAM", "WANDB_PROJECT", "WANDB_BASE_URL",
         "S3_ENDPOINT", "S3_REGION", "ACCESS_KEY", "SECRET_KEY", "S3_SEGMENTS_BUCKET",
         "VDB_ENDPOINT", "VASTDB_BUCKET", "VDB_SCHEMA", "VDB_COLLECTION"]
@@ -81,7 +92,7 @@ with os.fdopen(fd, "w") as f:
     for k, v in vals.items():
         if "\n" not in v:
             f.write(f"{k}={v}\n")
-missing = [k for k in ("VSS_URL", "VSS_PASSWORD", "GPU_BEARER_TOKEN", "COSMOS3_REASON_URL", "WANDB_API_KEY") if k not in vals]
+missing = [k for k in ("VSS_URL", "VSS_PASSWORD", "COSMOS3_REASON_URL", "WANDB_API_KEY") if k not in vals]
 print("   keys:", ", ".join(sorted(vals)))
 if missing:
     print("   WARNING: not in team config:", ", ".join(missing))

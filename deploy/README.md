@@ -10,7 +10,12 @@ deploy/deploy.sh             # live: real endpoints; needs cache/i24_index.json 
 deploy/deploy.sh --dry-run   # manifests + ConfigMap size table only; writes deploy/out/ (gitignored)
 ```
 
-The script reads `/config/<team>.config` (it must be the only `*.config` there) and `KUBECONFIG=/config/kubeconfig`. The namespace is `$USERNAME` and the host comes from `$INGRESS_URL`. Override them with `NS=` / `APP_NAME=` if needed.
+Run it from the event VM. Only 2 people per team can use a VM, so one of those two deploys; nothing runs on a laptop.
+
+- The script reads `/config/<team>.config`, which may be team-prefixed and must be the only `*.config` there.
+- `KUBECONFIG` falls back to `/config/kubeconfig`, then to `/config/<team>-k8s.yaml` (files or symlinks).
+- The namespace is `$USERNAME` and the host comes from `$INGRESS_URL`. Override them with `NS=` / `APP_NAME=` if needed.
+- `WANDB_*` and the other keys are also taken from your shell environment when the config file lacks them.
 
 ## What it creates
 
@@ -18,7 +23,7 @@ The script reads `/config/<team>.config` (it must be the only `*.config` there) 
 |---|---|
 | `perjury-code-N` ConfigMaps | `perjury/*.py`, `perjury/*.yaml`, `app/*.py`, `app/static/*`, `requirements.txt`, and `deploy/pod_main.py` shipped as `main.py`. Keys are flattened (`perjury__pipeline.py`). |
 | `perjury-cache-N` ConfigMaps | `cache/*.json`, `cache/*.npy`, `cache/replays/*.jsonl`. `fixture_*` files ship only in fixture mode. |
-| `perjury-secrets` Secret | `VSS_URL/USERNAME/PASSWORD` (from `INGRESS_URL/USERNAME/PASSWORD`), `GPU_BEARER_TOKEN`, model URLs, `WANDB_*`, S3/VastDB keys, plus any `PERJURY_*` tuning variables set in your shell. Only the key names are printed. |
+| `perjury-secrets` Secret | `VSS_URL/USERNAME/PASSWORD` (from `INGRESS_URL/USERNAME/PASSWORD`), `GPU_BEARER_TOKEN` (optional: the GPU endpoints need no auth token), model URLs and ids (`CANARY_1B_MODEL`, `COSMOS3_REASON_MODEL`, `COSMOS_EMBED1_MODEL` when set), `WANDB_*`, S3/VastDB keys, plus any `PERJURY_*` tuning variables set in your shell. Only the key names are printed. |
 | Deployment `perjury` | One projected volume maps every ConfigMap key back to its repo path under `/seed`. At start the container copies `/seed/*` into a writable `/code` (emptyDir), runs `pip install -r requirements.txt` (1–3 min), then `python main.py` on `:8080`. A startup probe allows 6 min; readiness and liveness probes hit `/health`. |
 | Service + Ingress | `/app(/|$)(.*)` → `/$2` on the team host. Proxy buffering is off for the SSE verdict stream, and the body limit is 16 MB for recorded testimony. |
 
