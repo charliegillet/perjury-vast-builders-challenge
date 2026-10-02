@@ -10,7 +10,7 @@ deploy/deploy.sh             # live: real endpoints; needs cache/i24_index.json 
 deploy/deploy.sh --dry-run   # manifests + ConfigMap size table only; writes deploy/out/ (gitignored)
 ```
 
-Run it from the event VM. Only 2 people per team can use a VM, so one of those two deploys; nothing runs on a laptop.
+Only 2 people per team can use a VM, so one of those two deploys. Nothing runs on a laptop.
 
 - The script reads `/config/<team>.config`, which may be team-prefixed and must be the only `*.config` there.
 - `KUBECONFIG` falls back to `/config/kubeconfig`, then to `/config/<team>-k8s.yaml` (files or symlinks).
