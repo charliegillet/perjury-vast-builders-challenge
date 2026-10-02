@@ -1,0 +1,2516 @@
+{
+ "version": 1,
+ "source": "fixture",
+ "probe_versions": {
+  "P-COND": "v1",
+  "P-COUNT": "v1"
+ },
+ "ran_at": "2026-10-02T11:32:00-07:00",
+ "scenes": {
+  "1": {
+   "p1c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6333
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5423
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p1c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6005
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3775
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p1c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 6118
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5635
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p1c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "D",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 4055
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5249
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p1c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 3769
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6647
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p1c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 4029
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6090
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p2c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 6337
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3031
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p2c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 5674
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6469
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p2c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 6546
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3562
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p2c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 3120
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4770
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p2c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4562
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5023
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 6238
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5743
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 6394
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4100
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 3441
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3527
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6338
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5439
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 3117
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3778
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   },
+   "p3c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "A",
+      "light": "A"
+     },
+     "latency_ms": 4999
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4978
+    },
+    "grid_times": [
+     9.0,
+     31.5,
+     54.0,
+     76.5
+    ]
+   }
+  },
+  "2": {
+   "p1c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4533
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6458
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4213
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4831
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4846
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5993
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6305
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3598
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 5024
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3858
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6985
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3920
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 5331
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4692
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4107
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4972
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 3042
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4471
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 3600
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5226
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "D",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 5950
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       }
+      ]
+     },
+     "latency_ms": 6739
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 3029
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 4329
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 3147
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5299
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4208
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5071
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "B",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4699
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       }
+      ]
+     },
+     "latency_ms": 5172
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "C",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4827
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "poor"
+       }
+      ]
+     },
+     "latency_ms": 6836
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   }
+  },
+  "3": {
+   "p1c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 6884
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5045
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 4796
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5140
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 6564
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5651
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "D",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 4458
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5539
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p1c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 5977
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5741
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3828
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3875
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3959
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3013
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 4807
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3069
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 4423
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3301
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p2c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3572
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5406
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c1": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3760
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5520
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c2": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 4070
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6685
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c3": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 5350
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3420
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c4": {
+    "P-COND": {
+     "parsed": {
+      "road": "D",
+      "traffic": "B",
+      "light": "A"
+     },
+     "latency_ms": 4140
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 3629
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c5": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3298
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 6534
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   },
+   "p3c6": {
+    "P-COND": {
+     "parsed": {
+      "road": "A",
+      "traffic": "C",
+      "light": "A"
+     },
+     "latency_ms": 3274
+    },
+    "P-COUNT": {
+     "parsed": {
+      "panels": [
+       {
+        "panel": 1,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 2,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 3,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       },
+       {
+        "panel": 4,
+        "people_on_foot": 0,
+        "bicycles": 0,
+        "motorcycles": 0,
+        "visibility": "clear"
+       }
+      ]
+     },
+     "latency_ms": 5010
+    },
+    "grid_times": [
+     6.0,
+     21.0,
+     36.0,
+     51.0
+    ]
+   }
+  }
+ }
+}

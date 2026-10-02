@@ -19,3 +19,11 @@ kubeconfig
 *kubeconfig*
 *secret*.yaml
 *secret*.yml
+
+# PERJURY runtime cache: generated on the VM by code; only fixtures + frozen bench outputs are committed
+cache/*
+!cache/fixture_i24_index.json
+!cache/fixture_scene_probes.json
+!cache/fixture_truth.json
+!cache/.gitkeep
+.pytest_cache/

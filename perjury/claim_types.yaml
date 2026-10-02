@@ -1,0 +1,239 @@
+# PERJURY claim routing table (FINAL-IDEA-v3 §4) as data. Loaded by perjury/router.py.
+#
+# Per type:
+#   tiers     tiers that may decide it (RECORDS = T0, CAPTIONS = T1, JURY = T2)
+#   hard      may issue SUPPORTED/CONTRADICTED on stage (before promotion state is applied)
+#   rule      verdict rule name in perjury/quorum.py / perjury/tiers.py (§7)
+#   promoted  default promotion state; cache/promotion.json (frozen bench, §4 promotion rule) overrides it
+#   reason / reason_code   template text + code rendered when the type is UNVERIFIABLE
+#   values    normalized value -> {option (P-COND letter), statement (canonical, §6 T1), synonyms (T1 preselect +
+#             SUPPORTS hints), contradicts (T1 preselect terms that would contradict this value)}
+# Types missing from this table are UNVERIFIABLE (reason_code "unrouted").
+version: 1
+alpha_prior: 0.27          # §7: Cosmos3-Super VANTAGE non-event acceptance; replaced by cache/promotion.json alpha
+quorum_target: 0.05        # §7: P(Y >= m | absent) <= 5%
+noise_floor_frames: 3      # §7: a camera "has" a COCO class only with >= 3 consecutive sidecar frames
+
+types:
+  scene_identity:
+    tiers: [RECORDS]
+    hard: true
+    rule: metadata_match
+    promoted: true
+    reason: "The place named is not covered by the pack metadata."
+    reason_code: no_metadata
+    packs:
+      i24:                         # Vanderbilt I-24 MOTION (I24-3D), Nashville TN
+        camera_id_prefix: i24
+        location: nashville
+        match: [highway, interstate, freeway, motorway, expressway, i-24, i24, i 24, nashville, tennessee,
+                multi-lane road, multilane road, the road]
+        mismatch: [toronto, warehouse, city street, downtown, parking lot, parking garage, intersection,
+                   residential street, side street, roundabout, tunnel, airport, rural road, dirt road,
+                   new york, los angeles, chicago, atlanta, london, montreal]
+
+  road_surface:
+    tiers: [CAPTIONS, JURY]
+    hard: true
+    rule: scene_majority
+    probe: P-COND
+    question: road
+    promoted: true
+    reason: "The scene-wide jury and captions did not reach a 2/3 majority."
+    reason_code: no_majority
+    values:
+      snow:
+        option: C
+        statement: "There is snow or slush on or beside the road."
+        synonyms: [snow, snowy, snow-covered, slush, slushy, winter, wintry, snowbank, snow bank, icy, ice]
+        contradicts: [dry road, dry pavement, dry roadway, dry asphalt, clear roadway, dry]
+      wet:
+        option: B
+        statement: "The road surface is wet."
+        synonyms: [wet, puddle, rain-soaked, damp, spray, standing water]
+        contradicts: [dry road, dry pavement, dry roadway, dry]
+      dry:
+        option: A
+        statement: "The road surface is dry."
+        synonyms: [dry, dry road, dry pavement, clear roadway, dry asphalt]
+        contradicts: [snow, slush, wet, puddle, icy, snow-covered, winter conditions]
+
+  weather:
+    tiers: [CAPTIONS, JURY]
+    hard: true
+    rule: scene_majority
+    probe: P-COND
+    question: road               # P-COND has no weather question; precipitation shows on the road surface
+    promoted: true
+    reason: "The scene-wide jury and captions did not reach a 2/3 majority."
+    reason_code: no_majority
+    values:
+      snow:
+        option: C
+        statement: "It is snowing or there is snow on or beside the road."
+        synonyms: [snow, snowing, snowfall, slush, winter, wintry, blizzard, flurries]
+        contradicts: [dry road, dry pavement, clear roadway, sunny, dry]
+      rain:
+        option: B
+        statement: "It is raining and the road is wet."
+        synonyms: [rain, raining, rainy, wet, puddle, drizzle, downpour]
+        contradicts: [dry road, dry pavement, sunny, dry]
+      fog:
+        option: null               # no juror question covers fog -> UNVERIFIABLE
+        statement: "It is foggy."
+        synonyms: [fog, foggy, mist, misty, haze]
+        contradicts: []
+      clear:
+        option: null
+        statement: "The weather is clear."
+        synonyms: [clear sky, clear skies, sunny, sunshine]
+        contradicts: []
+
+  traffic_state:
+    tiers: [CAPTIONS, JURY]
+    hard: true
+    rule: scene_majority
+    probe: P-COND
+    question: traffic
+    promoted: true
+    reason: "The scene-wide jury and captions did not reach a 2/3 majority."
+    reason_code: no_majority
+    values:
+      free_flow:
+        option: A
+        statement: "Traffic is moving freely at speed."
+        synonyms: [freely, free-flowing, free flowing, at speed, highway speed, steady spacing, light traffic]
+        contradicts: [stop-and-go, stop and go, queued, queue, standstill, bumper to bumper, congested,
+                      congestion, barely moving, gridlock, creeping, slowly, slow traffic]
+      slow:
+        option: B
+        statement: "Traffic is slow but moving."
+        synonyms: [slow, slowly, slow-moving, proceed slowly, moves slowly]
+        contradicts: [standstill, at speed, free-flowing, freely, highway speed]
+      stop_and_go:
+        option: C
+        statement: "Traffic is stop-and-go or queued."
+        synonyms: [stop-and-go, stop and go, queued, queue, queues, standstill, bumper to bumper, congested,
+                   congestion, barely moving, gridlock, creeping, jam, backed up]
+        contradicts: [freely, free-flowing, free flowing, at speed, highway speed, steady spacing, light traffic]
+
+  lighting:
+    tiers: [JURY]
+    hard: true
+    rule: scene_majority
+    probe: P-COND
+    question: light
+    promoted: true
+    reason: "The scene-wide jury did not reach a 2/3 majority."
+    reason_code: no_majority
+    values:
+      day:
+        option: A
+        statement: "It is daytime."
+        synonyms: [daylight, daytime, day, sunny, bright]
+        contradicts: [night, nighttime, dark, darkness]
+      dusk:
+        option: B
+        statement: "It is dusk or dawn."
+        synonyms: [dusk, dawn, sunset, sunrise, twilight]
+        contradicts: [night, nighttime, midday, noon]
+      night:
+        option: C
+        statement: "It is night."
+        synonyms: [night, nighttime, dark, darkness, after dark]
+        contradicts: [daylight, daytime, sunny, overcast daylight]
+
+  coco_presence:
+    tiers: [RECORDS, JURY]
+    hard: true
+    rule: coco_presence
+    probe: P-COUNT
+    promoted: true
+    reason: "YOLO and the scene-wide jury did not agree."
+    reason_code: no_agreement
+    jury_field:                    # P-COUNT field per COCO class; classes without one are decided by YOLO alone
+      person: people_on_foot
+      bicycle: bicycles
+      motorcycle: motorcycles
+
+  count:
+    tiers: [RECORDS]
+    hard: true                     # SUPPORTED only, and only for lower bounds (§4)
+    rule: count_lower_bound
+    promoted: true
+    reason: "Exact and upper-bound counts are not testable: YOLO at 640 px on 4K footage misses far lanes."
+    reason_code: count_not_testable
+
+  towing:
+    tiers: [CAPTIONS, JURY]
+    hard: true
+    rule: presence_jury
+    probe: P-TOW
+    promoted: true                 # "Yes if G3 passes"; cache/promotion.json is authoritative once frozen
+    reason: "The jury neither reached quorum nor cleared every claim-like moment."
+    reason_code: no_quorum
+    visual_phrase: "a {vehicle} towing a separate trailer on a highway, seen from above"
+    synonyms: [tow, towing, towed, trailer, pulling, hauling, hitched, camper, caravan, boat trailer, car hauler]
+    contradicts: []                # silence is never contradiction (§6)
+
+  heavy_vehicle_kind:
+    tiers: [JURY]
+    hard: true
+    rule: heavy_vehicle_jury
+    probe: P-TOW                   # P-TOW counts semis separately
+    promoted: false                # "Only if promoted by the bench"
+    reason: "No probe distinguishes this kind of heavy vehicle."
+    reason_code: no_probe
+    visual_phrase: "a {vehicle} on a highway, seen from above"
+    synonyms: [semi, semi-truck, tractor-trailer, box truck, 18-wheeler, big rig, lorry]
+    contradicts: []
+
+  action:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "Temporal: actions in time are not testable here (temporal localization tops out near 52-56 mIoU on fixed cameras)."
+    reason_code: temporal
+
+  attribute:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "Attributes such as colour, brand or livery are not testable from overhead footage."
+    reason_code: attribute
+    never: [plate]                 # plates are blurred by the dataset authors; identity is out of policy
+    never_reason: "Licence plates are never read: they are blurred by the dataset authors and identity is out of policy."
+
+  identity_intent:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "Not observable: intent, identity and driver state cannot be seen in pixels, and are out of policy."
+    reason_code: not_observable
+
+  cross_camera:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "Cross-camera identity is not testable (best published HOTA on Scene 3 is 29)."
+    reason_code: cross_camera
+
+  lane_position:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "Lane and direction are not testable: the I24-3D camera calibration is gated."
+    reason_code: lane_position
+
+  other:
+    tiers: []
+    hard: false
+    rule: unverifiable
+    promoted: false
+    reason: "This part of the statement does not map to anything the footage can test."
+    reason_code: other

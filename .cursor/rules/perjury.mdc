@@ -1,0 +1,47 @@
+---
+description: PERJURY repo rules (claim verification over I-24 footage). Applies to every agent session in this repo.
+alwaysApply: true
+---
+
+# PERJURY: repo rules
+
+PERJURY checks sentences about footage. It splits a sentence into atomic claims, sends each atom to the cheapest
+witness that can settle it (VastDB records, YOLO, captions, or a jury of cameras watched by Cosmos), and returns
+SUPPORTED / CONTRADICTED / UNVERIFIABLE per atom and TRUE / FALSE / UNPROVEN per claim. The spec is
+`docs/FINAL-IDEA-v3.md`; the module interfaces are pinned in `docs/BUILD-CONTRACT.md`.
+
+## Hard rules (never break these)
+
+- **Never print or log the environment.** No `env`, `printenv`, `set`, `os.environ` dumps, `cat /config/*`, or
+  echoing `$GPU_BEARER_TOKEN`, the VSS password, S3 keys or `$WANDB_API_KEY`. Anything sent to Weave or the UI
+  ribbon goes through `perjury.obs.redact()`.
+- **No custom DataEngine functions.** The rules forbid them. The only DataEngine writes allowed are
+  `videos/upload` (exhibits) and the scheduled prompt-suggester we read as a witness.
+- **Never write `*.mp4` into the pipeline buckets** (chunks / segments). That fires the ingest trigger. Exhibit reels
+  go in only through `POST /api/v1/videos/upload`.
+- **The test split runs once.** `bench/run_bench.py --split test` refuses to run without a frozen
+  `cache/promotion.json`, and refuses a second run without `--i-know`. Tune probes, thresholds and `m` on **dev
+  only**. No bench runs after 15:00.
+- **Every on-screen number comes from `cache/`, produced by code.** Slides are filled by `python -m
+  bench.fill_numbers` from `cache/bench_report.json`. It refuses fixture numbers. Never type a number into a slide,
+  a UI string or the README by hand. If the repo didn't measure it, it doesn't go on screen.
+- **Never fake a live chip.** The FIXTURE banner shows in fixture mode and the REPLAY banner in replay mode. CoreWeave
+  and Cursor are badges and never count toward "N of 13 fired".
+- `cache/fixture_truth.json` is hidden ground truth: only `perjury/fakes.py` may read it.
+- Do not `git commit` unless the human asks. Don't edit `lastframe/`, `src/`, `unwanted/` or `.firecrawl/`; copy
+  from them.
+
+## Honesty semantics
+
+- Jurors (Cosmos probes) never see the claim. Only `P-LEAD` sees it, and only on the bench, to measure
+  sycophancy. Never use P-LEAD for a verdict.
+- The verdict is computed by code (`perjury/quorum.py`). The LLM only splits sentences; explanations are templates.
+- `UNPROVEN` / `UNVERIFIABLE` is an answer, not an error. Temporal actions, identity/intent, plates, exact counts,
+  cross-camera re-ID and lane position are UNVERIFIABLE by policy. Don't "fix" that by guessing.
+
+## How to run
+
+- Offline (no network, no credentials): `PERJURY_MODE=fixture PERJURY_FIXTURE_LATENCY=0 .venv/bin/python -m pytest -q`
+- App: `uvicorn app.main:app --port 8080`. The UI uses relative URLs (`api/testify`), because Ingress strips `/app`.
+- Bench: `python -m bench.run_bench --split dev`, then `python -m bench.report`. See `bench/run_bench.py` for the order.
+- To verify a claim from another agent, use the `perjury-verify` skill in `.cursor/skills/`.
