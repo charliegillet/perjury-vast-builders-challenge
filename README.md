@@ -16,8 +16,12 @@ Applications required (space limited); registration closes one week before each 
 
 ## Start here (teammates)
 
+**New build: [LAST FRAME](lastframe/README.md)** — a video decision trainer built around Packs A–F. Run `python3 lastframe/app.py --port 8787` to try the clearly labeled storyboard demo. The scenario studio connects to the workshop VSS index to author human-reviewed drills from adjacent footage segments. [Idea, corpus fit and demo plan](docs/LAST-FRAME.md).
+
 | Doc | What it is |
 |---|---|
+| ⭐ [docs/FINAL-IDEA-v2.md](docs/FINAL-IDEA-v2.md) | **Current plan: ASSAY.** Plain-English scenario mining over the PIE dashcam archive, Cosmos3-verified, graded against human labels, with I-24 as a no-pedestrian negative control. Includes the 10:45 decision tree and the pre-build list for tonight |
+| [docs/corpus/](docs/corpus/) | What's actually in each footage pack (A–F) plus the organizer overview-video analysis |
 | 🚨 [docs/OFFICIAL-STARTER-KIT.md](docs/OFFICIAL-STARTER-KIT.md) | **Read first.** Official starter repo `vast-data/vast-builders-challenge`: browser VM, pre-deployed stack, skills, corpus packs, dry-run lessons, and how UNWATCHED adapts |
 | [docs/EVENT-DETAILS.md](docs/EVENT-DETAILS.md) | Official rules: **4:30 PM PT deadline**, submit **public repo + demo video**, join VAST Cosmos Community (build env = first 100 arrivals) |
 | [docs/FINAL-IDEA.md](docs/FINAL-IDEA.md) | Locked idea **UNWATCHED** — architecture, demo script, hour-by-hour plan, Q&A (read the corrections banner first) |
@@ -32,7 +36,7 @@ Applications required (space limited); registration closes one week before each 
 
 ## Idea
 
-**UNWATCHED** — the archive that watches itself and doesn't cry wolf. Every new segment is scored against what that camera normally sees; Cosmos-Reason2 verifies outliers before anyone is paged; a suppression counter shows what it chose not to show you; an unsolicited digest lands in Slack.
+**ASSAY** (current, see FINAL-IDEA-v2): *ask for a driving scenario in plain English; ASSAY pulls every instance from the archive, Cosmos3 verifies each one, and it grades itself against human labels: found, missed, made up.* Previous pick, now the pivot: **UNWATCHED** — the archive that watches itself and doesn't cry wolf. Every new segment is scored against what that camera normally sees; Cosmos-Reason2 verifies outliers before anyone is paged; a suppression counter shows what it chose not to show you; an unsolicited digest lands in Slack.
 
 ## Setup
 

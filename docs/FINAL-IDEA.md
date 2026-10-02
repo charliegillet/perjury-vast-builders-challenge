@@ -1,5 +1,7 @@
 # FINAL IDEA — UNWATCHED
 
+> **🔁 SUPERSEDED (2026-10-01 night) by [FINAL-IDEA-v2.md](FINAL-IDEA-v2.md): ASSAY.** Round-2 corpus research showed UNWATCHED's learned-normal story only holds on Pack D (one baseline day, possibly sparse). UNWATCHED survives as the pivot NIGHTSHIFT + VOID.
+
 > **🚨 READ FIRST — official starter kit found (2026-10-01 night): [OFFICIAL-STARTER-KIT.md](OFFICIAL-STARTER-KIT.md) supersedes §5 architecture and §9 checklist.** Teams build on a pre-deployed stack from a browser VM (workshop.thecosmoslabs.com) and must **not** deploy DataEngine functions — our scorer/verifier/digest run as one app service on the VastDB index. Model is **Cosmos3-Reason** (call directly, bearer `GPU_BEARER_TOKEN`). Corpus = dashcam/highway/neighborhood/SF streets/**warehouse (synthetic)**/**indoor** — use Packs C+F+D. New video upload works via `upload-video` (indexing takes tens of seconds–minutes).
 >
 > **⚠️ Corrections from deep research (2026-10-02) — read before pitching.** Full detail in [DEEP-RESEARCH.md](DEEP-RESEARCH.md).

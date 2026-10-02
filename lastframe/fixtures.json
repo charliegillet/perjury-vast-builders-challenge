@@ -1,0 +1,50 @@
+[
+  {
+    "id": "curbside", "title": "The curbside pause", "pack": "Urban driving", "skill": "Read the curb", "difficulty": "Intermediate", "provenance": "storyboard",
+    "question": "What happens in the next five seconds?", "context": "A pedestrian stands beside the curb. A parked van blocks part of the view. The camera vehicle is approaching the crossing.",
+    "options": [{"id": "a", "text": "The pedestrian stays beside the curb."}, {"id": "b", "text": "The pedestrian steps into the crossing."}, {"id": "c", "text": "The pedestrian walks away along the sidewalk."}],
+    "answer": "b", "outcome": "The pedestrian steps into the crossing.", "explanation": "In this storyboard, standing at the curb is followed by a crossing. The parked van limits what can be seen. One continuation does not prove a person's intention in another scene.",
+    "before": {"start": 0, "end": 5, "scene": "crossing"}, "after": {"start": 5, "end": 10, "scene": "crossing"},
+    "evidence": [{"at": 3, "text": "The pedestrian is at the edge of the sidewalk."}, {"at": 6, "text": "The pedestrian enters the marked crossing."}, {"at": 8, "text": "The pedestrian continues across the camera vehicle's path."}]
+  },
+  {
+    "id": "bus-stop", "title": "Beside the bus stop", "pack": "Urban driving", "skill": "Separate presence from action", "difficulty": "Beginner", "provenance": "storyboard",
+    "question": "What does the pedestrian do next?", "context": "A pedestrian stands near the road beside a bus-stop sign. A bus approaches on the near lane. No crossing is visible yet.",
+    "options": [{"id": "a", "text": "They remain on the sidewalk as the bus arrives."}, {"id": "b", "text": "They cross in front of the approaching bus."}, {"id": "c", "text": "They walk into the opposite lane."}],
+    "answer": "a", "outcome": "The pedestrian remains on the sidewalk.", "explanation": "The continuation shows waiting, not crossing. Being close to a road alone does not establish what someone will do. This drill contrasts with The curbside pause.",
+    "before": {"start": 0, "end": 5, "scene": "bus"}, "after": {"start": 5, "end": 10, "scene": "bus"},
+    "evidence": [{"at": 4, "text": "A pedestrian stands beside a bus-stop sign."}, {"at": 7, "text": "The bus draws alongside the stop."}, {"at": 9, "text": "The pedestrian is still on the sidewalk."}]
+  },
+  {
+    "id": "aisle", "title": "At the aisle junction", "pack": "Warehouse", "skill": "Follow intersecting paths", "difficulty": "Intermediate", "provenance": "storyboard",
+    "question": "Which interaction appears in the continuation?", "context": "A worker approaches an aisle junction. A warehouse vehicle approaches the same junction from another direction. Racking obscures the corner.",
+    "options": [{"id": "a", "text": "Both continue on separate paths without interacting."}, {"id": "b", "text": "The vehicle turns away before the junction."}, {"id": "c", "text": "The worker pauses as the vehicle passes the junction."}],
+    "answer": "c", "outcome": "The worker pauses while the vehicle passes.", "explanation": "The storyboard shows an interaction at the junction, followed by a pause. It does not establish a collision, distance, speed, or an actual near-miss classification.",
+    "before": {"start": 0, "end": 5, "scene": "warehouse"}, "after": {"start": 5, "end": 10, "scene": "warehouse"},
+    "evidence": [{"at": 4, "text": "Two paths approach the same aisle junction."}, {"at": 6, "text": "The worker stops at the junction."}, {"at": 8, "text": "The vehicle passes in front of the stationary worker."}]
+  },
+  {
+    "id": "queue", "title": "A gap in the queue", "pack": "Highway", "skill": "Track changes over time", "difficulty": "Beginner", "provenance": "storyboard",
+    "question": "What changes in the next segment?", "context": "Several vehicles form a dense queue. A gap opens ahead of one car while neighboring lanes remain crowded.",
+    "options": [{"id": "a", "text": "The car advances into the gap and stops again."}, {"id": "b", "text": "All lanes become continuously free-flowing."}, {"id": "c", "text": "The car exits across two lanes."}],
+    "answer": "a", "outcome": "The car advances, then stops again.", "explanation": "A short movement within a queue is different from sustained free-flow traffic. The schematic illustrates stop-and-go motion without claiming calibrated speeds or causes of congestion.",
+    "before": {"start": 0, "end": 5, "scene": "highway"}, "after": {"start": 5, "end": 10, "scene": "highway"},
+    "evidence": [{"at": 3, "text": "A gap opens in the middle lane."}, {"at": 6, "text": "One car moves into the gap."}, {"at": 9, "text": "The car stops behind the next vehicle."}]
+  },
+  {
+    "id": "doorway", "title": "The narrow doorway", "pack": "Indoor spaces", "skill": "Notice shared space", "difficulty": "Beginner", "provenance": "storyboard",
+    "question": "How does the doorway interaction unfold?", "context": "Two people approach a narrow doorway from opposite sides. One carries a large object. Both are still approaching.",
+    "options": [{"id": "a", "text": "Both pass through together."}, {"id": "b", "text": "One pauses while the person carrying the object passes."}, {"id": "c", "text": "Both turn away from the doorway."}],
+    "answer": "b", "outcome": "One person pauses to let the other pass.", "explanation": "The continuation shows a pause and sequential passage. No identity, intent, or exact occupancy count is inferred from the interaction.",
+    "before": {"start": 0, "end": 5, "scene": "doorway"}, "after": {"start": 5, "end": 10, "scene": "doorway"},
+    "evidence": [{"at": 4, "text": "Two people approach the same narrow doorway."}, {"at": 6, "text": "One person pauses beside the doorway."}, {"at": 8, "text": "The person carrying the object passes through first."}]
+  },
+  {
+    "id": "parked-car", "title": "The parked car", "pack": "Neighborhood", "skill": "Notice a change in routine", "difficulty": "Beginner", "provenance": "storyboard",
+    "question": "What changes in the next five seconds?", "context": "A car is parked beside a neighborhood street. Another vehicle passes on the road. The parked car has not moved in the observation window.",
+    "options": [{"id": "a", "text": "The parked car remains stationary."}, {"id": "b", "text": "A pedestrian crosses directly in front of it."}, {"id": "c", "text": "The parked car pulls out into the road."}],
+    "answer": "c", "outcome": "The parked car pulls out into the road.", "explanation": "This illustrative continuation shows a change from stationary to moving. A fixed-camera archive can supply these ordinary transitions without needing an accident or an unusual event.",
+    "before": {"start": 0, "end": 5, "scene": "neighborhood"}, "after": {"start": 5, "end": 10, "scene": "neighborhood"},
+    "evidence": [{"at": 4, "text": "The car remains beside the curb."}, {"at": 6, "text": "The car begins leaving its parked position."}, {"at": 9, "text": "The car is moving along the roadway."}]
+  }
+]
