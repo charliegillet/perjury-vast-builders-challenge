@@ -150,7 +150,25 @@ def build_index(raw_rows: Iterable[dict], camera_id: str, source_label: str) -> 
         scenes[str(sc)] = {"label": SCENE_LABELS.get(sc, f"scene {sc}"),
                            "duration": round(max(s.end for s in ss) - min(s.start for s in ss)),
                            "cameras": sorted({s.camera for s in ss})}
+    missing_scenes = sorted({1, 2, 3} - {int(sc) for sc in scenes})
+    camera_counts = {sc: len(meta["cameras"]) for sc, meta in scenes.items()}
+    complete = (len(segs) >= G1_MIN_ROWS and not missing_scenes
+                and all(count >= G1_MIN_CAMS for count in camera_counts.values()))
+    reasons = []
+    if len(segs) < G1_MIN_ROWS:
+        reasons.append(f"Only {len(segs)} indexed segments available; full-pack target is {G1_MIN_ROWS}.")
+    if missing_scenes:
+        reasons.append("Scenes " + ", ".join(map(str, missing_scenes)) + " are absent from the index.")
+    for sc, count in camera_counts.items():
+        if count < G1_MIN_CAMS:
+            reasons.append(f"Scene {sc} has {count} cameras; full-pack target is {G1_MIN_CAMS}.")
     return {"version": 1, "source": source_label, "camera_id": camera_id, "scenes": scenes,
+            "coverage": {"complete": complete, "source": source_label,
+                         "expected": {"minimum_segments": G1_MIN_ROWS, "scenes": [1, 2, 3],
+                                      "minimum_cameras_per_scene": G1_MIN_CAMS},
+                         "actual": {"segments": len(segs), "scenes": sorted(map(int, scenes)),
+                                    "cameras_per_scene": camera_counts},
+                         "missing_scenes": missing_scenes, "reasons": reasons},
             "segments": [s.model_dump(mode="json") for s in segs]}
 
 
