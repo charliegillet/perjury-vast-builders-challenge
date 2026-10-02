@@ -545,6 +545,11 @@ async def exhibit_jpg(run_id: str, atom_id: str, camera: str, panel: int = Query
     data = None
     scene = ex.get("scene")
     source, times = juror.get("source"), juror.get("times") or []
+    scene_probes = ((probes_raw() or {}).get("scenes") or {}).get(str(scene)) or {}
+    panel_sources = (scene_probes.get(camera) or {}).get("panel_sources") or []
+    if ex.get("cached") and len(panel_sources) >= panel:
+        source, offset = panel_sources[panel - 1]
+        times = [float(offset)] * panel
     if not source and scene:
         # scene-wide pre-run juror: the P-COND/P-COUNT grid came from the scene parent at grid_times
         idx = getattr(STATE.ctx, "index", None)
@@ -760,6 +765,8 @@ async def feedback(body: FeedbackIn) -> dict:
 def main() -> None:
     import uvicorn  # noqa: WPS433
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    # Playback URLs contain authentication tokens; do not log request URLs.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8080")), log_level="info", proxy_headers=True)
 
 
