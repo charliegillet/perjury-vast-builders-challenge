@@ -19,6 +19,9 @@ class LLM(HttpBase):
         super().__init__(s, timeout=45.0)
         self.model = model or s.atomizer_model
         self.json_mode = True   # flipped off once if the server rejects response_format
+        # Nemotron 3.5 thinks by default and spends max_tokens on reasoning (content=null). Measured on W&B 2026-10-02:
+        # enable_thinking=false -> JSON in ~0.3 s; Qwen3 Instruct accepts the flag too. PERJURY_LLM_THINKING=1 keeps thinking.
+        self.no_think = s.env.get("PERJURY_LLM_THINKING", "0") != "1"
 
     async def _post(self, body: dict) -> httpx.Response:
         return await self.http().post(f"{self.s.wandb_base}/chat/completions", json=body,
@@ -33,6 +36,8 @@ class LLM(HttpBase):
         body = {"model": self.model, "temperature": temperature, "max_tokens": max_tokens,
                 "messages": [{"role": "system", "content": system or UNTRUSTED_SYSTEM},
                              {"role": "user", "content": user}]}
+        if self.no_think:
+            body["chat_template_kwargs"] = {"enable_thinking": False}
         with ribbon(bus, self.service, request={"purpose": purpose, "model": self.model, "user": user[:600]}) as call:
             call.note = purpose
             try:
@@ -56,6 +61,10 @@ class LLM(HttpBase):
             if r.status_code == 400 and self.json_mode and "response_format" in r.text:
                 self.json_mode = False
                 r = await self._post(body)
+            if r.status_code == 400 and "chat_template_kwargs" in r.text and "chat_template_kwargs" in body:
+                self.no_think = False
+                body = {k: v for k, v in body.items() if k != "chat_template_kwargs"}
+                continue
             if r.status_code == 429 and attempt == 0:
                 try:
                     wait = min(8.0, float(r.headers.get("retry-after", "1.5")))
