@@ -73,22 +73,26 @@ def unverifiable(atom: Atom, reason: str, code: str, stats: dict | None = None) 
 # ======================================================================================================
 # T0 RECORDS
 # ======================================================================================================
-def t0_class(ctx: "Context", scene: int, cls: str) -> dict:
-    """Per-camera YOLO evidence for one COCO class over every segment of the scene."""
+def t0_class(ctx: "Context", scene: int, cls: str, floor: int = quorum.NOISE_FLOOR_FRAMES) -> dict:
+    """Per-camera YOLO evidence for one COCO class over every segment of the scene.
+    wall: camera -> segments where the class persisted >= floor frames (what the jury wall paints; noise stays 0)."""
     segs = ctx.index.segments(scene)
     cams = ctx.index.cameras(scene)
     persist = {c: 0 for c in cams}
     peak = {c: 0 for c in cams}
     seg_hits: dict[str, int] = {c: 0 for c in cams}
+    wall: dict[str, int] = {c: 0 for c in cams}
     for s in segs:
         if cls in s.object_classes or s.object_counts.get(cls, 0) > 0:
+            run = int(s.persist.get(cls, 1 if cls in s.object_classes else 0))
             seg_hits[s.camera] = seg_hits.get(s.camera, 0) + 1
-            persist[s.camera] = max(persist.get(s.camera, 0), int(s.persist.get(cls, 1 if cls in s.object_classes else 0)))
+            wall[s.camera] = wall.get(s.camera, 0) + (run >= floor)
+            persist[s.camera] = max(persist.get(s.camera, 0), run)
             peak[s.camera] = max(peak.get(s.camera, 0), int(s.object_counts.get(cls, 0)))
     return {"cls": cls, "segments_total": len(segs), "segments_with": sum(seg_hits.values()), "cameras": len(cams),
             "per_camera": {c: {"segments": seg_hits.get(c, 0), "persist": persist.get(c, 0), "peak": peak.get(c, 0)}
                            for c in cams},
-            "persist": persist, "peak": peak}
+            "persist": persist, "peak": peak, "wall": wall}
 
 
 @op("perjury.t0.scene_identity")
@@ -121,7 +125,9 @@ async def eval_count(atom: Atom, route: Route, scene: int, ctx: "Context", bus, 
     t0 = t0_class(ctx, scene, atom.cls or "")
     bus.emit("t0", {"atom_id": atom.id,
                     "summary": f"YOLO peak {atom.cls}: max {max(t0['peak'].values(), default=0)} per frame",
-                    "data": {"peak": t0["peak"], "segments_with": t0["segments_with"],
+                    "data": {"per_camera": t0["peak"], "peak": t0["peak"], "n": atom.count, "op": atom.count_op,
+                             "hits": sum(1 for v in t0["peak"].values() if v >= (atom.count or 0)),
+                             "total": len(t0["peak"]), "segments_with": t0["segments_with"],
                              "segments_total": t0["segments_total"]}})
     rule = quorum.count_lower_bound_verdict(t0["peak"], atom.count or 0, atom.count_op)
     if rule.verdict != "SUPPORTED":
@@ -287,14 +293,15 @@ async def eval_scene_wide(atom: Atom, route: Route, scene: int, ctx: "Context", 
 @op("perjury.coco")
 async def eval_coco(atom: Atom, route: Route, scene: int, ctx: "Context", bus, opts: RunOpts) -> AtomVerdict:
     cls = atom.cls or ""
-    t0 = t0_class(ctx, scene, cls)
     floor = ctx.router.noise_floor
+    t0 = t0_class(ctx, scene, cls, floor)
     over = quorum.yolo_cameras_over_floor(t0["persist"], floor)
     bus.emit("t0", {"atom_id": atom.id,
                     "summary": f"YOLO: {cls} in {t0['segments_with']} of {t0['segments_total']} segments; "
                                f"{len(over)} cameras over the {floor}-frame noise floor",
-                    "data": {"per_camera": t0["per_camera"], "segments_with": t0["segments_with"],
-                             "segments_total": t0["segments_total"], "floor": floor, "cameras_over_floor": over}})
+                    "data": {"per_camera": t0["wall"], "hits": t0["segments_with"], "total": t0["segments_total"],
+                             "segments_with": t0["segments_with"], "segments_total": t0["segments_total"],
+                             "floor": floor, "cameras_over_floor": over, "detail": t0["per_camera"]}})
     fld = route.cfg.get("jury_field", {}).get(cls)
     votes: list[Vote] = []
     counts: Optional[list[Optional[int]]] = None
@@ -389,14 +396,14 @@ async def _juror(atom: Atom, j: Juror, seg: Segment, ctx: "Context", bus, opts: 
     frames: list[bytes] = []
     try:
         async def look():
-            fr = await ctx.clients.media.keyframes(j.source, j.times, width=1920)
+            fr = await ctx.clients.media.keyframes(j.source, j.times, width=1920, bus=bus)
             grid = ctx.clients.media.grid2x2(fr, None)
             return fr, await ctx.clients.cosmos.probe(grid, prompt, probe.version, timeout_s=opts.juror_timeout_s,
                                                       bus=bus)
         frames, res = await asyncio.wait_for(look(), timeout=opts.juror_timeout_s)
         ms = int((time.monotonic() - t) * 1000)
         err = _g(res, "error")
-        if err and _g(res, "parsed") is None:
+        if err and _g(res, "parsed") is None and "invalid_json" not in str(err):
             p = Parsed("abstain", [], abstain_reason="timeout" if "timeout" in str(err).lower() else "error")
         elif lead:
             p = lead_vote(_g(res, "parsed"))
@@ -444,7 +451,7 @@ async def _ground_and_zoom(atom: Atom, vote: Vote, frames: list[bytes], j: Juror
     shape = seg.video_shape or DEFAULT_SHAPE
     h, w = int(shape[0]), int(shape[1])
     px = bbox_to_px(box, w, h, scale)
-    crop = await ctx.clients.media.crop_clip(j.source, j.times[panel - 1], px)
+    crop = await ctx.clients.media.crop_clip(j.source, j.times[panel - 1], px, bus=bus)
     z = await ctx.clients.yolo.zoom_check(crop, None, min_cover=0.30, bus=bus)
     vote.zoom_ok = bool(_g(z, "ok", False))
     bus.emit("zoom", {"atom_id": atom.id, "camera": j.camera, "panel": panel, "ok": vote.zoom_ok,

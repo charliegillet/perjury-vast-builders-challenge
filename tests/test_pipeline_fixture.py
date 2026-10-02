@@ -30,13 +30,13 @@ class StubLLM:
 
 
 class StubMedia:
-    async def keyframes(self, source, times, width=1920):
+    async def keyframes(self, source, times, width=1920, bus=None):
         return [f"{source}|{t}".encode() for t in times]
 
     def grid2x2(self, frames, labels=None):
         return b"GRID\n" + b"\n".join(frames)
 
-    async def crop_clip(self, source, t, box_px, dur=0.5):
+    async def crop_clip(self, source, t, box_px, dur=0.5, bus=None):
         return b"CROP"
 
 
@@ -139,6 +139,8 @@ def test_pedestrians_snow_compound_is_false_with_moots():
     ped = next(v for a, v in zip(cv.atoms, cv.atom_verdicts) if a.span == "pedestrians")
     assert ped.stats["pill"] == "YOLO: person in 0 of 192 segments · jury: 0 people seen by 16/16"
     assert ped.reason == "No person was detected in any of 192 segments; 16/16 cameras count 0."
+    t0 = next(e["data"]["data"] for e in evs if e["event"] == "t0" and "per_camera" in e["data"]["data"])
+    assert (t0["hits"], t0["total"]) == (0, 192) and set(t0["per_camera"].values()) == {0}
     juror_evs = [e["data"] for e in evs if e["event"] == "juror"]
     assert all(e["vote"]["cached"] for e in juror_evs)              # scene-wide jurors are pre-run: 0 live GPU
 
@@ -218,7 +220,9 @@ def test_lead_probe_override_sees_the_claim_bench_only():
 def test_jury_size_and_camera_subset():
     cv, evs = run("A pickup is towing a trailer", 1, stub_ctx(), jury_size=16)
     summon = next(e["data"] for e in evs if e["event"] == "summon")
-    assert len(summon["jurors"]) == 16 and cv.atom_verdicts[0].stats["k"] == 16
+    av = cv.atom_verdicts[0]
+    assert len(summon["jurors"]) == 16 and av.stats["k"] == 16
+    assert av.stats["m"] is not None and av.verdict != "UNVERIFIABLE"     # the m <= 4 cap is for k = 6 only
     cv, evs = run("A pickup is towing a trailer", 1, stub_ctx(), probe_overrides={"cameras": ["p1c1", "p1c2"]})
     summon = next(e["data"] for e in evs if e["event"] == "summon")
     assert {j["camera"] for j in summon["jurors"]} <= {"p1c1", "p1c2"}

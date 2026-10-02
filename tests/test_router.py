@@ -81,6 +81,7 @@ def test_m_from_alpha_prior(router):
     assert router.alpha("towing") == 0.27
     assert router.m("towing", 6) == 4
     assert router.route(A(AtomType.towing)).m == 4
+    assert router.m("towing", 16) is not None and router.m("towing", 16) <= 16   # cap at k for non-stage juries
 
 
 def test_value_config(router):

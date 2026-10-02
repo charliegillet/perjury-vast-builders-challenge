@@ -20,7 +20,7 @@ from perjury.events import BADGES, SERVICES, EventBus
 from perjury.index import SceneIndex
 from perjury.probes import classify_stock, stock_query
 from perjury.quorum import claim_verdict
-from perjury.router import Router
+from perjury.router import FIXTURE_PROMOTION_PATH, PROMOTION_PATH, Router
 from perjury.tiers import RunOpts, evaluate, unverifiable
 from perjury.types import Atom, AtomVerdict, ClaimVerdict
 from perjury.verdict import explain_claim
@@ -48,7 +48,8 @@ def load_context(s: Settings | None = None) -> Context:
     from perjury.clients import build_clients   # imported lazily: clients pull in httpx/ffmpeg
     s = s or get_settings()
     return Context(settings=s, clients=build_clients(s), index=SceneIndex.load(s.index_path),
-                   probes=_load_json(s.probes_path), router=Router())
+                   probes=_load_json(s.probes_path),
+                   router=Router(promotion_path=PROMOTION_PATH if s.mode == "live" else FIXTURE_PROMOTION_PATH))
 
 
 def new_run_id() -> str:

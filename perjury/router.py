@@ -14,11 +14,12 @@ from typing import Any, Optional
 import yaml
 
 from perjury.config import CACHE
-from perjury.quorum import choose_m
+from perjury.quorum import MAX_M, choose_m
 from perjury.types import Atom, AtomType, Tier
 
 TYPES_PATH = Path(__file__).with_name("claim_types.yaml")
 PROMOTION_PATH = CACHE / "promotion.json"
+FIXTURE_PROMOTION_PATH = CACHE / "fixture_promotion.json"   # bench --freeze in fixture mode
 DEMOTED_REASON = "demoted by bench"
 
 
@@ -65,11 +66,12 @@ class Router:
         return float(self.promotion.get("alpha", {}).get(type_name, self.alpha_prior))
 
     def m(self, type_name: str, k: int = 6) -> Optional[int]:
-        """Frozen m (bench) when k is the stage jury size 6, else recomputed from alpha for this k."""
+        """Frozen m (bench) when k is the stage jury size 6, else recomputed from alpha for this k.
+        The §7 "m >= 5 => demote" cap is stated for k = 6; other jury sizes (bench curve, k = 16) cap at k."""
         frozen = self.promotion.get("m", {}).get(type_name)
         if frozen is not None and k == 6:
             return int(frozen)
-        return choose_m(self.alpha(type_name), k, self.target)
+        return choose_m(self.alpha(type_name), k, self.target, max_m=MAX_M if k == 6 else k)
 
     def state(self) -> dict[str, dict]:
         """Promotion state per type, for the Bench tab and /api/bench."""
