@@ -113,6 +113,8 @@ Emits, in order: `run`, `transcript`, `atoms`, then per atom any of `t0`/`t1`/`s
 - `GET /api/replays` · `GET /api/replay/{name}` → SSE re-emit with original timing, every event carries `replay: true`
 - `POST /api/feedback` `{run_id, thumbs: "up"|"down", note}` → Weave feedback + `cache/feedback.jsonl`
 - CORS on (option c in §10).
+- Additive (app): `/api/transcribe` also returns `transcript_id`. `/api/testify` accepts `transcript_id` and `jury_size`. With `transcript_source:"canary"` and an unedited transcript, the app emits the real Canary call as `bus.service("canary","done",…)` *before* calling `testify`, so the pipeline must not emit a canary service event itself. `GET /api/stream?run_id=&atom_id=&camera=` is a Range proxy to VSS `videos/stream`, so the token stays server-side. `GET /api/replay/{name}?speed=` (0 = instant). `/health` adds `pipeline`, `pipeline_error`, `dev_stub`, `weave`, `tiles_warm`. Replays are listed from `cache/runs/` and `cache/replays/` (curated, shipped to the pod).
+- Ribbon rendering: a `service` event with state `"pipeline"`, or a note starting with "pipeline", renders as an outlined (pipeline-output) chip. `done` renders solid (live call).
 
 ## Ownership (parallel build)
 | Owner | Files |
