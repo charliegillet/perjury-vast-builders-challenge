@@ -9,14 +9,25 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 MODE="${1:-live}"
 PORT="${PORT:-8080}"
-VENV=.venv
+VENV="${PERJURY_VENV:-.venv}"
+if [[ "$MODE" == live && -f live-env.sh ]]; then
+  source ./live-env.sh
+fi
 PY="$VENV/bin/python"
 
 # 1. Python 3.12 venv with the runtime deps (first run only, or when requirements.txt changes)
 if [[ ! -x "$PY" ]]; then
   echo "== creating $VENV"
-  if command -v uv >/dev/null; then uv venv -q -p 3.12 "$VENV"; else python3 -m venv "$VENV"; fi
+  if command -v uv >/dev/null; then
+    uv venv -q -p 3.12 "$VENV"
+  elif command -v python3.12 >/dev/null; then
+    python3.12 -m venv "$VENV"
+  else
+    python3 -c 'import sys; assert sys.version_info >= (3, 12), "Python 3.12 or newer is required"'
+    python3 -m venv "$VENV"
+  fi
 fi
+"$PY" -c 'import sys; assert sys.version_info >= (3, 12), "This virtual environment needs Python 3.12 or newer; set PERJURY_VENV to a compatible environment"'
 STAMP="$VENV/.requirements.sha"
 SHA="$(cat requirements.txt | shasum | cut -d' ' -f1)"
 if [[ ! -f "$STAMP" || "$(cat "$STAMP")" != "$SHA" ]]; then
