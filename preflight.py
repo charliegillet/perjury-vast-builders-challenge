@@ -75,10 +75,11 @@ class Ctx:
 
 
 # ---- G0 reachability ----
-async def _http_ok(url: str, headers: dict | None = None, any_status: bool = False) -> tuple[bool, str]:
+async def _http_ok(url: str, headers: dict | None = None, any_status: bool = False,
+                   verify: bool = True) -> tuple[bool, str]:
     import httpx
     try:
-        async with httpx.AsyncClient(timeout=8, follow_redirects=True) as h:
+        async with httpx.AsyncClient(timeout=8, follow_redirects=True, verify=verify) as h:
             r = await h.get(url, headers=headers or {})
         return (True if any_status else r.status_code < 400), f"HTTP {r.status_code}"
     except Exception as e:
@@ -119,7 +120,9 @@ async def g0(ctx: Ctx) -> Result:
         checks["wandb_inference"] = _http_ok(f"{s.wandb_base}/models", {"Authorization": f"Bearer {s.wandb_key}"})
     checks["pypi"] = _http_ok("https://pypi.org/simple/imageio-ffmpeg/")
     if s.s3_endpoint:
-        checks["s3"] = _http_ok(s.s3_endpoint if "://" in s.s3_endpoint else f"http://{s.s3_endpoint}", any_status=True)
+        # reachability only: the event S3/VastDB endpoint uses a self-signed cert (vastdb itself connects with ssl_verify=False)
+        checks["s3"] = _http_ok(s.s3_endpoint if "://" in s.s3_endpoint else f"http://{s.s3_endpoint}", any_status=True,
+                                verify=False)
     if s.vdb_endpoint:
         checks["vastdb"] = _tcp_ok(s.vdb_endpoint)
     if s.vss_url:
