@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script>
+    // Relative URLs need a trailing slash: http://host/app must become http://host/app/ (the Ingress strips /app).
+    if (!location.pathname.endsWith("/")) location.replace(location.pathname + "/" + location.search + location.hash);
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PERJURY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" />
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+  <div id="banners">
+    <div class="banner fixture" id="banner-fixture" hidden>FIXTURE DATA · offline fakes · <span id="banner-fixture-note">no live services were called</span></div>
+    <div class="banner replay" id="banner-replay" hidden>REPLAY · recorded <span id="replay-when">--:--</span> · <span id="replay-name"></span> <button type="button" class="link" id="replay-exit">back to live</button></div>
+  </div>
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">PERJURY</div>
+      <div class="motto">every claim about the footage takes the stand</div>
+    </div>
+    <nav class="scenes" id="scenes" aria-label="Scene"></nav>
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab on" data-tab="courtroom">Courtroom</button>
+      <button type="button" class="tab" data-tab="witness">Witness stand</button>
+      <button type="button" class="tab" data-tab="bench">Bench</button>
+      <button type="button" class="tab" data-tab="log">Ribbon log</button>
+    </nav>
+  </header>
+
+  <section class="testify-bar">
+    <button type="button" class="mic" id="mic" title="Hold to speak (or hold the space bar)">
+      <span class="mic-dot"></span><span class="mic-label" id="mic-label">HOLD TO TESTIFY</span>
+      <span class="mic-level" id="mic-level"></span>
+    </button>
+    <form id="claim-form" class="claim-form" autocomplete="off">
+      <input id="claim" maxlength="500" list="claim-examples" placeholder="or type a claim about the footage…" spellcheck="false" />
+      <datalist id="claim-examples">
+        <option value="Three pedestrians are crossing the highway in the snow."></option>
+        <option value="A pickup is towing a trailer."></option>
+        <option value="The road is covered in snow."></option>
+        <option value="Traffic is at a standstill."></option>
+        <option value="The white truck braked hard."></option>
+      </datalist>
+      <button type="submit" class="go" id="go">Testify</button>
+    </form>
+    <button type="button" class="ghost" id="upload-btn" title="Upload a recorded clip (m4a, mp3, wav): works over plain HTTP">⤒ recording</button>
+    <input type="file" id="upload" accept="audio/*,.m4a,.mp3,.wav,.webm,.ogg" hidden />
+    <label class="check"><input type="checkbox" id="stock-ab" /> also ask stock VSS agent</label>
+    <select id="replay" class="replay-select" title="Replay a recorded run"><option value="">Replay ▾</option></select>
+  </section>
+  <div class="mic-hint" id="mic-hint" hidden></div>
+  <div class="toast" id="toast" hidden></div>
+
+  <main class="tabpane" id="tab-courtroom">
+    <section class="testimony-block">
+      <div class="row-label">TESTIMONY <span class="heard" id="heard-by"></span></div>
+      <p class="testimony" id="testimony"><span class="placeholder">Say anything about this footage. We'll tell you if it's true — and when we can't.</span></p>
+      <div class="row-label">ATOMS <span class="heard" id="parser"></span></div>
+      <div class="atoms" id="atoms"><span class="muted">Atomic claims appear here, each sent to the cheapest witness that can settle it.</span></div>
+    </section>
+
+    <section class="court">
+      <div class="wall-wrap">
+        <div class="wall-head">
+          <div class="row-label">JURY WALL <span class="heard" id="wall-atom"></span></div>
+          <div class="legend">
+            <span class="lg yes">yes</span><span class="lg no">no</span><span class="lg abstain">abstain</span><span class="lg delib">deliberating</span><span class="lg cached">cached</span>
+          </div>
+        </div>
+        <div class="wall" id="wall"></div>
+        <div class="wall-foot muted" id="wall-foot"></div>
+      </div>
+
+      <aside class="rail">
+        <div class="verdict-box" id="verdict-box">
+          <div class="row-label">VERDICT</div>
+          <div class="stamp-zone"><div class="stamp idle" id="stamp">AWAITING TESTIMONY</div></div>
+          <div class="why" id="why"></div>
+        </div>
+        <div class="stock-panel" id="stock-panel" hidden>
+          <div class="row-label">STOCK VSS AGENT <span class="heard">agent/search-and-answer · same sentence</span></div>
+          <div class="stock-body" id="stock-body"></div>
+        </div>
+        <div class="exhibits-panel">
+          <div class="row-label">EXHIBITS <span class="heard" id="exhibits-note"></span></div>
+          <div class="exhibits" id="exhibits"><span class="muted">Juror keyframes land here.</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="trace-block">
+      <div class="row-label">TRACE <span class="heard" id="trace-total"></span></div>
+      <div class="trace" id="trace"><span class="muted">Each call appears as a bar, in ms from the moment you finished speaking.</span></div>
+    </section>
+  </main>
+
+  <main class="tabpane" id="tab-witness" hidden>
+    <div class="pane-head">
+      <div>
+        <h2>Witness stand</h2>
+        <p class="muted">VSS's own outputs, cross-examined sentence by sentence with the same atomizer, router and quorum.</p>
+      </div>
+      <button type="button" class="ghost" id="witness-run">Run witness stand</button>
+    </div>
+    <div id="witness-body" class="witness-body"><span class="muted">Loading…</span></div>
+  </main>
+
+  <main class="tabpane" id="tab-bench" hidden>
+    <div class="pane-head">
+      <div>
+        <h2>Bench</h2>
+        <p class="muted">Held-out <b>test</b> numbers, with dev in grey. Every number comes from <code>cache/bench_report.json</code>, produced by code.</p>
+      </div>
+      <a class="ghost" id="bench-weave" target="_blank" rel="noopener" hidden>Weave leaderboard ↗</a>
+    </div>
+    <div id="bench-body" class="bench-body"><span class="muted">Loading…</span></div>
+  </main>
+
+  <main class="tabpane" id="tab-log" hidden>
+    <div class="pane-head">
+      <div>
+        <h2>Ribbon log</h2>
+        <p class="muted">Every service event of the current run. Requests and responses are redacted server-side (tokens, base64).</p>
+      </div>
+    </div>
+    <div id="log-body" class="log-body"></div>
+  </main>
+
+  <footer class="dock">
+    <div class="ribbon" id="ribbon"></div>
+    <div class="receipt" id="receipt"><span class="muted">RECEIPT · appears when the verdict lands</span></div>
+  </footer>
+
+  <div class="overlay" id="drawer" hidden>
+    <div class="drawer">
+      <div class="drawer-bar">
+        <div class="drawer-title" id="drawer-title">EXHIBIT</div>
+        <div class="drawer-actions">
+          <button type="button" class="ghost" id="drawer-play" hidden>▶ play segment</button>
+          <button type="button" class="ghost" id="drawer-close">Close ✕</button>
+        </div>
+      </div>
+      <div class="drawer-grid">
+        <div class="exhibit-stage" id="exhibit-stage">
+          <img id="exhibit-img" alt="juror keyframe" />
+          <div class="ex-overlay" id="ex-overlay"></div>
+          <video id="exhibit-video" controls playsinline hidden></video>
+        </div>
+        <div class="exhibit-meta" id="exhibit-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="chip-modal" hidden>
+    <div class="drawer small">
+      <div class="drawer-bar">
+        <div class="drawer-title" id="chip-title"></div>
+        <button type="button" class="ghost" id="chip-close">Close ✕</button>
+      </div>
+      <div id="chip-body" class="chip-body"></div>
+    </div>
+  </div>
+
+  <script src="static/wav.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>
