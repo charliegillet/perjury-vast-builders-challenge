@@ -24,6 +24,8 @@ Applications required (space limited); registration closes one week before each 
 | [docs/deep-research/01-technical.md](docs/deep-research/01-technical.md) | Build-day cheat sheet: DataEngine triggers, VastDB vector SQL, Cosmos API, W&B, Slack |
 | [docs/deep-research/02-competitive.md](docs/deep-research/02-competitive.md) | Prior art + safe stage wording |
 | [docs/deep-research/03-judges-market.md](docs/deep-research/03-judges-market.md) | Judges, organizer, market numbers |
+| [docs/GEMINI-FALLBACK.md](docs/GEMINI-FALLBACK.md) | Gemini as outage-only fallback verifier; Cosmos vs Gemini benchmarks (VANTAGE) |
+| [src/verifier_backends.py](src/verifier_backends.py) | Cosmos + Gemini verifier backends with circuit breaker; [src/eval_backends.py](src/eval_backends.py) runs the Weave comparison |
 | `.firecrawl/`, `docs/sources/` | Raw scrapes of every page used |
 
 ## Idea

@@ -9,6 +9,7 @@
 > 6. **Try NVIDIA's `Cosmos-Embed1-448p-anomaly-detection` embedder** for the baseline — and credit VSS's "temporal dedup" step openly.
 > 7. **Market:** video surveillance ≈ **$27B (Omdia, 2025)**, $60–80B+ on broad definitions — not "$50B+". IPVM: **<1%** of recorded footage is watched live. NVIDIA: **2B+ cameras**. Price **$8/camera/month** is supported by comps.
 > 8. **Use the venue's Cosmos NIM** (hosted build.nvidia.com Reason2 has been returning 404). VSS 3.2.1+ defaults to Cosmos Reason 3 Nano — confirm which model the event serves at 10:00.
+> 10. **Verifier model accuracy is the #1 risk.** On VANTAGE-Bench (NVIDIA + Clemson, Sep 2026), Cosmos-Reason2-8B accepted ~42% of events that never happened (specificity 57.6); Cosmos3-Super/Nano score higher. Prefer Cosmos 3 if the venue serves it, use **class-specific** verify prompts, and **measure specificity on our ~60 labeled clips in Weave before claiming "doesn't cry wolf."** Gemini is an outage-only fallback (`src/verifier_backends.py`); see [GEMINI-FALLBACK.md](GEMINI-FALLBACK.md).
 > 9. **Privacy framing:** private operational spaces (stockrooms, server cages, after-hours docks), no face ID, no "suspicious person" language.
 
 

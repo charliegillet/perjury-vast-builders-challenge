@@ -1,0 +1,918 @@
+> ## Documentation Index
+>
+> Fetch the complete documentation index at: [/llms.txt](https://docs.coreweave.com/llms.txt)
+>
+> Use this file to discover all available pages before exploring further.
+
+[Skip to main content](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger#content-area)
+
+This guide shows you how to use `EvaluationLogger` to record predictions and scores from your existing Python or TypeScript code, so you can evaluate model performance in Weave without first defining a full dataset and scorer suite. Use this approach when your dataset or scorers aren’t defined upfront, or when you need to log evaluation data incrementally as your workflow runs.In contrast to the standard `Evaluation` object, which requires a predefined `Dataset` and list of `Scorer` objects, the `EvaluationLogger` lets you log individual predictions and their associated scores incrementally as they become available.
+
+**Prefer a more structured evaluation?**If you prefer a more opinionated evaluation framework with predefined datasets and scorers, see the [standard Evaluation framework](https://docs.coreweave.com/products/wandb/weave/guides/core-types/evaluations).The `EvaluationLogger` offers flexibility while the standard framework offers structure and guidance.
+
+## [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#basic-workflow)  Basic workflow
+
+Following these steps records a complete evaluation in Weave, with per-prediction scores and an aggregated summary that you can review in the Weights & Biases UI.
+
+1. _Initialize the logger:_ Create an instance of `EvaluationLogger`, optionally providing metadata about the `model` and `dataset`. Weave uses defaults if omitted.
+
+
+
+
+
+
+To capture token usage and cost for LLM calls (for example, OpenAI), initialize `EvaluationLogger` before any LLM invocations.
+If you call your LLM first and then log predictions afterward, Weave doesn’t capture token and cost data.
+
+2. _Log predictions:_ Call `log_prediction()` for each input and output pair from your system.
+3. _Log scores:_ Use the returned `ScoreLogger` to `log_score()` for the prediction. Multiple scores per prediction are supported.
+4. _Finish prediction:_ Always call `finish()` after logging scores for a prediction to finalize it.
+5. _Log summary:_ After all predictions are processed, call `log_summary()` to aggregate scores and add optional custom metrics.
+
+After calling `finish()` on a prediction, no more scores can be logged for it.
+
+For a Python example that demonstrates this workflow, see the [Basic example](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger#basic-example). If the output and all scores are available at once, Python users can combine steps 2 through 4 into a single call using [`log_example()`](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger#simplified-logging-with-log_example).
+
+## [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#basic-example)  Basic example
+
+The following example shows how to use `EvaluationLogger` to log predictions and scores inline with your existing code. Replace `[YOUR-TEAM]/[YOUR-PROJECT]` with your Weights & Biases team name and project.
+
+- Python
+
+- TypeScript
+
+
+The `user_model` function is defined and applied to a list of inputs. For each example:
+
+- The input and output are logged using `log_prediction`.
+- A correctness score (`correctness_score`) is logged through `log_score`.
+- `finish()` finalizes logging for that prediction.
+
+Finally, `log_summary` records any aggregate metrics and triggers automatic score summarization in Weave.
+
+```
+import weave
+from openai import OpenAI
+from weave import EvaluationLogger
+
+weave.init('[YOUR-TEAM]/[YOUR-PROJECT]')
+
+# Initialize EvaluationLogger BEFORE calling the model to ensure token tracking
+eval_logger = EvaluationLogger(
+    model="my_model",
+    dataset="my_dataset"
+)
+
+# Example input data (this can be any data structure you want)
+eval_samples = [\
+    {'inputs': {'a': 1, 'b': 2}, 'expected': 3},\
+    {'inputs': {'a': 2, 'b': 3}, 'expected': 5},\
+    {'inputs': {'a': 3, 'b': 4}, 'expected': 7},\
+]
+
+# Example model logic using OpenAI
+@weave.op
+def user_model(a: int, b: int) -> int:
+    oai = OpenAI()
+    response = oai.chat.completions.create(
+        messages=[{"role": "user", "content": f"What is {a}+{b}?"}],
+        model="gpt-4o-mini"
+    )
+    # Use the response in some way (here we just return a + b for simplicity)
+    return a + b
+
+# Iterate through examples, predict, and log
+for sample in eval_samples:
+    inputs = sample["inputs"]
+    model_output = user_model(**inputs) # Pass inputs as kwargs
+
+    # Log the prediction input and output
+    prediction = eval_logger.log_prediction(
+        inputs=inputs,
+        output=model_output
+    )
+
+    # Calculate and log a score for this prediction
+    expected = sample["expected"]
+    correctness_score = model_output == expected
+    prediction.log_score(
+        scorer="correctness", # Simple string name for the scorer
+        score=correctness_score
+    )
+
+    # Finish logging for this specific prediction
+    prediction.finish()
+
+# Log a final summary for the entire evaluation.
+# Weave auto-aggregates the 'correctness' scores logged above.
+summary_stats = {"subjective_overall_score": 0.8}
+eval_logger.log_summary(summary_stats)
+
+print("Evaluation logging complete. View results in the Weave UI.")
+```
+
+The TypeScript SDK provides two API patterns:
+
+- **Fire-and-forget API (recommended for most cases)**: Use `logPrediction()` without `await` for synchronous, non-blocking logging.
+- **Awaitable API**: Use `logPredictionAsync()` with `await` when you need to ensure operations complete before proceeding.
+
+Use fire-and-forget for:
+
+- **High throughput**: Process multiple predictions in parallel without waiting for each logging operation.
+- **Minimal code disruption**: Add evaluation logging without restructuring your existing async/await flow.
+- **Simplicity**: Less boilerplate code and cleaner syntax for most evaluation scenarios.
+
+The fire-and-forget pattern is safe because `logSummary()` automatically waits for all pending operations to complete before aggregating results.The following example evaluates model predictions with the fire-and-forget pattern. It sets up an evaluation logger, runs a model on three test samples, and then logs the prediction without using await:
+
+```
+import * as weave from 'weave';
+import {EvaluationLogger} from 'weave';
+import OpenAI from 'openai';
+
+await weave.init('[YOUR-TEAM]/[YOUR-PROJECT]');
+
+// Initialize EvaluationLogger BEFORE calling the model to ensure token tracking
+const evalLogger = new EvaluationLogger({
+  name: 'my-eval',
+  model: 'my_model',
+  dataset: 'my_dataset'
+});
+
+// Example input data
+const evalSamples = [\
+  {inputs: {a: 1, b: 2}, expected: 3},\
+  {inputs: {a: 2, b: 3}, expected: 5},\
+  {inputs: {a: 3, b: 4}, expected: 7},\
+];
+
+// Example model logic using OpenAI
+const userModel = weave.op(async function userModel(a: number, b: number): Promise<number> {
+  const oai = new OpenAI();
+  const response = await oai.chat.completions.create({
+    messages: [{role: 'user', content: `What is ${a}+${b}?`}],
+    model: 'gpt-4o-mini'
+  });
+  return a + b;
+});
+
+// Iterate through examples, predict, and log using fire-and-forget pattern
+for (const sample of evalSamples) {
+  const {inputs} = sample;
+  const modelOutput = await userModel(inputs.a, inputs.b);
+
+  // Fire-and-forget: No await needed for logPrediction
+  const prediction = evalLogger.logPrediction(inputs, modelOutput);
+
+  // Calculate and log a score for this prediction
+  const correctnessScore = modelOutput === sample.expected;
+
+  // Fire-and-forget: No await needed for logScore
+  prediction.logScore('correctness', correctnessScore);
+
+  // Fire-and-forget: No await needed for finish
+  prediction.finish();
+}
+
+// logSummary waits for all pending operations to complete internally
+const summaryStats = {subjective_overall_score: 0.8};
+await evalLogger.logSummary(summaryStats);
+
+console.log('Evaluation logging complete. View results in the Weave UI.');
+```
+
+Use the awaitable API when you need to ensure each operation completes before proceeding, such as when managing error handling or sequential dependencies.In the following example, instead of calling `logPrediction()` without `await`, it uses `logPredictionAsync()` with `await` to ensure each operation completes before proceeding to the next one:
+
+```
+// Use logPredictionAsync instead of logPrediction
+const prediction = await evalLogger.logPredictionAsync(inputs, modelOutput);
+
+// Await each operation
+await prediction.logScore('correctness', correctnessScore);
+await prediction.finish();
+```
+
+## [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#simplified-logging-with-log_example)  Simplified logging with `log_example()`
+
+Use `log_example()` to log inputs, an output, and scores in a single call. This convenience method combines `log_prediction()`, `log_score()`, and `finish()` into one step, and it’s useful when you already have the inputs, model outputs, and scores ready to log, such as during batch or offline evaluations.
+
+```
+import weave
+from weave import EvaluationLogger
+
+weave.init('[YOUR-TEAM]/[YOUR-PROJECT]')
+
+eval_logger = EvaluationLogger(
+    model="my_model",
+    dataset="my_dataset"
+)
+
+eval_samples = [\
+    {'inputs': {'a': 1, 'b': 2}, 'expected': 3},\
+    {'inputs': {'a': 2, 'b': 3}, 'expected': 5},\
+    {'inputs': {'a': 3, 'b': 4}, 'expected': 7},\
+]
+
+for sample in eval_samples:
+    inputs = sample['inputs']
+    output = inputs['a'] + inputs['b']
+
+    eval_logger.log_example(
+        inputs=inputs,
+        output=output,
+        scores={"correctness": output == sample['expected']}
+    )
+
+eval_logger.log_summary({"avg_score": 1.0})
+```
+
+The previous `log_example()` call is equivalent to:
+
+```
+prediction = eval_logger.log_prediction(inputs=inputs, output=output)
+prediction.log_score(scorer="correctness", score=output == sample['expected'])
+prediction.finish()
+```
+
+`log_example()` is not available for the Weave TypeScript SDK. TypeScript users should use the `logPrediction()` and `logScore()` pattern shown in the [basic example](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger#basic-example).
+
+## [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#advanced-usage)  Advanced usage
+
+The `EvaluationLogger` offers flexible patterns beyond the basic workflow to accommodate more complex evaluation scenarios. The following sections describe advanced techniques, including how to use context managers for automatic resource management, link agent traces to evaluation rows, separate model execution from logging, work with rich media data, and compare multiple model evaluations side by side.
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#use-context-managers)  Use context managers
+
+The `EvaluationLogger` supports context managers (`with` statements) for both predictions and scores. This can provide cleaner code, automatic resource cleanup, and better tracking of nested operations like LLM judge calls.Using `with` statements in this context provides:
+
+- Automatic `finish()` calls when exiting the context.
+- Better token and cost tracking for nested LLM calls.
+- Setting output after model execution within the prediction context.
+
+- Python
+
+- TypeScript
+
+
+```
+import openai
+import weave
+
+weave.init("nested-evaluation-example")
+oai = openai.OpenAI()
+
+# Initialize the logger
+ev = weave.EvaluationLogger(
+    model="gpt-4o-mini",
+    dataset="joke_dataset"
+)
+
+user_prompt = "Tell me a joke"
+
+# Use context manager for prediction - no need to call finish()
+with ev.log_prediction(inputs={"user_prompt": user_prompt}) as prediction:
+    # Make your model call within the context
+    result = oai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": user_prompt}],
+    )
+
+    # Set the output after the model call
+    prediction.output = result.choices[0].message.content
+
+    # Log simple scores
+    prediction.log_score("correctness", 1.0)
+    prediction.log_score("ambiguity", 0.3)
+
+    # Use nested context manager for scores that require LLM calls
+    with prediction.log_score("llm_judge") as score:
+        judge_result = oai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[\
+                {"role": "system", "content": "Rate how funny the joke is from 1-5"},\
+                {"role": "user", "content": prediction.output},\
+            ],
+        )
+        # Set the score value after computation
+        score.value = judge_result.choices[0].message.content
+
+# finish() is automatically called when exiting the 'with' block
+
+ev.log_summary({"avg_score": 1.0})
+```
+
+This pattern ensures that all nested operations are tracked and attributed to the parent prediction, giving you accurate token usage and cost data in the Weights & Biases UI.
+
+TypeScript doesn’t have Python’s `with` statement pattern for context managers. Instead, use the fire-and-forget pattern with explicit `finish()` calls.The following example logs a prediction, adds scores and an LLM judge score, then finalizes the prediction with `finish()`:
+
+```
+import * as weave from 'weave';
+import OpenAI from 'openai';
+import {EvaluationLogger} from 'weave';
+
+await weave.init('[YOUR-TEAM]/[YOUR-PROJECT]');
+const oai = new OpenAI();
+
+// Initialize the logger
+const ev = new EvaluationLogger({
+  name: 'joke-eval',
+  model: 'gpt-4o-mini',
+  dataset: 'joke_dataset',
+});
+
+const userPrompt = 'Tell me a joke';
+
+// Get model output
+const result = await oai.chat.completions.create({
+  model: 'gpt-4o-mini',
+  messages: [{role: 'user', content: userPrompt}],
+});
+
+const modelOutput = result.choices[0].message.content;
+
+// Log prediction with output
+const prediction = ev.logPrediction({user_prompt: userPrompt}, modelOutput);
+
+// Log simple scores
+prediction.logScore('correctness', 1.0);
+prediction.logScore('ambiguity', 0.3);
+
+// For LLM judge scores, make the call and log the result
+const judgeResult = await oai.chat.completions.create({
+  model: 'gpt-4o-mini',
+  messages: [\
+    {role: 'system', content: 'Rate how funny the joke is from 1-5'},\
+    {role: 'user', content: modelOutput || ''},\
+  ],
+});
+prediction.logScore('llm_judge', judgeResult.choices[0].message.content);
+
+// Explicitly call finish when done scoring
+prediction.finish();
+
+await ev.logSummary({avg_score: 1.0});
+```
+
+While TypeScript doesn’t have automatic cleanup with context managers, `logSummary()` automatically finishes any unfinished predictions before aggregating results. You can rely on this behavior if you prefer not to call `finish()` explicitly.
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#link-agent-traces-to-evaluations)  Link agent traces to evaluations
+
+In Python, keep each traced agent call inside its `log_prediction()` context. `EvaluationLogger` sets the evaluation run, example, and trial metadata on spans created in that context, and Weave uses that metadata to link the trace to its evaluation result.
+
+Automatic evaluation-to-agent span linking is available only in Python. Neither the TypeScript `EvaluationLogger` nor `Evaluation.evaluate()` creates an active evaluation scope that links agent spans. In TypeScript, you can link a span only by setting the OTel attributes described in this section directly, and only when both Call IDs are already available.
+
+The following example uses the [OpenAI Agents SDK](https://docs.coreweave.com/products/wandb/weave/guides/integrations/agents/openai-agents-sdk). The same pattern applies to other agent frameworks that Weave traces. Replace `[YOUR-TEAM]/[YOUR-PROJECT]` with your Weights & Biases team name and project.
+
+- Python
+
+- TypeScript
+
+
+```
+import weave
+from agents import Agent, Runner
+from weave import EvaluationLogger
+
+weave.init("[YOUR-TEAM]/[YOUR-PROJECT]")
+
+agent = Agent(
+    name="Support agent",
+    instructions="Answer with only the city name.",
+)
+eval_logger = EvaluationLogger(
+    name="support-agent-eval",
+    model="support-agent",
+    dataset="support-prompts",
+)
+question = "What is the capital of France?"
+
+with eval_logger.log_prediction(
+    inputs={"prompt": question},
+    example_id="capital-of-france",
+) as prediction:
+    result = Runner.run_sync(agent, question)
+    output = str(result.final_output or "")
+    prediction.output = output
+    prediction.log_score(
+        scorer="contains_expected_answer",
+        score="paris" in output.lower(),
+    )
+
+eval_logger.log_summary()
+```
+
+This feature is not available in TypeScript.
+
+If the agent runs before the prediction context starts or after it finishes, Weave records the trace but doesn’t link it to the evaluation result.Weave links a trace to its evaluation result automatically when the agent runs inside the `log_prediction()` context and a Weave integration traces it, as in the preceding code example. Otherwise, you set the two linking IDs on the agent spans yourself. How you do this depends on where the spans are created:
+
+- **Same process, your own instrumentation:** Set the attributes directly on each span.
+- **A separate service:** Send both IDs to that service, then set them on the spans it creates.
+
+#### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#link-spans-you-instrument-yourself)  Link spans you instrument yourself
+
+When spans are created inside the `log_prediction()` context, the `EvaluationLogger` sets all the attributes automatically. However, if you send spans with your own OpenTelemetry (OTel) instrumentation, you must set the attributes directly on each span that you want to link. You can set the following attributes for evaluations:
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `weave.eval.run_id` | string | (Required) The Call ID of the evaluation run (`Evaluation.evaluate`). Needed to include the span in the evaluation-level **View spans** result. |
+| `weave.eval.predict_and_score_call_id` | string | (Required) The Call ID of the `Evaluation.predict_and_score` operation for a specific result and trial. Set this together with `weave.eval.run_id` to link the span to that result. |
+| `weave.eval.kind` | string | (Optional) The evaluation category. Weave uses `agent` for agent evaluations and `standard` for standard evaluations. |
+| `weave.eval.row_digest` | string | (Optional) A stable digest that identifies the evaluated dataset row. `EvaluationLogger` derives this value from the prediction inputs unless you provide one. |
+| `weave.eval.example_id` | string | (Optional) A caller-provided identifier for the evaluated example. |
+| `weave.eval.trial_index` | integer | (Optional) The zero-based trial number for the dataset row. |
+| `weave.eval.evaluation_name` | string | (Optional) The evaluation’s human-readable name. |
+| `weave.eval.project_id` | string | (Optional) Project context set by the Weave SDK. This attribute doesn’t route or link the span. Configure the destination project on the OTel resource instead. |
+
+Send the span to the same Weave project as the evaluation through the `/agents/otel/v1/traces` endpoint. OTel span attributes don’t propagate from parent spans to child spans, so set the attributes on every span that you want to link.For more information about the endpoint:
+
+- To send spans from an existing OTel pipeline, see [Send OpenTelemetry spans to the Agents view](https://docs.coreweave.com/products/wandb/weave/guides/tracking/trace-agents-otel).
+- For the endpoint specification, see [Export a GenAI trace](https://docs.coreweave.com/products/wandb/weave/reference/service-api/agents/export-genai-trace).
+
+Only `weave.eval.run_id` and `weave.eval.predict_and_score_call_id` establish the evaluation and result links. The row digest, example ID, trial index, kind, and evaluation name add context and support filtering, but don’t create a link by themselves. Use Weave Call IDs for the two linking attributes, not OTel trace or span IDs.You can obtain both IDs from the [evaluation results query API](https://docs.coreweave.com/products/wandb/weave/reference/service-api/eval-results/eval-results-query). Each evaluation in the response has an `evaluation_call_id`, and each trial has a `predict_and_score_call_id`.The following examples assume that `span` is the OTel span for the agent operation. Replace each bracketed value with metadata from the evaluation run and result that the span belongs to.The TypeScript example works because it sets the OTel attributes directly rather than relying on a prediction scope. Use it only when both Call IDs are already available.
+
+- Python
+
+- TypeScript
+
+
+```
+span.set_attributes(
+    {
+        "weave.eval.run_id": "[EVALUATION-RUN-CALL-ID]",
+        "weave.eval.predict_and_score_call_id": "[PREDICT-AND-SCORE-CALL-ID]",
+        "weave.eval.kind": "agent",
+        "weave.eval.row_digest": "[ROW-DIGEST]",
+        "weave.eval.example_id": "[EXAMPLE-ID]",
+        "weave.eval.trial_index": 0,
+        "weave.eval.evaluation_name": "[EVALUATION-NAME]",
+    }
+)
+```
+
+```
+span.setAttributes({
+  'weave.eval.run_id': '[EVALUATION-RUN-CALL-ID]',
+  'weave.eval.predict_and_score_call_id': '[PREDICT-AND-SCORE-CALL-ID]',
+  'weave.eval.kind': 'agent',
+  'weave.eval.row_digest': '[ROW-DIGEST]',
+  'weave.eval.example_id': '[EXAMPLE-ID]',
+  'weave.eval.trial_index': 0,
+  'weave.eval.evaluation_name': '[EVALUATION-NAME]',
+});
+```
+
+#### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#link-an-agent-that-runs-in-a-separate-service)  Link an agent that runs in a separate service
+
+When your agent runs as a separate service, the evaluation process and the agent don’t share memory: Weave can’t set the linking attributes automatically, and you can’t reach the agent’s span objects directly. Instead, get both Call IDs in the evaluation process, send them to the service, and set them on the spans created there. This distributed `EvaluationLogger` pattern is Python-only.
+
+- Python
+
+- TypeScript
+
+
+Entering the `log_prediction()` context creates the `Evaluation.predict_and_score` call before the context body runs. The context yields a `ScoreLogger` (bound to `prediction` in the following example) that exposes both Call IDs. Keep the context open until the service returns so that you can log its output and scores on the same evaluation result.In the evaluation process, replace `[AGENT-SERVICE-URL]` with the endpoint that runs your agent, and replace `[YOUR-TEAM]/[YOUR-PROJECT]` as well:
+
+```
+import requests
+import weave
+from weave import EvaluationLogger
+
+weave.init("[YOUR-TEAM]/[YOUR-PROJECT]")
+
+eval_logger = EvaluationLogger(
+    name="support-agent-eval",
+    model="support-agent",
+    dataset="support-prompts",
+)
+question = "What is the capital of France?"
+example_id = "capital-of-france"
+trial_index = 0
+
+with eval_logger.log_prediction(
+    inputs={"prompt": question},
+    example_id=example_id,
+    trial_index=trial_index,
+) as prediction:
+    eval_context = {
+        "weave.eval.run_id": prediction.evaluate_call.id,
+        "weave.eval.predict_and_score_call_id": (
+            prediction.predict_and_score_call.id
+        ),
+        "weave.eval.kind": "agent",
+        "weave.eval.example_id": example_id,
+        "weave.eval.trial_index": trial_index,
+        "weave.eval.evaluation_name": "support-agent-eval",
+    }
+    response = requests.post(
+        "[AGENT-SERVICE-URL]",
+        json={"prompt": question, "eval_context": eval_context},
+        timeout=60,
+    )
+    response.raise_for_status()
+    prediction.output = response.json()["output"]
+
+eval_logger.log_summary()
+```
+
+In the agent service, copy the received attributes onto every agent span that you want to associate with the result. The following function demonstrates the receiving side with a raw OTel span. Configure the service to export spans to the same `[YOUR-TEAM]/[YOUR-PROJECT]` as the evaluation.
+
+```
+from typing import Any
+
+import weave
+from agents import Agent, Runner
+from opentelemetry import trace
+
+weave.init("[YOUR-TEAM]/[YOUR-PROJECT]")
+tracer = trace.get_tracer(__name__)
+agent = Agent(
+    name="Support agent",
+    instructions="Answer with only the city name.",
+)
+
+def run_agent(request_body: dict[str, Any]) -> dict[str, str]:
+    eval_context = request_body["eval_context"]
+    with tracer.start_as_current_span(
+        "invoke_agent Support agent",
+        attributes={
+            "gen_ai.operation.name": "invoke_agent",
+            "gen_ai.agent.name": "Support agent",
+            **eval_context,
+        },
+    ):
+        result = Runner.run_sync(agent, request_body["prompt"])
+        return {"output": str(result.final_output or "")}
+```
+
+The wrapper span in this example is linked to the evaluation result. If the agent framework creates additional spans, copy `eval_context` onto those spans as well. OTel doesn’t inherit span attributes from the wrapper.
+
+This feature is not available in TypeScript.
+
+#### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#view-linked-agent-spans-from-your-evaluations)  View linked agent spans from your evaluations
+
+To inspect linked spans in the Weights & Biases UI:
+
+1. Navigate to [Forge](https://forge.coreweave.com/wandb).
+2. In the Weave sidebar menu, click **Evals**.
+3. Select your evaluation run.
+4. In the evaluation detail panel that opens, in the **Evaluation** tab, click **View spans**. This opens the **Agents** page with the **Spans** tab filtered to that evaluation.
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#link-to-an-existing-dataset)  Link to an existing dataset
+
+When you pass raw datasets as `inputs` to `log_prediction`, Weave reimports the data with every evaluation run. This stores duplicate data, which can waste space if the dataset is large or if many evaluations reuse it.To avoid this duplication, publish your dataset to Weave before running any evaluations, then pass the published dataset’s rows as `inputs`. Weave resolves references to published rows using internal references instead of reimporting the data. This technique gives you the same linked experience as the standard Evaluation framework, where each prediction links back to a specific dataset row in the Weights & Biases UI.The following example publishes a dataset, links it in the `EvaluationLogger`, and retrieves and iterates over it like any other dataset.
+
+- Python
+
+- TypeScript
+
+
+```
+import weave
+from weave import EvaluationLogger
+
+weave.init("[YOUR-TEAM]/[YOUR-PROJECT]")
+
+# Publish the dataset (only needs to happen once)
+dataset = weave.Dataset(
+    name="my_eval_dataset",
+    rows=[\
+      {"question": "What is the capital of France?", "expected": "Paris"},\
+      {"question": "What U.S. state is Seattle in?", "expected": "Washington"},\
+      {"question": "In which country is Mount Fuji?", "expected": "Japan"},\
+    ],
+)
+weave.publish(dataset)
+
+# Retrieve the published dataset
+dataset = weave.ref("my_eval_dataset").get()
+```
+
+```
+import * as weave from 'weave';
+import {EvaluationLogger, Dataset} from 'weave';
+
+await weave.init('[YOUR-TEAM]/[YOUR-PROJECT]');
+
+// Publish the dataset (only needs to happen once)
+const dataset = new Dataset({
+  name: 'my_eval_dataset',
+  rows: [\
+    {"question": "What is the capital of France?", "expected": "Paris"},\
+    {"question": "What U.S. state is Seattle in?", "expected": "Washington"},\
+    {"question": "In which country is Mount Fuji?", "expected": "Japan"},\
+  ],
+});
+const datasetRef = await dataset.save();
+
+// Retrieve the published dataset
+const published = await datasetRef.get();
+```
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#get-outputs-before-logging)  Get outputs before logging
+
+You can first compute your model outputs, then separately log predictions and scores. This separates evaluation and logging logic, which can make code easier to test and maintain when different parts of your system handle prediction generation and scoring.
+
+- Python
+
+- TypeScript
+
+
+```
+# Initialize EvaluationLogger BEFORE calling the model to ensure token tracking
+ev = EvaluationLogger(
+    model="example_model",
+    dataset="example_dataset"
+)
+
+# Model outputs (e.g. OpenAI calls) must happen after logger init for token tracking
+outputs = [your_output_generator(**inputs) for inputs in your_dataset]
+predictions = [ev.log_prediction(inputs, output) for inputs, output in zip(your_dataset, outputs)]
+for prediction, output in zip(predictions, outputs):
+    prediction.log_score(scorer="greater_than_5_scorer", score=output > 5)
+    prediction.log_score(scorer="greater_than_7_scorer", score=output > 7)
+    prediction.finish()
+
+ev.log_summary()
+```
+
+The fire-and-forget pattern excels when processing multiple predictions in parallel.The following example batch-processes evaluations in parallel by creating multiple concurrent instances of the `EvaluationLogger`:
+
+```
+// Initialize EvaluationLogger BEFORE calling the model to ensure token tracking
+const ev = new EvaluationLogger({
+  name: 'parallel-eval',
+  model: 'example_model',
+  dataset: 'example_dataset'
+});
+
+// Model outputs, such as OpenAI calls, must happen after logger init for token tracking
+const outputs = await Promise.all(
+  yourDataset.map(inputs => yourOutputGenerator(inputs))
+);
+
+// Fire-and-forget: Process all predictions without awaiting
+const predictions = yourDataset.map((inputs, i) =>
+  ev.logPrediction(inputs, outputs[i])
+);
+
+predictions.forEach((prediction, i) => {
+  const output = outputs[i];
+  // Fire-and-forget: No await needed
+  prediction.logScore('greater_than_5_scorer', output > 5);
+  prediction.logScore('greater_than_7_scorer', output > 7);
+  prediction.finish();
+});
+
+// logSummary waits for all pending operations
+await ev.logSummary();
+```
+
+You can use the fire-and-forget pattern to process as many evaluations in parallel as your compute resources allow.
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#log-rich-media)  Log rich media
+
+Inputs, outputs, and scores can include rich media such as images, videos, audio, or structured tables. Logging rich media lets you inspect the actual content alongside scores in the Weights & Biases UI, which is helpful for qualitative analysis of multimodal models. Pass a dict or media object into the `log_prediction` or `log_score` methods.
+
+- Python
+
+- TypeScript
+
+
+```
+import io
+import wave
+import struct
+from PIL import Image
+import random
+from typing import Any
+import weave
+
+def generate_random_audio_wave_read(duration=2, sample_rate=44100):
+    n_samples = duration * sample_rate
+    amplitude = 32767  # 16-bit max amplitude
+
+    buffer = io.BytesIO()
+
+    # Write wave data to the buffer
+    with wave.open(buffer, 'wb') as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)  # 16-bit
+        wf.setframerate(sample_rate)
+
+        for _ in range(n_samples):
+            sample = random.randint(-amplitude, amplitude)
+            wf.writeframes(struct.pack('<h', sample))
+
+    # Rewind the buffer to the beginning so we can read from it
+    buffer.seek(0)
+
+    # Return a Wave_read object
+    return wave.open(buffer, 'rb')
+
+rich_media_dataset = [\
+    {\
+        'image': Image.new(\
+            "RGB",\
+            (100, 100),\
+            color=(\
+                random.randint(0, 255),\
+                random.randint(0, 255),\
+                random.randint(0, 255),\
+            ),\
+        ),\
+        "audio": generate_random_audio_wave_read(),\
+    }\
+    for _ in range(5)\
+]
+
+@weave.op
+def your_output_generator(image: Image.Image, audio) -> dict[str, Any]:
+    return {
+        "result": random.randint(0, 10),
+        "image": image,
+        "audio": audio,
+    }
+
+ev = EvaluationLogger(model="example_model", dataset="example_dataset")
+
+for inputs in rich_media_dataset:
+    output = your_output_generator(**inputs)
+    prediction = ev.log_prediction(inputs, output)
+    prediction.log_score(scorer="greater_than_5_scorer", score=output["result"] > 5)
+    prediction.log_score(scorer="greater_than_7_scorer", score=output["result"] > 7)
+
+ev.log_summary()
+```
+
+The TypeScript SDK supports logging images and audio using the `weaveImage` and `weaveAudio` functions. The following example loads image and audio files, processes them through a model, and logs the results with scores.
+
+```
+import * as weave from 'weave';
+import {EvaluationLogger} from 'weave';
+import * as fs from 'fs';
+
+await weave.init('[YOUR-TEAM]/[YOUR-PROJECT]');
+
+// Load images and audio from files
+const richMediaDataset = [\
+  {\
+    image: weave.weaveImage({data: fs.readFileSync('sample1.png')}),\
+    audio: weave.weaveAudio({data: fs.readFileSync('sample1.wav')}),\
+  },\
+  {\
+    image: weave.weaveImage({data: fs.readFileSync('sample2.png')}),\
+    audio: weave.weaveAudio({data: fs.readFileSync('sample2.wav')}),\
+  },\
+];
+
+// Model that processes media and returns results
+const yourOutputGenerator = weave.op(
+  async (inputs: {image: any; audio: any}) => {
+    const result = Math.floor(Math.random() * 10);
+    return {
+      result,
+      image: inputs.image,
+      audio: inputs.audio,
+    };
+  },
+  {name: 'yourOutputGenerator'}
+);
+
+const ev = new EvaluationLogger({
+  name: 'rich-media-eval',
+  model: 'example_model',
+  dataset: 'example_dataset',
+});
+
+for (const inputs of richMediaDataset) {
+  const output = await yourOutputGenerator(inputs);
+
+  // Log prediction with rich media in both inputs and outputs
+  const prediction = ev.logPrediction(inputs, output);
+  prediction.logScore('greater_than_5_scorer', output.result > 5);
+  prediction.logScore('greater_than_7_scorer', output.result > 7);
+  prediction.finish();
+}
+
+await ev.logSummary();
+```
+
+### [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#log-and-compare-multiple-evaluations)  Log and compare multiple evaluations
+
+With `EvaluationLogger`, you can log and compare multiple evaluations side by side in the Weights & Biases UI. This is useful for assessing how different models perform on the same dataset.
+
+1. Run the following code sample.
+2. In the Weights & Biases UI, open the **Evals** tab.
+3. Select the evaluations that you want to compare.
+4. Click **Compare**. In the Compare view, you can:
+   - Choose which evaluations to add or remove.
+   - Choose which metrics to show or hide.
+   - Page through specific examples to see how different models performed for the same input on a given dataset.
+
+For more information about comparisons, see [Comparisons](https://docs.coreweave.com/products/wandb/weave/guides/tools/comparison).
+
+- Python
+
+- TypeScript
+
+
+```
+import weave
+
+models = [\
+    "model1",\
+    "model2",\
+     {"name": "model3", "metadata": {"coolness": 9001}}\
+]
+
+for model in models:
+    # EvalLogger must be initialized before model calls to capture tokens
+    ev = EvaluationLogger(
+        name="comparison-eval",
+        model=model,
+        dataset="example_dataset",
+        scorers=["greater_than_3_scorer", "greater_than_5_scorer", "greater_than_7_scorer"],
+        eval_attributes={"experiment_id": "exp_123"}
+    )
+    for inputs in your_dataset:
+        output = your_output_generator(**inputs)
+        prediction = ev.log_prediction(inputs=inputs, output=output)
+        prediction.log_score(scorer="greater_than_3_scorer", score=output > 3)
+        prediction.log_score(scorer="greater_than_5_scorer", score=output > 5)
+        prediction.log_score(scorer="greater_than_7_scorer", score=output > 7)
+        prediction.finish()
+
+    ev.log_summary()
+```
+
+```
+import * as weave from 'weave';
+import {EvaluationLogger, WeaveObject} from 'weave';
+
+await weave.init('[YOUR-TEAM]/[YOUR-PROJECT]');
+
+const models = [\
+  'model1',\
+  'model2',\
+  new WeaveObject({name: 'model3', metadata: {coolness: 9001}})\
+];
+
+for (const model of models) {
+  // EvalLogger must be initialized before model calls to capture tokens
+  const ev = new EvaluationLogger({
+    name: 'comparison-eval',
+    model: model,
+    dataset: 'example_dataset',
+    description: 'Model comparison evaluation',
+    scorers: ['greater_than_3_scorer', 'greater_than_5_scorer', 'greater_than_7_scorer'],
+    attributes: {experiment_id: 'exp_123'}
+  });
+
+  for (const inputs of yourDataset) {
+    const output = await yourOutputGenerator(inputs);
+
+    // Fire-and-forget pattern for clean, efficient logging
+    const prediction = ev.logPrediction(inputs, output);
+    prediction.logScore('greater_than_3_scorer', output > 3);
+    prediction.logScore('greater_than_5_scorer', output > 5);
+    prediction.logScore('greater_than_7_scorer', output > 7);
+    prediction.finish();
+  }
+
+  await ev.logSummary();
+}
+```
+
+![Evals tab showing a list of evaluation runs](https://mintcdn.com/coreweave-dbfa0e8d/3Dv_sw2eg8feUJlx/products/wandb/weave/_media/evals_tab.png?fit=max&auto=format&n=3Dv_sw2eg8feUJlx&q=85&s=5797fc0d57a030bdeb0f73bd6fd9f641)
+
+![Comparison view showing metrics across multiple evaluation runs](https://mintcdn.com/coreweave-dbfa0e8d/3Dv_sw2eg8feUJlx/products/wandb/weave/_media/comparison.png?fit=max&auto=format&n=3Dv_sw2eg8feUJlx&q=85&s=9745c7f8e8e280deeaa7acb44da60341)
+
+## [​](https://docs.coreweave.com/products/wandb/weave/guides/evaluation/evaluation_logger\#usage-tips)  Usage tips
+
+The following tips help you get the most out of `EvaluationLogger`:
+
+- Python
+
+- TypeScript
+
+
+- Call `finish()` promptly after each prediction.
+- Use `log_summary` to capture metrics not tied to single predictions (for example, overall latency).
+- Rich media logging is useful for qualitative analysis.
+
+- **Auto-finish behavior**: For clarity, explicitly call `finish()` on each prediction. `logSummary()` automatically finishes any unfinished predictions. However, after you call `finish()`, you can’t log any more scores for that prediction.
+- **Configuration options**: Use configuration options, including `name`, `description`, `dataset`, `model`, `scorers`, and `attributes` to organize and filter your evaluations in the Weights & Biases UI.
+
+Last modified onSeptember 29, 2026
+
+Was this page helpful?
+
+YesNo
+
+![Project Logo](<Base64-Image-Removed>)
+
+Ask AI
+
+reCAPTCHA
+
+Recaptcha requires verification.
+
+protected by **reCAPTCHA**
