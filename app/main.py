@@ -205,6 +205,7 @@ async def health() -> dict:
         "mode": s.mode,
         "pod": s.pod_name,
         "index_segments": len((idx or {}).get("segments") or []),
+        "coverage": (idx or {}).get("coverage"),
         "probes": settings().probes_path.exists(),
         "pipeline": STATE.ctx is not None and STATE.stub is None,
         "pipeline_error": STATE.ctx_error,
@@ -601,6 +602,46 @@ async def stream(request: Request, run_id: str, atom_id: str, camera: str) -> Re
     return StreamingResponse(body(), status_code=upstream.status_code, headers=passthru)
 
 
+@app.get("/api/camera-stream")
+async def camera_stream(request: Request, scene: int, camera: str) -> Response:
+    """Actual recorded camera video, independent of a claim or exhibit."""
+    if settings().mode != "live":
+        raise HTTPException(409, "Real recorded video requires live service mode")
+    _check_camera(camera)
+    ctx = await _ensure_ctx()
+    try:
+        source = ctx.index.scene_parent(scene, camera) if ctx is not None else None
+    except (KeyError, ValueError):
+        source = None
+    if not source:
+        raise HTTPException(404, "No recorded camera source for this scene")
+    url = await _stream_url(source)
+    if not url:
+        raise HTTPException(503, "Recorded playback service unavailable")
+    import httpx
+    client = httpx.AsyncClient(timeout=httpx.Timeout(30.0, read=60.0))
+    headers = {k: v for k, v in request.headers.items() if k.lower() in ("range", "if-range")}
+    try:
+        upstream = await client.send(client.build_request("GET", url, headers=headers), stream=True)
+        if upstream.status_code >= 400:
+            await upstream.aclose()
+            await client.aclose()
+            raise HTTPException(upstream.status_code, "Recorded camera playback unavailable")
+    except httpx.HTTPError:
+        await client.aclose()
+        raise HTTPException(502, "Recorded playback connection failed")
+    async def body():
+        try:
+            async for chunk in upstream.aiter_bytes(65536):
+                yield chunk
+        finally:
+            await upstream.aclose()
+            await client.aclose()
+    passthru = {k: v for k, v in upstream.headers.items()
+                if k.lower() in ("content-type", "content-length", "content-range", "accept-ranges")}
+    return StreamingResponse(body(), status_code=upstream.status_code, headers=passthru)
+
+
 # ---------------------------------------------------------------- bench + witness
 
 def _json_file(name: str) -> Any:
@@ -760,6 +801,10 @@ async def feedback(body: FeedbackIn) -> dict:
     with p.open("a") as f:
         f.write(json.dumps(row) + "\n")
     return {"ok": True, "weave": sent}
+
+
+from app.live import router as live_router
+app.include_router(live_router)
 
 
 def main() -> None:
