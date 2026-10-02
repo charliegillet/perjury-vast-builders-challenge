@@ -709,9 +709,19 @@ function buildWall() {
   const wall = $("#wall");
   if (S.live) return;
   const meta = S.scenes[S.scene] || {};
-  let html = "";
-  wall.classList.add("available-only");
-  (meta.cameras || []).forEach((cam, cameraIndex) => {
+  // Full 18-slot wall: 3 poles x 6 cameras; cameras with no indexed footage render as NO FEED.
+  const present = meta.cameras || [];
+  wall.classList.remove("available-only");
+  let html = `<div></div>` + POLES.map((p) => `<div class="colh">POLE ${p}</div>`).join("");
+  SLOT_ROWS.forEach((c) => {
+    html += `<div class="rowh">CAM ${c}</div>`;
+    POLES.forEach((p) => {
+      const cam = `p${p}c${c}`;
+      const cameraIndex = present.indexOf(cam);
+      if (cameraIndex < 0) {
+        html += `<div class="tile outage" data-cam="${cam}"><span class="cam">${cam}</span><span class="nofeed">NO FEED</span></div>`;
+        return;
+      }
       const t0 = ((meta.t0 || {}).cameras || {})[cam] || {};
       const pr = t0.probes || {};
       const cond = pr.cond ? [COND.road[pr.cond.road], COND.traffic[pr.cond.traffic]].filter(Boolean).join(" · ") : "";
@@ -721,6 +731,7 @@ function buildWall() {
         <video src="api/camera-stream?${qs({ scene: S.scene, camera: cam })}" aria-label="Recorded video camera ${cameraIndex + 1}" muted autoplay loop controls playsinline preload="metadata"></video>
         <span class="cam">Camera ${cameraIndex + 1} <small>${esc(cam)}</small></span><span class="mark"></span><div class="gb"></div>
         <div class="badges"></div><span class="video-error" hidden>Video playback unavailable</span></article>`;
+    });
   });
   wall.innerHTML = html;
   $$("video", wall).forEach((video) => video.addEventListener("error", () => { $(".video-error", video.closest(".tile")).hidden = false; }));
