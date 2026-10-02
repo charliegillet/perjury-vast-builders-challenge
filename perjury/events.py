@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import time
 from pathlib import Path
 from typing import Any, Optional
@@ -31,6 +32,7 @@ from pydantic import BaseModel
 SERVICES = ("s3", "dataengine", "vastdb", "vss", "cosmos3", "embed1", "yolo", "canary",
             "wandb_inference", "weave", "coreweave", "cursor", "k8s")
 BADGES = ("coreweave", "cursor")  # never count toward "fired" (§5a receipt rule)
+log = logging.getLogger("perjury.events")
 
 
 def _plain(v: Any) -> Any:
@@ -63,6 +65,12 @@ class EventBus:
         ev = {"event": name, "t_ms": int((time.monotonic() - self.t0) * 1000), "data": _plain(data or {})}
         self.events.append(ev)
         self.queue.put_nowait(ev)
+        if log.isEnabledFor(logging.DEBUG):  # every event, redacted and truncated (run.sh debug log)
+            from perjury.obs import redact
+            body = json.dumps(redact(ev["data"]), default=str)
+            log.debug("run=%s +%dms %s %s", self.run_id, ev["t_ms"], name, body if len(body) <= 1500 else body[:1500] + "…")
+        if name == "error":
+            log.warning("run=%s error: %s", self.run_id, str(ev["data"].get("message", ""))[:500])
         if name == "done":
             self.closed = True
             if self.record_to:
