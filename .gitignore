@@ -27,3 +27,6 @@ cache/*
 !cache/fixture_truth.json
 !cache/.gitkeep
 .pytest_cache/
+
+# real endpoints for the live VM run (see live-env.example.sh)
+live-env.sh
