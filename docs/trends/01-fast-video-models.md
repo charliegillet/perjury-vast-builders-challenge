@@ -1,5 +1,7 @@
 # 01 — Fast / Real-Time Video Understanding: Models & Techniques (sweep as of 2026-10-02)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 **Purpose:** pick what makes UNWATCHED's 5 s CCTV verify step **faster and more accurate on one GPU today**.
 **Method:** 35 firecrawl searches + 35 page scrapes, saved under `.firecrawl/trend-models-*` (search JSON = `s*`, page captures = `p*`). Each number below cites the page it came from. **[UNVERIFIED]** means the figure only appeared in a search snippet or on a secondary/vendor page, and we did not confirm it on the primary source.
 

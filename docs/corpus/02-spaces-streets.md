@@ -1,5 +1,7 @@
 # Corpus 02: Warehouse, Smart Spaces, Neighborhood, and SF Streets (Packs C, D, E, F)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 *Prepared Oct 2, 2026 (event day, SF). We can't open the clips until doors open, so this doc works out where the footage probably comes from, using public dataset cards, NVIDIA/VAST docs, and the official starter kit. Anything inferred is labeled as inference. All raw captures are in `.firecrawl/clips-spaces-*` (18 searches, 24 scrapes). No video or archive files were downloaded.*
 
 Official corpus definition: `.firecrawl/starter-repos/official-vast-data/ARCHITECTURE_REFERENCE.md` ("Video corpus", groups 3–6, packs C–F).

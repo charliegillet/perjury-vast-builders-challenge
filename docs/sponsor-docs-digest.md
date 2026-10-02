@@ -1,5 +1,7 @@
 # Sponsor Docs Digest (build-day reference)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Scrapes are in `.firecrawl/`. **[not in scrape]** = from SDK knowledge; verify.
 
 ## 1. NVIDIA VSS 3.2.1 (latest)

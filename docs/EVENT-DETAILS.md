@@ -1,5 +1,7 @@
 # Real-Time Video Agents Hack — Official Event Details
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Source of truth: **tokens& hackathon portal** ([tokensand.com/vastsf](https://tokensand.com/vastsf), [tokensand.com/vastnyc](https://tokensand.com/vastnyc)), scraped 2026-10-02. Raw scrapes are in `.firecrawl/` and `docs/sources/` (both committed). Where this page and the Luma pages disagree, this page wins (it's the submission portal).
 
 ## Links

@@ -11,3 +11,11 @@ dist/
 build/
 .next/
 lastframe/data/
+
+# Event VM credentials and k8s config: never commit (the repo goes public for submission)
+*.config
+!config.example
+kubeconfig
+*kubeconfig*
+*secret*.yaml
+*secret*.yml

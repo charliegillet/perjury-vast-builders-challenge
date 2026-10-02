@@ -1,5 +1,7 @@
 # Corpus deep-dive 01: Traffic and driving packs (I-24 3D + PIE)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Prepared 2026-10-02, before we can see the clips. Everything below comes from the public source datasets, papers and repos. The pack descriptions are from `.firecrawl/starter-repos/official-vast-data/ARCHITECTURE_REFERENCE.md` ("Video corpus" section). Raw captures are in `.firecrawl/clips-traffic-*` (search JSON is `clips-traffic-s-*.json`).
 
 How confident each claim is:

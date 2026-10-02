@@ -1,9 +1,11 @@
 # Fast video understanding: what's trending (Oct 2026) and what it means for UNWATCHED
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 This is a web-wide sweep run with firecrawl on 2026-10-02 by 3 parallel agents: about 110 searches and about 120 pages scraped. Raw captures are in `.firecrawl/trend-models-*`, `trend-oss-*` and `trend-mkt-*`. The detailed reports are:
 - [trends/01-fast-video-models.md](trends/01-fast-video-models.md): models, speed techniques, embedders, benchmarks
-- [trends/02-trending-oss.md](trends/02-trending-oss.md): open-source projects, with stars and licenses from the GitHub API
-- [trends/03-products-startups-buzz.md](trends/03-products-startups-buzz.md): launches, funding, hackathon winners, what builders are saying
+- [trends/02-trending-oss.md](../unwanted/docs/trends/02-trending-oss.md): open-source projects, with stars and licenses from the GitHub API
+- [trends/03-products-startups-buzz.md](../unwanted/docs/trends/03-products-startups-buzz.md): launches, funding, hackathon winners, what builders are saying
 
 ## TL;DR: change these today
 1. **Verifier model order: Cosmos3-Super, then Cosmos3-Nano, then Reason2-8B.** VANTAGE Event Verification scores are 71.3, 68.9 and 64.1. Reason2-8B's specificity is 57.6, meaning it accepts about 42% of events that never happened. ([01](trends/01-fast-video-models.md))

@@ -1,5 +1,7 @@
 # 01: Build-day technical cheat sheet (UNWATCHED, SF Oct 2 2026)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Each section has copy-pasteable code, a source link, and a verification tag:
 
 - **VERIFIED**: read directly in primary source code or official docs today.

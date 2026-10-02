@@ -1,5 +1,7 @@
 # 03 — Judges, Organizer, Market (UNWATCHED)
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Researched 2026-10-02 (morning of SF build day). Raw scrapes and search JSON: `docs/sources/dr-judge-*.{md,json}` (24 search result sets, 30 page scrapes). This uses only public professional information: blogs, talks, press, and public post snippets.
 
 **Source quality key:** **[A]** primary source (vendor press release or own blog, government or regulator, analyst press release). **[B]** credible secondary source (trade press, IPVM, industry body). **[C]** vendor marketing blog or search snippet only. Treat C as directional.

@@ -1,5 +1,7 @@
 # The official starter kit, and what it changes for UNWATCHED
 
+> **Cleanup note (2026-10-02):** some raw captures and docs cited below were moved to [`unwanted/`](../unwanted/README.md) with their paths preserved (e.g. `docs/sources/x.md` is now `unwanted/docs/sources/x.md`). See `unwanted/MANIFEST.tsv`.
+
 Found on 2026-10-01 at 18:16 PT (the night before SF) by searching GitHub for the event:
 - **[vast-data/vast-builders-challenge](https://github.com/vast-data/vast-builders-challenge)**: the official starter repo. It is pre-cloned on the event VM and was last pushed 2026-10-01. Copied to `.firecrawl/starter-repos/official-vast-data/`.
 - [relaxedtomato/vast-builders-challenge](https://github.com/relaxedtomato/vast-builders-challenge): an earlier version of the same repo. Copied to `.firecrawl/starter-repos/relaxedtomato/`.
