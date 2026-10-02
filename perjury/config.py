@@ -46,7 +46,7 @@ class Settings:
         # GPU host (shared CoreWeave endpoints). config.example: "No auth token is needed"; the bearer is sent only if set
         self.gpu_token = e.get("GPU_BEARER_TOKEN", "")
         self.cosmos_url = e.get("COSMOS3_REASON_URL", "").rstrip("/")
-        self.cosmos_model = e.get("COSMOS3_REASON_MODEL", "nvidia/cosmos3-reason")
+        self.cosmos_model = e.get("COSMOS3_REASON_MODEL", "")  # unset: ask the server (/v1/models); it serves cosmos3-nano-reasoner
         self.cosmos_bbox_scale = float(e.get("COSMOS_BBOX_SCALE", "1000"))
         self.yolo_url = e.get("YOLO_URL", "").rstrip("/")
         self.embed_url = e.get("COSMOS_EMBED1_URL", "").rstrip("/")
@@ -58,7 +58,7 @@ class Settings:
         self.wandb_project = (f"{e['WANDB_TEAM']}/{e.get('WANDB_PROJECT', 'perjury')}"
                               if e.get("WANDB_TEAM") else e.get("WANDB_PROJECT", "perjury"))
         self.wandb_base = e.get("WANDB_BASE_URL", "https://api.inference.wandb.ai/v1").rstrip("/")
-        self.atomizer_model = e.get("PERJURY_ATOMIZER_MODEL", "Qwen/Qwen3-30B-A3B-Instruct-2507")
+        self.atomizer_model = e.get("PERJURY_ATOMIZER_MODEL", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B")  # thinking off in llm.py
         # S3 / VastDB
         self.s3_endpoint = e.get("S3_ENDPOINT", "")
         self.s3_access = e.get("ACCESS_KEY", "")

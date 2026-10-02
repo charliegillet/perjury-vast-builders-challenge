@@ -105,10 +105,22 @@ class Cosmos(HttpBase):
 
     def __init__(self, s: Settings, cache: ProbeCache | None = None):
         super().__init__(s, timeout=PROBE_TIMEOUT_S)
-        self.model = s.cosmos_model
+        self.model = s.cosmos_model or None   # None: discovered from /v1/models on first use (gpu/model-smoke-test)
         self.bbox_scale = s.cosmos_bbox_scale
         self.no_think = s.env.get("PERJURY_COSMOS_NO_THINK", "0") == "1"
         self.cache = cache or ProbeCache()
+
+    async def _resolve_model(self) -> None:
+        """COSMOS3_REASON_MODEL unset: use the id the server reports (the event host serves nvidia/cosmos3-nano-reasoner,
+        not the documented nvidia/cosmos3-reason). Falls back to the documented id if /v1/models is unreachable."""
+        if self.model:
+            return
+        try:
+            r = await self.http().get(f"{self.s.cosmos_url}/v1/models", headers=self.gpu_headers(), timeout=10)
+            r.raise_for_status()
+            self.model = r.json()["data"][0]["id"]
+        except Exception:
+            self.model = "nvidia/cosmos3-reason"
 
     def body(self, media_part: dict, prompt: str) -> dict:
         b = {"model": self.model, "temperature": 0, "max_tokens": 512,
@@ -142,6 +154,7 @@ class Cosmos(HttpBase):
                                image_sha=image_sha)
         if not self.s.cosmos_url:
             return ProbeResult(image_sha=image_sha, error="COSMOS3_REASON_URL not set")
+        await self._resolve_model()
         body = self.body(part, prompt)
         try:
             async with self.sem(self.s.cosmos_concurrency):
