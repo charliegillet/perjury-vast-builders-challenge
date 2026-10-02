@@ -22,12 +22,11 @@ Set it up at G0 (10:00–10:20) and test it then, not at 16:45.
 - Managed or corporate Chrome profiles can block flags. Use a personal profile or another laptop.
 - macOS: System Settings → Privacy & Security → Microphone → Google Chrome must be on.
 
-## Fallbacks, in order (FINAL-IDEA-v3 §10)
+## Fallbacks, in order (FINAL-IDEA-v3 §10; option c is dropped because nothing runs on the laptop)
 
 | | Where the mic runs | How |
 |---|---|---|
 | b | VM browser | `http://localhost:8080`. localhost counts as secure, so the mic works with no flag (if the VM desktop passes audio through). |
-| c | Laptop localhost | From the repo: `mkdir -p /tmp/pj && cp app/static/index.html /tmp/pj/ && cp -r app/static /tmp/pj/static && cd /tmp/pj && python3 -m http.server 5173`, then open `http://localhost:5173/?api=http://video-lab-team-__.cosmos.vastdata.com/app/`. localhost is secure, so the mic works, and every API call goes to /app (CORS is on). |
 | d | **Recorded file** | Record the line in Voice Memos or QuickTime → **⤒ recording** → pick the file. Works over plain HTTP. |
 | e | **Typed** | Always available. Type the claim and press Enter. |
 

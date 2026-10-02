@@ -23,11 +23,6 @@ const COND = {
 };
 
 // ------------------------------------------------------------------ helpers
-// §10 option (c): a static copy on laptop localhost can target the pod with ?api=http://<team host>/app/
-const API_BASE = (() => {
-  try { const a = new URLSearchParams(location.search).get("api"); return a ? a.replace(/\/?$/, "/") : ""; } catch (e) { return ""; }
-})();
-const U = (p) => (API_BASE && !/^(https?:|data:|blob:)/.test(p) ? API_BASE + p : p);
 const $ = (s, root) => (root || document).querySelector(s);
 const $$ = (s, root) => Array.from((root || document).querySelectorAll(s));
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -48,7 +43,7 @@ function toast(msg, kind) {
 }
 
 async function getJSON(url, opts) {
-  const res = await fetch(U(url), opts);
+  const res = await fetch(url, opts);
   let body = null;
   try { body = await res.json(); } catch (e) { body = null; }
   if (!res.ok) {
@@ -203,7 +198,7 @@ function showTab(tab) {
 
 // ------------------------------------------------------------------ runs + SSE
 async function streamSSE(url, opts, onEvent) {
-  const res = await fetch(U(url), opts);
+  const res = await fetch(url, opts);
   if (!res.ok) {
     let d = `${res.status}`;
     try { const b = await res.json(); d = Array.isArray(b.detail) ? b.detail.map((x) => x.msg).join("; ") : b.detail || d; } catch (e) { /* not json */ }
@@ -616,9 +611,9 @@ function frac(st) {
   const votes = Object.values(st.tiles).filter((t) => t.vote && t.tier !== "YOLO");
   const stats = (st.verdict && st.verdict.stats) || {};
   if (votes.length || stats.k) {
-    const Y = stats.Y ?? votes.filter((t) => t.state === "yes").length;
-    const N = stats.N ?? votes.filter((t) => t.state === "no").length;
-    const k = stats.k ?? (st.summon ? (st.summon.jurors || []).length : votes.length);
+    const Y = stats.Y ?? stats.match ?? votes.filter((t) => t.state === "yes").length;
+    const N = stats.N ?? stats.other ?? votes.filter((t) => t.state === "no").length;
+    const k = stats.Y == null && stats.k_valid != null ? stats.k_valid : stats.k ?? (st.summon ? (st.summon.jurors || []).length : votes.length);
     out.JURY = `${v === "CONTRADICTED" ? N : Y}/${k}`;
   } else if (st.summon) {
     out.JURY = `0/${(st.summon.jurors || []).length}`;
@@ -661,7 +656,8 @@ function renderPills(fresh) {
     const tb = tiers.map((t) => `<span class="tb ${t}">${t}${fr[t] ? " " + esc(fr[t]) : ""}</span>`).join("");
     const label = state === "moot" ? "moot" : typeLabel(a);
     b.className = `pill ${state}${r.activeAtom === a.id ? " on" : ""}`;
-    b.title = st.verdict ? `${st.verdict.verdict}: ${st.verdict.reason}` : (st.t0 && st.t0.summary) || "pending";
+    const pillTxt = st.verdict && st.verdict.stats && st.verdict.stats.pill ? ` · ${st.verdict.stats.pill}` : "";
+    b.title = st.verdict ? `${st.verdict.verdict}: ${st.verdict.reason}${pillTxt}` : (st.t0 && st.t0.summary) || "pending";
     const note = st.verdict && state !== "supported" && state !== "contradicted" ? `<span class="note">${esc(st.verdict.reason)}</span>` : "";
     b.innerHTML = `<span class="ic"></span><span class="span">${esc(a.span)}</span><span class="ty">${esc(label)}</span>${tb}${note}`;
   });
@@ -687,7 +683,7 @@ function buildWall() {
       const cls = Object.entries(t0.segments_with || {}).map(([k, v]) => `${k} ${v}`).join(", ");
       const title = `${cam} · ${t0.segments || 0} segments${cls ? " · YOLO segments with: " + cls : ""}${cond ? " · P-COND: " + cond : ""}`;
       html += `<div class="tile idle" data-cam="${cam}" data-cond="${esc(cond)}" title="${esc(title)}">
-        <img src="${U("api/tile?" + qs({ scene: S.scene, camera: cam }))}" alt="${cam}" loading="eager" />
+        <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" loading="eager" />
         <span class="cam">${cam}</span><span class="mark"></span><div class="gb"></div>
         <div class="badges"></div></div>`;
     });
@@ -740,11 +736,11 @@ function paintWall() {
   });
 }
 
-function boxDiv(b, cls, label) {
+function boxDiv(b, cls, label, frame) {
+  // bbox_2d is 0-1000 normalized; zoom.crop_box is pixels of the 4K frame (frame = [w, h])
   if (!b || b.length < 4) return "";
   const [x1, y1, x2, y2] = b.map(Number);
-  const scaleX = Math.max(x1, x2) > 1000 ? 3840 : 1000;
-  const scaleY = Math.max(y1, y2) > 1000 ? 2160 : 1000;
+  const [scaleX, scaleY] = frame || [1000, 1000];
   const css = `left:${(x1 / scaleX) * 100}%;top:${(y1 / scaleY) * 100}%;width:${((x2 - x1) / scaleX) * 100}%;height:${((y2 - y1) / scaleY) * 100}%`;
   return `<div class="${cls}" style="${css}">${label ? `<span>${esc(label)}</span>` : ""}</div>`;
 }
@@ -788,7 +784,7 @@ function renderExhibits() {
   $("#exhibits-note").textContent = `“${st.atom ? st.atom.span : ""}” · ${items.length} jurors · click for the keyframe`;
   box.innerHTML = items.slice(0, 12).map(([cam, t]) => `
     <button type="button" class="ex-thumb ${t.state}" data-cam="${cam}" title="${esc(t.vote.probe_version || "")}">
-      <img src="${U("api/tile?" + qs({ scene: S.scene, camera: cam }))}" alt="${cam}" />
+      <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" />
       <span>${cam} ${t.state === "yes" ? "✓" : "✗"}</span>
     </button>`).join("");
   $$(".ex-thumb", box).forEach((b) => b.addEventListener("click", () => openExhibit(r.activeAtom, b.dataset.cam)));
@@ -808,7 +804,7 @@ async function openExhibit(atomId, cam) {
   const j = ex.juror || {};
   $("#drawer-title").textContent = `EXHIBIT · ${cam} · “${a.span || atomId}” · ${ex.probe_version || ex.probe || ""} · panel ${ex.panel}`;
   const img = $("#exhibit-img");
-  img.src = U(ex.image);
+  img.src = ex.image;
   const vid = $("#exhibit-video");
   vid.pause();
   vid.removeAttribute("src");
@@ -817,7 +813,7 @@ async function openExhibit(atomId, cam) {
   play.hidden = !ex.stream;
   play.onclick = () => {
     vid.hidden = false;
-    vid.src = U(ex.stream);
+    vid.src = ex.stream;
     vid.muted = true;
     const p = vid.play();
     if (p && p.catch) p.catch(() => toast("Stream did not play (VSS videos/stream)."));
@@ -826,7 +822,7 @@ async function openExhibit(atomId, cam) {
   if (ex.ground && ex.ground.bbox_2d) ov += boxDiv(ex.ground.bbox_2d, "cbox", "Cosmos3 P-GROUND");
   if (ex.zoom && ex.zoom.crop_box) {
     const z = ex.zoom;
-    ov += boxDiv(z.crop_box, "ybox", `YOLO zoom ${z.ok ? "✓" : "✗"} ${z.label || ""} ${z.conf != null ? (+z.conf).toFixed(2) : ""}`);
+    ov += boxDiv(z.crop_box, "ybox", `YOLO zoom ${z.ok ? "✓" : "✗"} ${z.label || ""} ${z.conf != null ? (+z.conf).toFixed(2) : ""}`, [3840, 2160]);
   }
   $("#ex-overlay").innerHTML = ov;
   const kv = [
@@ -1328,7 +1324,7 @@ async function loadBench() {
   const box = $("#bench-body");
   let rep;
   try { rep = await getJSON("api/bench"); } catch (e) { box.innerHTML = `<div class="empty-note">${esc(e.message)}</div>`; return; }
-  if (!rep || rep.status === "not_run") {
+  if (!rep || rep.status === "not_run" || rep.mode === "empty") {
     box.innerHTML = `<div class="empty-note">Bench not run yet. <code>python -m bench.run_bench</code> writes <code>cache/bench_report.json</code>; nothing is shown here until code has measured it.</div>`;
     return;
   }
