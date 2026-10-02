@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Run PERJURY from the repo root.
-#   ./run.sh              offline demo on fake Pack A data (FIXTURE banner) → http://localhost:8080/
+#   ./run.sh              real endpoints → http://localhost:8080/
 #   ./run.sh live         real endpoints (event VM: needs INGRESS_URL etc. in the env or /config/<team>.config)
 #   ./run.sh test         run the test suite
 #   PORT=9000 ./run.sh    another port
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-MODE="${1:-fixture}"
+MODE="${1:-live}"
 PORT="${PORT:-8080}"
 VENV=.venv
 PY="$VENV/bin/python"
@@ -39,7 +39,7 @@ case "$MODE" in
     ;;
   live)
     # On the VM, pick up this team's config if the env doesn't already have it (values are never printed).
-    if [[ -z "${INGRESS_URL:-}" ]]; then
+    if [[ -z "${INGRESS_URL:-}" && -z "${VSS_URL:-}" && -z "${PERJURY_TEAM_CONFIG:-}" ]]; then
       cfg="$(find /config -maxdepth 1 \( -type f -o -type l \) -name '*.config' 2>/dev/null | sort | head -n 1 || true)"
       [[ -n "$cfg" ]] && export PERJURY_TEAM_CONFIG="$cfg"
     fi
