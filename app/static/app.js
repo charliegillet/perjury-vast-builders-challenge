@@ -1,5 +1,5 @@
 // PERJURY courtroom UI (FINAL-IDEA-v3 §9). Vanilla JS, no build step.
-// Every URL is relative ("api/testify", never "/api/testify"): the Ingress serves this page at /app/ and strips /app.
+// Every URL is relative (api/testify, with no leading slash): the Ingress serves this page at /app/ and strips /app.
 "use strict";
 
 // ------------------------------------------------------------------ constants
@@ -23,6 +23,11 @@ const COND = {
 };
 
 // ------------------------------------------------------------------ helpers
+// §10 option (c): a static copy on laptop localhost can target the pod with ?api=http://<team host>/app/
+const API_BASE = (() => {
+  try { const a = new URLSearchParams(location.search).get("api"); return a ? a.replace(/\/?$/, "/") : ""; } catch (e) { return ""; }
+})();
+const U = (p) => (API_BASE && !/^(https?:|data:|blob:)/.test(p) ? API_BASE + p : p);
 const $ = (s, root) => (root || document).querySelector(s);
 const $$ = (s, root) => Array.from((root || document).querySelectorAll(s));
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -43,7 +48,7 @@ function toast(msg, kind) {
 }
 
 async function getJSON(url, opts) {
-  const res = await fetch(url, opts);
+  const res = await fetch(U(url), opts);
   let body = null;
   try { body = await res.json(); } catch (e) { body = null; }
   if (!res.ok) {
@@ -198,7 +203,7 @@ function showTab(tab) {
 
 // ------------------------------------------------------------------ runs + SSE
 async function streamSSE(url, opts, onEvent) {
-  const res = await fetch(url, opts);
+  const res = await fetch(U(url), opts);
   if (!res.ok) {
     let d = `${res.status}`;
     try { const b = await res.json(); d = Array.isArray(b.detail) ? b.detail.map((x) => x.msg).join("; ") : b.detail || d; } catch (e) { /* not json */ }
@@ -582,7 +587,7 @@ function renderTestimony() {
   if (!r) return;
   const reason = (id) => { const st = r.A[id]; return st && st.verdict ? `${st.verdict.verdict}: ${st.verdict.reason}` : "pending"; };
   $("#testimony").innerHTML = `<span class="q">“</span>${spansHTML(r.text, r.atoms, spanStateOf, reason)}<span class="q">”</span>`;
-  const by = r.source === "canary" ? `(as heard by Canary${r.heardMs ? " · " + fmtMs(r.heardMs) : ""})` : r.replay ? "(replay)" : "(typed)";
+  const by = (r.source === "canary" ? `(as heard by Canary${r.heardMs ? " · " + fmtMs(r.heardMs) : ""}` : `(${r.source || "typed"}`) + (r.replay ? " · replay)" : ")");
   $("#heard-by").textContent = by;
   $$("#testimony .sp").forEach((sp) => sp.addEventListener("click", () => {
     const id = (sp.dataset.atoms || "").split(",")[0];
@@ -682,7 +687,7 @@ function buildWall() {
       const cls = Object.entries(t0.segments_with || {}).map(([k, v]) => `${k} ${v}`).join(", ");
       const title = `${cam} · ${t0.segments || 0} segments${cls ? " · YOLO segments with: " + cls : ""}${cond ? " · P-COND: " + cond : ""}`;
       html += `<div class="tile idle" data-cam="${cam}" data-cond="${esc(cond)}" title="${esc(title)}">
-        <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" loading="eager" />
+        <img src="${U("api/tile?" + qs({ scene: S.scene, camera: cam }))}" alt="${cam}" loading="eager" />
         <span class="cam">${cam}</span><span class="mark"></span><div class="gb"></div>
         <div class="badges"></div></div>`;
     });
@@ -783,7 +788,7 @@ function renderExhibits() {
   $("#exhibits-note").textContent = `“${st.atom ? st.atom.span : ""}” · ${items.length} jurors · click for the keyframe`;
   box.innerHTML = items.slice(0, 12).map(([cam, t]) => `
     <button type="button" class="ex-thumb ${t.state}" data-cam="${cam}" title="${esc(t.vote.probe_version || "")}">
-      <img src="api/tile?${qs({ scene: S.scene, camera: cam })}" alt="${cam}" />
+      <img src="${U("api/tile?" + qs({ scene: S.scene, camera: cam }))}" alt="${cam}" />
       <span>${cam} ${t.state === "yes" ? "✓" : "✗"}</span>
     </button>`).join("");
   $$(".ex-thumb", box).forEach((b) => b.addEventListener("click", () => openExhibit(r.activeAtom, b.dataset.cam)));
@@ -803,7 +808,7 @@ async function openExhibit(atomId, cam) {
   const j = ex.juror || {};
   $("#drawer-title").textContent = `EXHIBIT · ${cam} · “${a.span || atomId}” · ${ex.probe_version || ex.probe || ""} · panel ${ex.panel}`;
   const img = $("#exhibit-img");
-  img.src = ex.image;
+  img.src = U(ex.image);
   const vid = $("#exhibit-video");
   vid.pause();
   vid.removeAttribute("src");
@@ -812,7 +817,7 @@ async function openExhibit(atomId, cam) {
   play.hidden = !ex.stream;
   play.onclick = () => {
     vid.hidden = false;
-    vid.src = ex.stream;
+    vid.src = U(ex.stream);
     vid.muted = true;
     const p = vid.play();
     if (p && p.catch) p.catch(() => toast("Stream did not play (VSS videos/stream)."));
@@ -914,12 +919,12 @@ function renderChip(id) {
   const st = $(".st", el);
   if (id === "coreweave") {
     el.className = "chip badge";
-    st.textContent = `${gpuSeconds().toFixed(1)} GPU-s · meter`;
+    st.textContent = `${gpuSeconds().toFixed(1)} GPU-s`;
     return;
   }
   if (id === "cursor") {
     el.className = "chip badge";
-    st.textContent = "built with · badge";
+    st.textContent = "badge";
     return;
   }
   if (id === "k8s") {
@@ -1310,8 +1315,8 @@ function lineChart(points, series) {
 }
 
 function sycoBars(sy) {
-  const rows = Object.entries(sy).filter(([, v]) => v != null && typeof v !== "string").map(([k, v]) => {
-    const m = metricOf(typeof v === "object" ? { k: v.yes ?? v.k, n: v.n ?? v.total, rate: v.rate } : v);
+  const rows = Object.entries(sy).filter(([, v]) => v && typeof v === "object").map(([k, v]) => {
+    const m = metricOf({ k: v.yes ?? v.k, n: v.n ?? v.total, rate: v.rate });
     return [k, m];
   }).filter(([, m]) => m && m.rate != null);
   if (!rows.length) return `<p class="muted">no sycophancy numbers in the report</p>`;
@@ -1335,8 +1340,9 @@ async function loadBench() {
   const test = splitOf(rep, "test");
   const dev = splitOf(rep, "dev");
   const stock = rep.stock || rep.stock_ab || splitOf(rep, "stock");
-  const stockTest = stock && (stock.test || stock);
-  let html = "";
+  const stockTest = stock && ((stock.splits || {}).test || stock.test || (stock.catch ? stock : null));
+  let html = rep.fixture || rep.mode === "fixture"
+    ? `<div class="empty-note" style="margin-bottom:14px;color:var(--warn);border-color:#6b4f0c">FIXTURE bench: these numbers come from offline fakes, not the live models. Never put them on a slide.</div>` : "";
   if (test || dev) {
     html += `<div class="card"><h3>VERDICT METRICS · claims ${test && test.n_claims ? "· test n=" + test.n_claims : ""}</h3><table class="metrics"><thead><tr><th>metric</th><th>PERJURY · test</th><th>dev</th>${stockTest ? "<th>stock VSS agent · test</th>" : ""}</tr></thead><tbody>` +
       METRICS.map(([key, name, hint]) => {
@@ -1367,10 +1373,19 @@ async function loadBench() {
         `<p class="muted" style="font-size:12px;margin:6px 0 0">A type issues hard verdicts only if dev catch ≥ 80% and false accusation ≤ 10% with n ≥ 5; otherwise "demoted by bench".</p></div>`;
     }
   }
-  const per = rep.atom_accuracy || rep.per_type || null;
+  const per = rep.atom_accuracy || rep.per_type || (test && test.atoms) || null;
   if (per && typeof per === "object") {
-    html += `<div class="card"><h3>ATOM ACCURACY PER TYPE</h3><table class="metrics"><tbody>` +
-      Object.entries(per).map(([k, v]) => { const m = metricOf(v); return `<tr><td>${esc(k)}</td>${metricCell(m)}</tr>`; }).join("") + `</tbody></table></div>`;
+    html += `<div class="card"><h3>ATOM ACCURACY PER TYPE · test</h3><table class="metrics"><thead><tr><th>type</th><th>accuracy</th><th>catch</th><th>false accusation</th><th>support</th></tr></thead><tbody>` +
+      Object.entries(per).map(([k, v]) => {
+        const acc = metricOf(v && v.accuracy ? v.accuracy : v);
+        return `<tr><td>${esc(k.replace(/_/g, " "))}<span class="ci">n=${esc((v && v.n) ?? "?")}</span></td>${metricCell(acc)}${metricCell(metricOf(v && v.catch), true)}${metricCell(metricOf(v && v.false_accusation), true)}${metricCell(metricOf(v && v.support), true)}</tr>`;
+      }).join("") + `</tbody></table></div>`;
+  }
+  const claims = test && Array.isArray(test.claims) ? test.claims : null;
+  if (claims) {
+    html += `<details class="card"><summary class="muted">per-claim results · test (${claims.length})</summary><table class="metrics"><thead><tr><th>id</th><th>scene</th><th>claim</th><th>kind</th><th>expected</th><th>got</th></tr></thead><tbody>` +
+      claims.map((c) => `<tr><td>${esc(c.id)}</td><td>${esc(c.scene)}</td><td style="font-family:var(--serif);font-size:14px">${esc(c.text)}</td><td>${esc(c.kind)}</td><td>${esc(c.expected)}</td><td class="vd ${esc(c.verdict)}">${esc(c.verdict)} ${c.correct ? "✓" : "✗"}</td></tr>`).join("") +
+      `</tbody></table></details>`;
   }
   html += `<details><summary class="muted">raw bench_report.json</summary><pre class="json">${json(rep)}</pre></details>`;
   box.innerHTML = html;
