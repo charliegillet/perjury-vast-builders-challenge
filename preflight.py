@@ -95,6 +95,26 @@ async def _tcp_ok(endpoint: str) -> tuple[bool, str]:
         return False, type(e).__name__
 
 
+async def _s3_ok(ctx: Ctx) -> tuple[bool, str]:
+    """Read a known real object through the app's existing signed media transport.
+
+    No VSS fallback here: this gate specifically checks S3, with the same ffmpeg
+    transport and trust configuration the application already uses for playback.
+    """
+    from perjury.media import run_ffmpeg
+    idx = ctx.index() or {}
+    segs = idx.get("segments") or []
+    if not segs:
+        return False, "no indexed object available for authenticated S3 check"
+    try:
+        url = ctx.c.media.presign(segs[0]["source"], expires=60)
+        data = await run_ffmpeg(["-i", url, "-frames:v", "1", "-vf", "scale=160:-2",
+                                 "-f", "image2pipe", "-vcodec", "mjpeg", "pipe:1"], timeout=8)
+        return len(data) > 200, "authenticated S3 frame read" if len(data) > 200 else "empty S3 frame"
+    except Exception as e:
+        return False, type(e).__name__
+
+
 async def g0(ctx: Ctx) -> Result:
     r = Result("G0")
     r.steps = ["Laptop Chrome: chrome://flags/#unsafely-treat-insecure-origin-as-secure -> add the /app origin, relaunch, "
@@ -119,7 +139,7 @@ async def g0(ctx: Ctx) -> Result:
         checks["wandb_inference"] = _http_ok(f"{s.wandb_base}/models", {"Authorization": f"Bearer {s.wandb_key}"})
     checks["pypi"] = _http_ok("https://pypi.org/simple/imageio-ffmpeg/")
     if s.s3_endpoint:
-        checks["s3"] = _http_ok(s.s3_endpoint if "://" in s.s3_endpoint else f"http://{s.s3_endpoint}", any_status=True)
+        checks["s3"] = _s3_ok(ctx)
     if s.vdb_endpoint:
         checks["vastdb"] = _tcp_ok(s.vdb_endpoint)
     if s.vss_url:
