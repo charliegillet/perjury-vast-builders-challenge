@@ -522,6 +522,16 @@ RULES = {
 
 
 async def evaluate(atom: Atom, route: Route, scene: int, ctx: "Context", bus, opts: RunOpts) -> AtomVerdict:
+    """Route -> rule -> AtomVerdict, then per-video observations when the verdict has no juror votes (any location,
+    any number of videos; perjury/observe.py). Observations never change the verdict label."""
+    from perjury.observe import attach
+    t = time.monotonic()
+    av = await _evaluate(atom, route, scene, ctx, bus, opts)
+    budget = float(getattr(ctx.settings, "atom_timeout_s", 20.0)) - (time.monotonic() - t) - 1.0
+    return await attach(av, atom, route, scene, ctx, bus, opts, budget)
+
+
+async def _evaluate(atom: Atom, route: Route, scene: int, ctx: "Context", bus, opts: RunOpts) -> AtomVerdict:
     """Route -> rule -> AtomVerdict. Unrouted, never-testable and bench-demoted types never touch a model."""
     if (atom.type == AtomType.coco_presence and atom.cls == "truck" and not atom.negated) or (atom.type == AtomType.attribute and atom.cls == "truck"):
         from perjury.trucks import evaluate_truck
