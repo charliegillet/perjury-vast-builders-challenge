@@ -34,7 +34,8 @@
     <div class="team-badge"><span class="avatar">41</span><span class="team-copy">Team 41<small>Builders Challenge</small></span></div>
   </header>
   <div class="workspace-heading"><div><span class="workspace-eyebrow">WORKSPACE</span><h1>Evidence review</h1></div><span class="workspace-caption">Verify claims against recorded footage</span></div>
-  <section class="scene-bar"><strong>Scene</strong><nav class="scenes" id="scenes" aria-label="Scene"></nav><span class="scene-context" id="scene-context"></span></section>
+  <section class="catalog-controls" aria-label="VAST footage selection"><label for="location-select">Location</label><select id="location-select"><option value="">Loading VAST catalog…</option></select><label for="assessment-camera">Assess camera</label><select id="assessment-camera" disabled><option>Choose a location</option></select><button type="button" class="ghost" id="catalog-refresh">Refresh footage</button><span id="catalog-progress" role="status" aria-live="polite"></span></section>
+  <section class="scene-bar" id="legacy-scenes"><strong>Scene</strong><nav class="scenes" id="scenes" aria-label="Scene"></nav><span class="scene-context" id="scene-context"></span></section>
 
   <section class="source-controls"><span class="source-status" id="source-status">VAST video streaming · Recorded footage</span><a class="ghost" href="https://team-41-vss.thecosmoslabs.com/explore" target="_blank" rel="noopener">Browse VAST videos ↗</a></section>
   <section class="testify-bar"><label class="claim-label" for="claim">Your claim</label>
@@ -80,6 +81,7 @@
             <span class="lg yes">yes</span><span class="lg no">no</span><span class="lg abstain">abstain</span><span class="lg delib">deliberating</span><span class="lg cached">cached</span>
           </div>
         </div>
+        <div class="gallery-toolbar"><span id="gallery-count">Recorded cameras</span><label>Layout <select id="gallery-layout" aria-label="Camera gallery layout"><option value="1">1</option><option value="3">3</option><option value="6" selected>6</option><option value="all">All</option></select></label></div>
         <div class="live-preview" id="live-preview" hidden><video id="live-video" muted autoplay playsinline controls></video></div>
         <div class="wall" id="wall"></div>
         <div class="wall-foot muted" id="wall-foot"></div>
@@ -186,5 +188,6 @@
 
   <script src="static/wav.js"></script>
   <script src="static/app.js?v=20261002-live-2"></script>
+  <script src="static/trucks.js?v=truck-colour-v1"></script>
 </body>
 </html>
