@@ -261,7 +261,12 @@ async function runStream(url, opts) {
     });
   } catch (e) {
     if (e.name !== "AbortError") {
-      toast(e.message);
+      // Catalog selections live in server memory for 20 min (and are lost on a pod restart): reload and ask to retry.
+      if (S.scope && /expired|refresh footage/i.test(e.message)) {
+        const location = S.scope.location;
+        toast("Footage selection expired; reloaded it. Press Testify again.", "info");
+        setTimeout(() => loadLocation(location), 0);
+      } else toast(e.message);
       if (S.run && !S.run.verdict) setStamp("idle", "NO VERDICT");
     }
   } finally {
@@ -850,26 +855,60 @@ function renderStock(d) {
     <span class="muted"> · search returned ${esc(d.hits ?? "?")} clips for this sentence · ${fmtMs(d.latency_ms)}</span>`;
 }
 
+function exhibitLabel(cam) {
+  // per-video observation ids look like "<camera>.vNN" (perjury/observe.py)
+  const m = /^(.*)\.v(\d+)$/.exec(cam);
+  return m ? `${m[1]} · video ${+m[2]}` : cam;
+}
+
+function exhibitSource(v) {
+  if (!v) return "Evidence frame";
+  if (v.probe === "YOLO") return "YOLO detections";
+  if (v.probe === "metadata") return "Location metadata";
+  return v.cached ? `Cosmos · cached ${hhmm(v.cached_at) || ""}`.trim() : "Cosmos juror";
+}
+
+const EXHIBIT_MAX = 60;
+
 function renderExhibits() {
   if (S.live) { $("#exhibits").innerHTML = `<span class="muted">Live assessment applies to the recently received frames, not archived camera evidence.</span>`; return; }
   const r = S.run;
   const box = $("#exhibits");
   if (!r || !r.activeAtom) return;
   const st = atomState(r.activeAtom);
+  // One entry per video / juror with a vote (cameras on the I-24 jury, every video elsewhere), plus caption sources.
   const items = Object.entries(st.tiles).filter(([, t]) => t.vote);
+  const captions = (st.t1 && st.t1.snippets || []).filter((c) => !c.calibration && c.quote && ["SUPPORTS", "CONTRADICTS"].includes(c.label));
+  for (const c of captions) {
+    if (!items.some(([cam]) => cam === c.cam)) items.push([c.cam, { state: c.label === "SUPPORTS" ? "yes" : "no", vote: null, caption: c }]);
+  }
   if (!items.length) {
+    const why = st.verdict && st.verdict.reason ? ` ${st.verdict.reason}` : "";
     $("#exhibits-note").textContent = st.atom ? `“${st.atom.span}”` : "";
-    box.innerHTML = `<span class="muted">No frame assessments are associated with this claim.</span>`;
+    box.innerHTML = `<span class="muted">No frame assessments are associated with this claim.${esc(why)}</span>`;
     return;
   }
-  items.sort((a, b) => (a[1].state === "yes" ? 0 : 1) - (b[1].state === "yes" ? 0 : 1) || a[0].localeCompare(b[0]));
-  $("#exhibits-note").textContent = `“${st.atom ? st.atom.span : ""}” · ${items.length} jurors · click for the keyframe`;
-  box.innerHTML = items.slice(0, 12).map(([cam, t]) => `
-    <button type="button" class="ex-thumb ${t.state}" data-cam="${cam}" title="${esc(t.vote.probe_version || "")}">
-      <img src="api/exhibit.jpg?${qs({ run_id: r.id, atom_id: r.activeAtom, camera: cam, panel: 1 })}" alt="Assessment frame for ${esc(cam)}" loading="lazy" />
-      <span><strong>${esc(cam)} · Evidence frame</strong><small>${t.state === "yes" ? "Supporting vote" : t.state === "no" ? "Contradicting vote" : "Abstained · not supporting evidence"}</small><em>Open frame →</em></span>
-    </button>`).join("");
-  $$(".ex-thumb", box).forEach((b) => b.addEventListener("click", () => openExhibit(r.activeAtom, b.dataset.cam)));
+  const rank = { yes: 0, no: 1, abstain: 2 };
+  items.sort((a, b) => (rank[a[1].state] ?? 3) - (rank[b[1].state] ?? 3) || a[0].localeCompare(b[0], undefined, { numeric: true }));
+  const tally = { yes: 0, no: 0, abstain: 0 };
+  items.forEach(([, t]) => { tally[t.state in tally ? t.state : "abstain"] += 1; });
+  const perVideo = items.some(([cam]) => /\.v\d+$/.test(cam));
+  const unit = perVideo ? (items.length === 1 ? "video" : "videos") : (items.length === 1 ? "juror" : "jurors");
+  $("#exhibits-note").textContent = `“${st.atom ? st.atom.span : ""}” · ${items.length} ${unit} · ${tally.yes} yes · ${tally.no} no · ${tally.abstain} abstain · click for the keyframe`;
+  const shown = items.slice(0, EXHIBIT_MAX);
+  box.innerHTML = shown.map(([cam, t]) => {
+    const verdict = t.state === "yes" ? "Supporting vote" : t.state === "no" ? "Contradicting vote" : `Abstained${t.vote && t.vote.abstain_reason ? " · " + t.vote.abstain_reason.replace(/_/g, " ") : ""}`;
+    const src = t.caption ? `Caption: “${t.caption.quote}”` : exhibitSource(t.vote);
+    return `
+    <button type="button" class="ex-thumb ${t.state}" data-cam="${esc(cam)}" title="${esc((t.vote && t.vote.probe_version) || "")}">
+      ${t.caption ? "" : `<img src="api/exhibit.jpg?${qs({ run_id: r.id, atom_id: r.activeAtom, camera: cam, panel: 1 })}" alt="Evidence frame for ${esc(exhibitLabel(cam))}" loading="lazy" />`}
+      <span><strong>${esc(exhibitLabel(cam))}</strong><small>${esc(verdict)} · ${esc(src)}</small><em>${t.caption ? "" : "Open frame →"}</em></span>
+    </button>`;
+  }).join("") + (items.length > shown.length ? `<span class="muted">+${items.length - shown.length} more videos (${tally.yes} yes · ${tally.no} no in total)</span>` : "");
+  $$(".ex-thumb", box).forEach((b) => b.addEventListener("click", () => {
+    const t = st.tiles[b.dataset.cam];
+    if (t && t.vote) openExhibit(r.activeAtom, b.dataset.cam);
+  }));
 }
 
 async function openExhibit(atomId, cam) {
@@ -1497,6 +1536,28 @@ async function loadBench() {
 
 
 // VAST catalog: metadata loads once; recorded video bytes load only for visible players.
+const JURY_VIEW = "__i24_jury";
+
+function showJuryView() {
+  if (S.busy) { $("#location-select").value = S.scope?.location || JURY_VIEW; return toast("Wait for the current assessment to finish.", "info"); }
+  ++S.catalogRequest;
+  S.catalogLoading = false;
+  (S.catalogPlayers || []).forEach((dispose) => dispose());
+  S.catalogPlayers = [];
+  S.replay = null;
+  $("#banner-replay").hidden = true;
+  $("#legacy-scenes").hidden = false;
+  const cams = $("#assessment-camera");
+  cams.disabled = true;
+  cams.innerHTML = `<option>All I-24 cameras (jury)</option>`;
+  $("#catalog-progress").textContent = "Camera jury · cached Cosmos juror answers per camera";
+  $("#source-status").textContent = "VAST · Nashville I-24 · Recorded footage";
+  $("#go").disabled = false;
+  const available = [1, 2, 3].filter((n) => (S.scenes[n] && S.scenes[n].cameras || []).length);
+  selectScene(available.includes(S.scene) ? S.scene : (available[0] || 1), { clear: true });
+  applyHealth();
+}
+
 async function loadCatalog(refresh = false) {
   if (S.busy) return toast("Wait for this assessment to finish before changing footage.", "info");
   const generation = ++S.catalogRequest;
@@ -1507,11 +1568,14 @@ async function loadCatalog(refresh = false) {
     if (generation !== S.catalogRequest) return;
     S.catalog = data;
     const select = $("#location-select");
-    select.innerHTML = data.locations.map(l => `<option value="${esc(l.key)}">${esc(l.label)} · ${l.count} clips</option>`).join("");
-    select.onchange = () => loadLocation(select.value);
+    // The I-24 camera jury (cached Cosmos jurors per camera, exhibits with keyframes) is the default view;
+    // catalog locations are single-camera assessments without a jury.
+    select.innerHTML = `<option value="${JURY_VIEW}">Nashville I-24 · camera jury</option>` +
+      data.locations.map(l => `<option value="${esc(l.key)}">${esc(l.label)} · ${l.count} clips</option>`).join("");
+    select.onchange = () => (select.value === JURY_VIEW ? showJuryView() : loadLocation(select.value));
     $("#catalog-refresh").onclick = () => loadCatalog(true);
-    select.value = data.locations.some(l => l.key === S.scope?.location) ? S.scope.location : "all";
-    await loadLocation(select.value);
+    select.value = S.scope && data.locations.some(l => l.key === S.scope.location) ? S.scope.location : JURY_VIEW;
+    if (select.value === JURY_VIEW) showJuryView(); else await loadLocation(select.value);
   } catch (error) {
     if (generation !== S.catalogRequest) return;
     S.catalogLoading = false;
@@ -1519,7 +1583,7 @@ async function loadCatalog(refresh = false) {
   }
 }
 async function loadLocation(location) {
-  if (S.busy) { $("#location-select").value = S.scope?.location || "all"; return toast("Wait for the current assessment to finish.", "info"); }
+  if (S.busy) { $("#location-select").value = S.scope?.location || JURY_VIEW; return toast("Wait for the current assessment to finish.", "info"); }
   const generation = ++S.catalogRequest;
   S.catalogLoading = true;
   $("#go").disabled = true;
@@ -1544,7 +1608,7 @@ async function loadLocation(location) {
   } catch (error) {
     if (generation !== S.catalogRequest) return;
     $("#catalog-progress").textContent = `Could not load footage: ${error.message}`;
-    $("#location-select").value = S.scope?.location || "all";
+    $("#location-select").value = S.scope?.location || JURY_VIEW;
     toast(error.message);
   } finally {
     if (generation === S.catalogRequest) { S.catalogLoading = false; $("#go").disabled = false; }

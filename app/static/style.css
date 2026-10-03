@@ -817,3 +817,6 @@ body.submitted .testify-bar .testimony { font-size:15px; }
 @media(min-width:1000px) { .court { align-items:start; }.rail { max-height:calc(var(--gallery-height,50dvh) + 75px); overflow-y:auto; scrollbar-gutter:stable; }.trace-block { margin-top:10px; } }
 @media(max-width:999px) { .wall.available-only { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:min(var(--gallery-height,60dvh),60dvh); }.wall[data-layout="1"] { grid-template-columns:1fr; }.rail { max-height:none; overflow:visible; } }
 @media(max-width:550px) { .wall.available-only { grid-template-columns:1fr; max-height:65dvh; }.gallery-toolbar { font-size:11px; } }
+
+/* per-video exhibits (any number of videos): scroll inside the panel */
+#exhibits { max-height: 420px; overflow-y: auto; }
