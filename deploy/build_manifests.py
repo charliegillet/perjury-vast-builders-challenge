@@ -51,7 +51,7 @@ def entry(rel: str, p: Path) -> dict:
         # Each deploy gets URLs derived from the actual asset bytes, so an open
         # browser cannot retain stale scripts after a code ConfigMap changes.
         text = raw.decode("utf-8")
-        for name in ("app.js", "wav.js", "style.css"):
+        for name in ("app.js", "wav.js", "style.css", "trucks.js"):
             asset = ROOT / "app" / "static" / name
             version = hashlib.sha256(asset.read_bytes()).hexdigest()[:12]
             text = re.sub(r"static/" + re.escape(name) + r"(?:\?v=[^\"']*)?", f"static/{name}?v={version}", text)
