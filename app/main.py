@@ -41,7 +41,7 @@ MAX_AUDIO_BYTES = 12 * 1024 * 1024      # ~6 min of 16 kHz mono WAV; wav.js outp
 MAX_RUNS = 50
 RUN_TIMEOUT_S = float(os.getenv("PERJURY_RUN_TIMEOUT_S", "60"))   # app-level guard over the pipeline's 20 s atom cap
 KEEPALIVE_S = 10.0
-CAMERA_RE = re.compile(r"^p[1-3]c[1-6]$")
+CAMERA_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,96}$")
 NAME_RE = re.compile(r"^[\w.-]{1,160}$")
 SLOTS = [f"p{p}c{c}" for c in range(1, 7) for p in range(1, 4)]   # 6 camera rows x 3 pole columns
 
@@ -145,7 +145,7 @@ def _check_scene(scene: int) -> int:
 
 def _check_camera(camera: str) -> str:
     if not CAMERA_RE.match(camera or ""):
-        raise HTTPException(422, "camera must look like p1c1…p3c6")
+        raise HTTPException(422, "invalid camera identifier")
     return camera
 
 
@@ -185,6 +185,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PERJURY", lifespan=lifespan)
+from app.truck_routes import router as truck_router
+app.include_router(truck_router)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])  # contract: CORS on
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
@@ -290,6 +292,8 @@ def _placeholder_jpeg(text: str, w: int = 480, h: int = 270) -> bytes:
 async def tile(scene: int = Query(...), camera: str = Query(...)) -> Response:
     _check_scene(scene)
     _check_camera(camera)
+    if not re.fullmatch(r"p[1-3]c[1-6]", camera):
+        raise HTTPException(422, "invalid legacy scene camera")
     key = (scene, camera)
     data = STATE.tiles.get(key)
     if data is None:
@@ -316,6 +320,8 @@ class TestifyIn(BaseModel):
     transcript_source: Literal["typed", "canary"] = "typed"
     transcript_id: Optional[str] = None
     jury_size: Optional[int] = Field(None, ge=1, le=16)
+    scope_id: Optional[str] = Field(None, min_length=32, max_length=32)
+    camera: Optional[str] = Field(None, min_length=1, max_length=96)
 
     @field_validator("text")
     @classmethod
@@ -377,7 +383,17 @@ async def _run_pipeline(entry: dict, body: TestifyIn, source: str) -> None:
             testify = STATE.stub.testify
         else:
             from perjury.pipeline import testify  # noqa: WPS433
-        kwargs: dict[str, Any] = {"transcript_source": source, "stock_ab": body.stock_ab}
+        if body.scope_id:
+            from app.catalog import CATALOG, build_context
+            snapshot = CATALOG.get(body.scope_id)
+            bus.emit("scope_start", {"run_id": bus.run_id, "scope_id": snapshot.id,
+                "location": snapshot.location, "camera": body.camera, "state": "loading"})
+            started = time.monotonic()
+            ctx = await build_context(ctx, snapshot, body.camera)
+            entry["ctx"] = ctx
+            bus.emit("scope_ready", {"scope_id": snapshot.id, "coverage": ctx.index.coverage,
+                "segments": len(ctx.index), "elapsed_ms": int((time.monotonic()-started)*1000)})
+        kwargs: dict[str, Any] = {"transcript_source": source, "stock_ab": body.stock_ab and not body.scope_id}
         if entry.get("canary_ms"):
             kwargs["transcript_latency_ms"] = entry["canary_ms"]
         if body.jury_size:
@@ -398,6 +414,14 @@ async def _run_pipeline(entry: dict, body: TestifyIn, source: str) -> None:
 
 @app.post("/api/testify")
 async def testify(body: TestifyIn) -> StreamingResponse:
+    if body.scope_id:
+        from app.catalog import CATALOG
+        try:
+            snapshot = CATALOG.get(body.scope_id)
+            if not body.camera or body.camera not in snapshot.index_data["scenes"]["1"]["cameras"]:
+                raise HTTPException(422, "Choose an assessment camera within this location")
+        except KeyError as error:
+            raise HTTPException(409, "Footage selection expired; refresh footage before assessment") from error
     run_id = _new_run_id(body.text)
     bus = EventBus(run_id, record_to=runs_dir() / f"{run_id}.jsonl")
     source = "typed"
@@ -546,14 +570,15 @@ async def exhibit_jpg(run_id: str, atom_id: str, camera: str, panel: int = Query
     data = None
     scene = ex.get("scene")
     source, times = juror.get("source"), juror.get("times") or []
-    scene_probes = ((probes_raw() or {}).get("scenes") or {}).get(str(scene)) or {}
+    run_ctx = (STATE.runs.get(run_id) or {}).get("ctx")
+    scene_probes = (((run_ctx.probes if run_ctx else probes_raw()) or {}).get("scenes") or {}).get(str(scene)) or {}
     panel_sources = (scene_probes.get(camera) or {}).get("panel_sources") or []
     if ex.get("cached") and len(panel_sources) >= panel:
         source, offset = panel_sources[panel - 1]
         times = [float(offset)] * panel
     if not source and scene:
         # scene-wide pre-run juror: the P-COND/P-COUNT grid came from the scene parent at grid_times
-        idx = getattr(STATE.ctx, "index", None)
+        idx = getattr(run_ctx or STATE.ctx, "index", None)
         try:
             source = idx.scene_parent(int(scene), camera) if idx is not None else None
         except Exception:
@@ -567,9 +592,11 @@ async def exhibit_jpg(run_id: str, atom_id: str, camera: str, panel: int = Query
             data = frames[0] if frames else None
         except Exception as e:
             log.info("exhibit keyframe failed: %s", type(e).__name__)
-    if data is None and scene and (int(scene), camera) in STATE.tiles:
+    if data is None and run_ctx is None and scene and (int(scene), camera) in STATE.tiles:
         data = STATE.tiles[(int(scene), camera)]
     if data is None:
+        if run_ctx is not None:
+            raise HTTPException(503, "Actual evidence frame unavailable")
         data = _placeholder_jpeg(f"{camera} · exhibit frame unavailable", 960, 540)
     else:
         _remember(STATE.exhibit_jpgs, key, data, 40)
@@ -602,17 +629,54 @@ async def stream(request: Request, run_id: str, atom_id: str, camera: str) -> Re
     return StreamingResponse(body(), status_code=upstream.status_code, headers=passthru)
 
 
+@app.get("/api/catalog")
+async def catalog(refresh: bool = False) -> dict:
+    from app.catalog import CATALOG
+    ctx = await _ensure_ctx()
+    if ctx is None or settings().mode != "live":
+        raise HTTPException(503, "Real VAST catalog service unavailable")
+    if refresh:
+        CATALOG.updated = 0
+    try:
+        return await CATALOG.summary(ctx.clients.vss)
+    except Exception as error:
+        raise HTTPException(502, obs.redact(str(error))[:300]) from error
+
+
+@app.get("/api/catalog/scope")
+async def catalog_scope(location: str) -> dict:
+    from app.catalog import CATALOG
+    ctx = await _ensure_ctx()
+    if ctx is None or settings().mode != "live":
+        raise HTTPException(503, "Real VAST catalog service unavailable")
+    try:
+        return (await CATALOG.scope(ctx.clients.vss, location)).public()
+    except KeyError as error:
+        raise HTTPException(404, "Location not present in VAST catalog") from error
+    except Exception as error:
+        raise HTTPException(502, obs.redact(str(error))[:300]) from error
+
+
+@app.get("/api/catalog/stream")
 @app.get("/api/camera-stream")
-async def camera_stream(request: Request, scene: int, camera: str) -> Response:
+async def camera_stream(request: Request, scene: int = 1, camera: str = "",
+                        scope_id: Optional[str] = None, source_id: Optional[str] = None) -> Response:
     """Actual recorded camera video, independent of a claim or exhibit."""
     if settings().mode != "live":
         raise HTTPException(409, "Real recorded video requires live service mode")
-    _check_camera(camera)
     ctx = await _ensure_ctx()
-    try:
-        source = ctx.index.scene_parent(scene, camera) if ctx is not None else None
-    except (KeyError, ValueError):
-        source = None
+    if scope_id:
+        from app.catalog import CATALOG
+        try:
+            source = CATALOG.get(scope_id).source_id(source_id)
+        except KeyError as error:
+            raise HTTPException(404, "Clip selection expired or outside selected footage") from error
+    else:
+        _check_camera(camera)
+        try:
+            source = ctx.index.scene_parent(scene, camera) if ctx is not None else None
+        except (KeyError, ValueError):
+            source = None
     if not source:
         raise HTTPException(404, "No recorded camera source for this scene")
     url = await _stream_url(source)
@@ -623,6 +687,16 @@ async def camera_stream(request: Request, scene: int, camera: str) -> Response:
     headers = {k: v for k, v in request.headers.items() if k.lower() in ("range", "if-range")}
     try:
         upstream = await client.send(client.build_request("GET", url, headers=headers), stream=True)
+        if upstream.status_code == 401 and ctx is not None:
+            await upstream.aclose()
+            # Stream URLs carry a short-lived VSS token. Renew once at clip boundaries.
+            try:
+                await ctx.clients.vss.login()
+                url = await _stream_url(source)
+                upstream = await client.send(client.build_request("GET", url, headers=headers), stream=True)
+            except Exception as error:
+                await client.aclose()
+                raise HTTPException(503, "Recorded playback authentication could not renew") from error
         if upstream.status_code >= 400:
             await upstream.aclose()
             await client.aclose()
@@ -639,6 +713,8 @@ async def camera_stream(request: Request, scene: int, camera: str) -> Response:
             await client.aclose()
     passthru = {k: v for k, v in upstream.headers.items()
                 if k.lower() in ("content-type", "content-length", "content-range", "accept-ranges")}
+    passthru["content-type"] = "video/mp4"
+    passthru["cache-control"] = "private, no-cache"
     return StreamingResponse(body(), status_code=upstream.status_code, headers=passthru)
 
 
