@@ -210,7 +210,7 @@ async def pull_vss(clients, camera_id: str) -> list[dict]:
     parents, off = [], 0
     while True:
         d = await clients.vss.explore(limit=48, offset=off)
-        batch = [x for x in (d.get("videos") or d.get("results") or d.get("items") or []) if isinstance(x, dict)]
+        batch = [x for x in (d.get("chunks") or d.get("videos") or d.get("results") or d.get("items") or []) if isinstance(x, dict)]
         parents += [x for x in batch if (x.get("camera_id") or camera_id) == camera_id]
         if len(batch) < 48 or off > 2000:
             break
@@ -219,7 +219,8 @@ async def pull_vss(clients, camera_id: str) -> list[dict]:
     for p in parents:
         pv = p.get("original_video") or p.get("source")
         if pv:
-            rows += await clients.vss.segments(pv)
+            rows += [r for r in await clients.vss.segments(pv)
+                     if (r.get("camera_id") or camera_id) == camera_id]
     return rows
 
 
