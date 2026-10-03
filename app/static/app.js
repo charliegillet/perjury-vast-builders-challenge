@@ -68,6 +68,7 @@ const S = {
   tab: "courtroom",
   live: null,
   editing: false,
+  catalog: null, scope: null, catalogLoading: false, catalogRequest: 0, assessmentCamera: null, catalogPlayers: [],
 };
 
 function newRun(opts) {
@@ -95,6 +96,7 @@ async function boot() {
   }
   applyHealth();
   await loadScenes();
+  await loadCatalog();
   loadReplays();
   setInterval(tick, 100);
   setInterval(refreshHealth, 15000);
@@ -107,7 +109,7 @@ async function refreshHealth() {
 function applyHealth() {
   const h = S.health || {};
   const fixture = h.mode === "fixture";
-  const coverage = h.coverage;
+  const coverage = S.scope ? null : h.coverage;
   const banner = $("#banner-coverage");
   banner.hidden = !coverage || coverage.complete !== false || fixture;
   if (!banner.hidden) {
@@ -144,6 +146,7 @@ async function loadScenes() {
 }
 
 function selectScene(n, opts) {
+  S.scope = null;
   S.scene = n;
   $$(".scene-btn").forEach((b) => b.classList.toggle("on", +b.dataset.scene === n));
   const meta = S.scenes[n] || {};
@@ -281,6 +284,8 @@ async function testify(text, opts) {
   if (!text) return toast("Type or say a claim first.", "info");
   if (text.length > 500) return toast("Keep testimony under 500 characters.");
   if (S.busy) return toast("Wait for the current assessment to finish.", "info");
+  if (S.catalogLoading) return toast("Wait for the selected footage to load.", "info");
+  if (S.scope && !S.assessmentCamera) return toast("Choose an assessment camera first.", "info");
   if (S.live && (!S.live.lastReceived || Date.now() - S.live.lastReceived > 30000)) return toast("Live evidence is unavailable or stale. Reconnect the source.");
   S.editing = false;
   exitReplay();
@@ -292,6 +297,7 @@ async function testify(text, opts) {
   setStamp("out", "THE JURY IS OUT");
   if ($("#stock-ab").checked) showStockPending();
   const body = { text, scene: S.scene, stock_ab: $("#stock-ab").checked, transcript_source: opts.source || "typed" };
+  if (S.scope) { body.scope_id = S.scope.id; body.camera = S.assessmentCamera; body.scene = 1; body.stock_ab = false; }
   if (opts.transcript_id) body.transcript_id = opts.transcript_id;
   if (S.tab !== "courtroom") showTab("courtroom");
   const endpoint = S.live ? `api/live/${encodeURIComponent(S.live.id)}/testify` : "api/testify";
@@ -299,6 +305,9 @@ async function testify(text, opts) {
 }
 
 function startReplay(name, at) {
+  S.scope = null;
+  $("#legacy-scenes").hidden = false;
+  buildWall();
   S.replay = { name, recorded_at: at };
   $("#banner-replay").hidden = false;
   $("#replay-when").textContent = hhmm(at);
@@ -336,6 +345,11 @@ function atomState(id) {
 }
 
 const HANDLERS = {
+  scope_start(d) { S.run.id = d.run_id; $("#catalog-progress").textContent = "Loading real detection evidence…"; },
+  scope_ready(d) {
+    S.run.coverage = d.coverage;
+    $("#catalog-progress").textContent = `${d.segments} indexed segments · ${d.coverage.analysis_camera} · Detections ${d.coverage.detection_evidence}`;
+  },
   run(d) {
     const r = S.run;
     r.id = d.run_id;
@@ -708,6 +722,9 @@ function renderPills(fresh) {
 function buildWall() {
   const wall = $("#wall");
   if (S.live) return;
+  if (S.scope) return buildCatalogWall();
+  S.catalogPlayers.forEach(dispose => dispose());
+  S.catalogPlayers = [];
   const meta = S.scenes[S.scene] || {};
   // Full 18-slot wall: 3 poles x 6 cameras; cameras with no indexed footage render as NO FEED.
   const present = meta.cameras || [];
@@ -1092,6 +1109,11 @@ function traceRows() {
         if (row) { Object.assign(row, { end: e.t_ms, state: d.state, label, pipeline, data: d }); }
         else rows.push({ label, lane, start: Math.max(0, e.t_ms - (d.ms || 0)), end: e.t_ms, state: d.state, pipeline, data: d });
       }
+    } else if (e.event === "scope_start") {
+      rows.push({lane:"STEP", label:"VAST evidence preparation", start:e.t_ms, end:null, state:"firing", duration:true, data:d});
+    } else if (e.event === "scope_ready") {
+      const prep = rows.find(x => x.label === "VAST evidence preparation" && x.end == null);
+      if (prep) { prep.end = e.t_ms; prep.state = "done"; prep.data = d; }
     } else if (["transcript", "atoms", "verdict"].includes(e.event)) {
       const label = e.event === "atoms" ? `atomize → ${(d.atoms || []).length} atoms (${d.parser || "?"})` : e.event === "verdict" ? `quorum → ${d.verdict}` : `transcript (${d.source || "?"})`;
       rows.push({ label, lane: "STEP", start: e.t_ms, end: e.t_ms, state: "done", data: d });
@@ -1114,7 +1136,7 @@ function renderTrace() {
     const left = (row.start / total) * 100;
     const width = Math.max(0.3, ((end - row.start) / total) * 100);
     const cls = ["bar", row.lane, row.state === "firing" ? "firing" : "", row.state === "error" ? "error" : "", row.pipeline ? "outlined" : ""].join(" ");
-    const ms = row.lane === "STEP" ? `@${fmtMs(row.start)}` : row.end == null ? "…" : fmtMs(end - row.start);
+    const ms = row.lane === "STEP" && !row.duration ? `@${fmtMs(row.start)}` : row.end == null ? "…" : fmtMs(end - row.start);
     return `<button type="button" class="tl trace-select" data-trace="${i}" title="Inspect ${esc(row.label)}">${esc(row.label)}</button><div class="tr"><div class="${cls}" style="left:${left}%;width:${width}%"></div></div><div class="tms">${ms}</div>`;
   }).join("");
   $$(".trace-select").forEach((button) => button.addEventListener("click", () => {
@@ -1471,4 +1493,176 @@ async function loadBench() {
   }
   html += `<details><summary class="muted">raw bench_report.json</summary><pre class="json">${json(rep)}</pre></details>`;
   box.innerHTML = html;
+}
+
+
+// VAST catalog: metadata loads once; recorded video bytes load only for visible players.
+async function loadCatalog(refresh = false) {
+  if (S.busy) return toast("Wait for this assessment to finish before changing footage.", "info");
+  const generation = ++S.catalogRequest;
+  S.catalogLoading = true;
+  $("#catalog-progress").textContent = "Fetching indexed footage from VAST…";
+  try {
+    const data = await getJSON(`api/catalog${refresh ? "?refresh=true" : ""}`);
+    if (generation !== S.catalogRequest) return;
+    S.catalog = data;
+    const select = $("#location-select");
+    select.innerHTML = data.locations.map(l => `<option value="${esc(l.key)}">${esc(l.label)} · ${l.count} clips</option>`).join("");
+    select.onchange = () => loadLocation(select.value);
+    $("#catalog-refresh").onclick = () => loadCatalog(true);
+    select.value = data.locations.some(l => l.key === S.scope?.location) ? S.scope.location : "all";
+    await loadLocation(select.value);
+  } catch (error) {
+    if (generation !== S.catalogRequest) return;
+    S.catalogLoading = false;
+    $("#catalog-progress").textContent = `VAST catalog unavailable: ${error.message}`;
+  }
+}
+async function loadLocation(location) {
+  if (S.busy) { $("#location-select").value = S.scope?.location || "all"; return toast("Wait for the current assessment to finish.", "info"); }
+  const generation = ++S.catalogRequest;
+  S.catalogLoading = true;
+  $("#go").disabled = true;
+  $("#catalog-progress").textContent = "Loading indexed clips…";
+  try {
+    const scope = await getJSON(`api/catalog/scope?${qs({location})}`);
+    if (generation !== S.catalogRequest) return;
+    S.scope = scope; S.scene = 1; S.run = null; S.replay = null;
+    $("#legacy-scenes").hidden = true;
+    $("#banner-replay").hidden = true;
+    S.assessmentCamera = scope.cameras[0]?.key || null;
+    const cameras = $("#assessment-camera");
+    cameras.disabled = !scope.cameras.length;
+    cameras.innerHTML = scope.cameras.map(c => `<option value="${esc(c.key)}">${esc(c.label)} · ${c.clips.length} clips</option>`).join("");
+    cameras.onchange = () => {
+      if (S.busy) { cameras.value = S.assessmentCamera; return toast("Wait for the current assessment to finish.", "info"); }
+      S.assessmentCamera = cameras.value; S.run = null; resetBoard(); buildCatalogWall();
+    };
+    $("#catalog-progress").textContent = `${scope.coverage.catalog_chunks} clips · ${scope.cameras.length} cameras · Recorded uploads`;
+    $("#source-status").textContent = `VAST · ${scope.label} · Latest uploads ${scope.cameras[0]?.clips[0]?.upload_timestamp?.slice(0,10) || "date unavailable"}`;
+    resetBoard(); buildCatalogWall(); applyHealth();
+  } catch (error) {
+    if (generation !== S.catalogRequest) return;
+    $("#catalog-progress").textContent = `Could not load footage: ${error.message}`;
+    $("#location-select").value = S.scope?.location || "all";
+    toast(error.message);
+  } finally {
+    if (generation === S.catalogRequest) { S.catalogLoading = false; $("#go").disabled = false; }
+  }
+}
+function buildCatalogWall() {
+  const scope = S.scope;
+  if (!scope) return;
+  S.catalogPlayers.forEach(dispose => dispose());
+  S.catalogPlayers = [];
+  const buckets = new Map();
+  scope.cameras.forEach(camera => {
+    const location = camera.clips[0]?.location || scope.location;
+    if (!buckets.has(location)) buckets.set(location, []);
+    buckets.get(location).push(camera);
+  });
+  const ordered = [];
+  while ([...buckets.values()].some(cameras => cameras.length)) {
+    buckets.forEach(cameras => { if (cameras.length) ordered.push(cameras.shift()); });
+  }
+  const selected = ordered.findIndex(camera => camera.key === S.assessmentCamera);
+  if (selected > 0) ordered.unshift(ordered.splice(selected,1)[0]);
+  const visible = ordered;
+  const wall = $("#wall"); wall.classList.add("available-only");
+  wall.innerHTML = visible.map(c => `<section class="catalog-slot"><article class="tile idle" data-cam="${esc(c.key)}"><video muted autoplay controls playsinline preload="metadata" aria-label="Recorded footage ${esc(c.label)}"></video><span class="cam">${esc(c.label)}${c.key === S.assessmentCamera ? " <small>Assessment camera</small>" : ""}</span><span class="mark"></span><div class="gb"></div><div class="badges"></div><span class="video-error" hidden><span class="video-error-message">Video unavailable</span><button type="button" class="video-retry">Retry video</button></span></article><label class="clip-control">Recorded clip<select aria-label="Clip for ${esc(c.label)}">${c.clips.map((clip,i) => `<option value="${i}">${i + 1} · ${esc(clip.label || c.label)}</option>`).join("")}</select></label><p class="clip-caption"></p></section>`).join("");
+  visible.forEach((camera,i) => {
+    const slot = wall.children[i];
+    const expand = document.createElement("button");
+    expand.type = "button"; expand.className = "camera-expand";
+    expand.textContent = "⤢"; expand.setAttribute("aria-label", `Expand ${camera.label}`);
+    expand.onclick = () => { const player = $("video",slot); if (player.requestFullscreen) player.requestFullscreen().catch(() => {}); else toast("Use the video fullscreen control.", "info"); };
+    $(".tile",slot).append(expand);
+    S.catalogPlayers.push(initCatalogPlayer(wall.children[i], camera, scope));
+  });
+  $("#gallery-count").textContent = `${visible.length} real cameras · Scroll for more`;
+  const layout = $("#gallery-layout");
+  const resize = () => {
+    const trace = $(".trace-block");
+    const bottom = (trace?.getBoundingClientRect().height || 100) + 80;
+    const available = Math.max(window.innerHeight * .28, window.innerHeight - wall.getBoundingClientRect().top - bottom);
+    wall.dataset.layout = layout.value;
+    const cardHeight = wall.firstElementChild?.getBoundingClientRect().height || available;
+    const rows = layout.value === "6" ? 2 : layout.value === "all" ? Infinity : 1;
+    wall.style.setProperty("--gallery-height", `${Math.min(available, cardHeight * rows + (rows === 2 ? 12 : 0))}px`);
+  };
+  layout.onchange = resize;
+  const observer = new ResizeObserver(resize); observer.observe($(".testify-bar"));
+  window.addEventListener("resize", resize); resize();
+  S.catalogPlayers.push(() => { observer.disconnect(); window.removeEventListener("resize",resize); });
+  $("#wall-foot").textContent = `${scope.coverage.catalog_chunks} real clips indexed · Claims assess all indexed footage of ${S.assessmentCamera}, independently of playback position.`;
+  paintWall();
+}
+
+
+function initCatalogPlayer(slot, camera, scope) {
+  const video = $("video", slot), select = $("select", slot);
+  const warning = $(".video-error", slot), message = $(".video-error-message", slot);
+  let generation = 0, attempts = 0, retryTimer = null, loadingTimer = null, disposed = false, active = false, loaded = false;
+  const clearTimers = () => { clearTimeout(retryTimer); clearTimeout(loadingTimer); retryTimer = null; loadingTimer = null; };
+  const attemptPlayback = () => video.play().catch(error => {
+    // Chrome may cancel play() when the previous MP4 request is replaced.
+    // Autoplay permission and expected cancellation are not source failures.
+    if (error.name !== "AbortError" && error.name !== "NotAllowedError" && video.error) retry();
+  });
+  const load = (retrying = false) => {
+    if (disposed || !slot.isConnected || !active) return;
+    loaded = true;
+    clearTimers();
+    const current = ++generation;
+    if (!retrying) attempts = 0;
+    const clip = camera.clips[Number(select.value)];
+    if (!clip) return;
+    warning.hidden = true;
+    video.pause();
+    video.src = `api/catalog/stream?${qs({scope_id:scope.id, source_id:clip.source_id, attempt:attempts})}`;
+    video.load();
+    $(".clip-caption",slot).textContent = clip.caption || "Recorded VAST clip; indexed captions are used for assessment.";
+    attemptPlayback();
+    // A stalled clip can fail without firing a media error. Bound recovery.
+    loadingTimer = setTimeout(() => {
+      if (generation === current && !disposed && !document.hidden && slot.isConnected && video.readyState < 2) retry();
+    }, 12000);
+  };
+  const retry = () => {
+    if (disposed || !slot.isConnected || !active || retryTimer) return;
+    clearTimeout(loadingTimer);
+    if (attempts >= 2) {
+      message.textContent = `Clip ${Number(select.value)+1} could not load. Retry or choose another recorded clip.`;
+      warning.hidden = false;
+      return;
+    }
+    const current = generation;
+    attempts++;
+    retryTimer = setTimeout(() => {
+      retryTimer = null;
+      if (current === generation) load(true);
+    }, attempts * 600);
+  };
+  const recovered = () => {
+    clearTimers(); retryTimer = null; loadingTimer = null;
+    warning.hidden = true;
+  };
+  video.addEventListener("loadeddata", recovered);
+  video.addEventListener("playing", recovered);
+  const visibility = () => { if (document.hidden) video.pause(); else if (active && !disposed) { if (video.readyState < 2) load(true); else attemptPlayback(); } };
+  document.addEventListener("visibilitychange", visibility);
+  video.addEventListener("error", () => { if (video.error) retry(); });
+  video.addEventListener("ended", () => {
+    const next = Number(select.value) + 1;
+    if (next < camera.clips.length) { select.value = String(next); load(); }
+  });
+  select.onchange = () => { loaded = false; load(); };
+  $(".video-retry", slot).onclick = () => load();
+  const viewport = new IntersectionObserver(entries => {
+    active = entries[0].isIntersecting;
+    if (active && !document.hidden) { if (!loaded || video.readyState < 2) load(); else attemptPlayback(); }
+    else { clearTimers(); video.pause(); }
+  }, {root:$("#wall"), threshold:.15});
+  viewport.observe(slot);
+  return () => { disposed = true; generation++; viewport.disconnect(); clearTimers(); document.removeEventListener("visibilitychange", visibility); video.pause(); video.removeAttribute("src"); video.load(); };
 }

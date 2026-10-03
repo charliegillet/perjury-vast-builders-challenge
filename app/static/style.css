@@ -788,3 +788,32 @@ body.submitted .testify-bar .testimony { font-size:15px; }
 .rail { min-width:0; }
 ::selection { background:#dedede; color:#202020; }
 .stock-error { color:var(--text); font-size:13px; }
+
+/* Recorded VAST collection controls preserve fluid video geometry. */
+.catalog-controls { margin:0 24px 10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; }
+.catalog-controls label { font-weight:600; }.catalog-controls select { min-width:140px; max-width:100%; padding:7px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font:inherit; }
+#catalog-progress { color:var(--muted); margin-left:auto; font-size:11px; }
+#legacy-scenes[hidden] { display:none; }
+.catalog-slot { min-width:0; }.clip-control { display:flex; align-items:center; gap:6px; margin-top:8px; font-size:11px; color:var(--muted); }
+.clip-control select { min-width:0; width:100%; padding:5px; border:1px solid var(--line); border-radius:5px; background:#fff; color:var(--ink); font:inherit; }
+.clip-caption { font-size:11px; line-height:1.5; margin:6px 0 0; color:var(--muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+@media(max-width:800px) { .catalog-controls { margin-inline:16px; }#catalog-progress { flex-basis:100%; margin-left:0; }.catalog-controls select { flex:1; } }
+
+.video-error { align-content:center; gap:12px; padding:16px; text-align:center; line-height:1.5; }.video-error .video-retry { padding:7px 12px; border:1px solid #777; border-radius:6px; background:#fff; color:#171717; cursor:pointer; font:500 12px var(--sans); }
+
+/* Six-camera review: scrolling belongs to the footage gallery, not the workspace. */
+.gallery-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 0 10px; font-size:12px; color:var(--muted); }
+.gallery-toolbar label { display:flex; gap:8px; align-items:center; }
+.gallery-toolbar select { background:#fff; border:1px solid var(--line); border-radius:6px; padding:5px 9px; font:inherit; color:var(--text); }
+.wall.available-only { grid-template-columns:repeat(3,minmax(0,1fr)); max-height:var(--gallery-height,50dvh); overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; align-content:start; padding-right:3px; gap:12px; }
+.wall[data-layout="1"] { grid-template-columns:minmax(0,1fr); }
+.catalog-slot { border:1px solid var(--line); border-radius:8px; background:#fff; padding:0 0 10px; overflow:hidden; }
+.catalog-slot .tile { border:0; border-radius:7px 7px 0 0; }
+.catalog-slot .clip-control,.catalog-slot .clip-caption { margin-left:9px; margin-right:9px; }
+.catalog-slot .clip-caption { -webkit-line-clamp:2; }
+.camera-expand { position:absolute; z-index:4; top:7px; right:7px; background:#202020b3; color:#fff; border:1px solid #ffffff4d; border-radius:5px; width:27px; height:27px; cursor:pointer; font:600 20px/1 var(--sans); }
+.camera-expand:hover { background:#202020; }.tile video:fullscreen { object-fit:contain; background:#000; }
+.wall[data-layout="1"] .tile { max-height:calc(var(--gallery-height,50dvh) - 90px); }
+@media(min-width:1000px) { .court { align-items:start; }.rail { max-height:calc(var(--gallery-height,50dvh) + 75px); overflow-y:auto; scrollbar-gutter:stable; }.trace-block { margin-top:10px; } }
+@media(max-width:999px) { .wall.available-only { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:min(var(--gallery-height,60dvh),60dvh); }.wall[data-layout="1"] { grid-template-columns:1fr; }.rail { max-height:none; overflow:visible; } }
+@media(max-width:550px) { .wall.available-only { grid-template-columns:1fr; max-height:65dvh; }.gallery-toolbar { font-size:11px; } }
