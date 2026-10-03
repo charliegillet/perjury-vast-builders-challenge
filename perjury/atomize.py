@@ -487,11 +487,13 @@ async def atomize(text: str, llm: Any = None, *, bus: Any = None) -> tuple[list[
                                for a in atoms):
                         atoms.append(Atom(id=f"a{len(atoms) + 1}", span=span,
                                           type=AtomType.scene_identity, value=span.lower()))
-                return atoms, "llm"
+                from perjury.trucks import split_coloured_truck
+                return split_coloured_truck(text, atoms), "llm"
         except Exception as e:  # 429, timeout, bad JSON: the rules parser takes over (§17)
             if bus is not None:
                 bus.service("wandb_inference", "fallback", note=f"atomizer: rules parser ({type(e).__name__})")
-    return rules_parse(text), "rules"
+    from perjury.trucks import split_coloured_truck
+    return split_coloured_truck(text, rules_parse(text)), "rules"
 
 
 # ---- canonical statements (T1 input, templates) ----

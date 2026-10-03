@@ -523,6 +523,52 @@ RULES = {
 
 async def evaluate(atom: Atom, route: Route, scene: int, ctx: "Context", bus, opts: RunOpts) -> AtomVerdict:
     """Route -> rule -> AtomVerdict. Unrouted, never-testable and bench-demoted types never touch a model."""
+    if (atom.type == AtomType.coco_presence and atom.cls == "truck" and not atom.negated) or (atom.type == AtomType.attribute and atom.cls == "truck"):
+        from perjury.trucks import evaluate_truck
+        observed = await evaluate_truck(atom, ctx, scene, bus)
+        if observed is not None:
+            return observed
+    if atom.type == AtomType.action and atom.value == "braking":
+        return unverifiable(atom, "Hard braking requires validated motion and deceleration measurements of the same tracked vehicle. Presence and colour evidence do not establish braking.", "motion_evidence_required")
+    # A catalog scope is a recorded camera corpus, not a synchronized calibrated jury.
+    if ctx.index.coverage.get("catalog_scope"):
+        if route.rule in ("scene_majority", "presence_jury", "heavy_vehicle_jury"):
+            return unverifiable(atom, "This selected camera archive has no calibrated independent camera jury. Indexed observations can be inspected; a hard verdict is not inferred.", "uncalibrated_catalog_scope")
+        if route.rule == "metadata_match":
+            locations = ctx.index.locations(scene)
+            aliases = {"toronto": "toronto", "san francisco": "san_francisco", "nashville": "nashville",
+                       "neighborhood": "neighborhood", "indoor": "indoor", "warehouse": "warehouse3"}
+            term = (atom.value or atom.span).lower()
+            named = {value for name, value in aliases.items() if re.search(rf"\b{re.escape(name)}\b", term)}
+            data = {"locations": sorted(locations), "metadata_only": True}
+            bus.emit("t0", {"atom_id": atom.id, "summary": "VAST catalog location metadata", "data": data})
+            if named and len(locations) == 1:
+                matches = bool(named & locations)
+                return AtomVerdict(atom_id=atom.id, verdict="SUPPORTED" if matches else "CONTRADICTED",
+                    reason="The named location matches the VAST upload metadata." if matches else "The named location differs from the VAST upload metadata.",
+                    reason_code="catalog_location_metadata", tiers=["RECORDS"], stats=data)
+            # City metadata identifies a location, not the visual scene type.
+            # Verify scene nouns against actual indexed captions with checked quotes.
+            scene_terms = {
+                "highway": ["highway", "freeway", "interstate", "motorway", "expressway"],
+                "road": ["road", "roadway", "street", "highway", "freeway"],
+                "warehouse": ["warehouse"],
+            }
+            terms = next((terms for noun, terms in scene_terms.items()
+                          if any(re.search(rf"\b{re.escape(t)}\b", term) for t in terms)), None)
+            if not named and terms:
+                evidence = await t1_captions(atom, terms, [], scene, ctx, bus, opts)
+                stats = {**data, "caption_evidence": evidence}
+                if evidence["supports"] > 0 and evidence["contradicts"] == 0 and not evidence["error"]:
+                    return AtomVerdict(atom_id=atom.id, verdict="SUPPORTED", tiers=["CAPTIONS"],
+                        reason=f"The selected camera's VAST indexed captions explicitly describe {atom.span}; supporting quotes were checked against the source captions.",
+                        reason_code="catalog_scene_captions", stats=stats)
+                if evidence["contradicts"] > 0 and evidence["supports"] == 0 and evidence["complete"] and not evidence["error"]:
+                    return AtomVerdict(atom_id=atom.id, verdict="CONTRADICTED", tiers=["CAPTIONS"],
+                        reason="The selected camera's indexed captions explicitly contradict this scene identity.",
+                        reason_code="catalog_scene_captions", stats=stats)
+                return unverifiable(atom, "The selected camera's indexed captions do not consistently establish this scene type.", "catalog_scene_unknown", stats)
+            return unverifiable(atom, "The catalog metadata cannot establish this scene identity.", "catalog_identity_unknown", data)
     fn = RULES.get(route.rule)
     if fn is None:
         return unverifiable(atom, route.reason_if_unverifiable, route.reason_code)
